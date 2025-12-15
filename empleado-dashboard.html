@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Empleado</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/global.css">
+    
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 70px;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --sidebar-active: #10b981;
+            --sidebar-text: #e2e8f0;
+            --sidebar-text-muted: #94a3b8;
+        }
+
+        body { margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+
+        .mobile-toggle {
+            display: none; position: fixed; top: 16px; left: 16px; z-index: 1001;
+            width: 44px; height: 44px; border-radius: 10px; border: none;
+            background: var(--sidebar-bg); color: white; font-size: 22px;
+            cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            align-items: center; justify-content: center;
+        }
+
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; }
+        .sidebar-overlay.active { display: block; }
+
+        .sidebar {
+            position: fixed; left: 0; top: 0; height: 100vh; width: var(--sidebar-width);
+            background: var(--sidebar-bg); display: flex; flex-direction: column;
+            z-index: 1000; transition: all 0.3s ease; overflow: hidden;
+        }
+        .sidebar.collapsed { width: var(--sidebar-collapsed); }
+
+        .sidebar-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); min-height: 70px;
+        }
+        .logo-container { display: flex; align-items: center; gap: 12px; overflow: hidden; }
+        .logo-icon {
+            width: 40px; height: 40px; min-width: 40px; border-radius: 10px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        }
+        .logo-container h2 { margin: 0; font-size: 18px; font-weight: 700; color: white; white-space: nowrap; transition: opacity 0.3s; }
+        .sidebar.collapsed .logo-container h2 { opacity: 0; width: 0; }
+
+        .sidebar-toggle {
+            width: 28px; height: 28px; min-width: 28px; border-radius: 6px; border: none;
+            background: rgba(255,255,255,0.1); color: var(--sidebar-text); cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 12px;
+        }
+        .sidebar-toggle:hover { background: rgba(255,255,255,0.2); }
+        .sidebar.collapsed .sidebar-toggle { display: none; }
+        .sidebar.collapsed .sidebar-header { justify-content: center; padding: 20px 10px; }
+
+        .sidebar-user {
+            display: flex; align-items: center; gap: 12px; padding: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-user-avatar {
+            width: 42px; height: 42px; min-width: 42px; border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+        }
+        .sidebar-user-info { overflow: hidden; transition: opacity 0.3s; }
+        .sidebar.collapsed .sidebar-user-info { opacity: 0; width: 0; }
+        .sidebar.collapsed .sidebar-user { justify-content: center; padding: 16px 10px; }
+        .user-name { font-size: 14px; font-weight: 600; color: white; white-space: nowrap; }
+        .user-role { font-size: 12px; color: var(--sidebar-text-muted); }
+
+        .sidebar-menu { flex: 1; padding: 12px 8px; overflow-y: auto; }
+        .sidebar-section-title {
+            font-size: 11px; font-weight: 600; color: var(--sidebar-text-muted);
+            text-transform: uppercase; padding: 12px 12px 8px; white-space: nowrap; transition: opacity 0.3s;
+        }
+        .sidebar.collapsed .sidebar-section-title { opacity: 0; }
+        .sidebar-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 8px 12px; }
+
+        .sidebar-menu button {
+            width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+            border: none; border-radius: 10px; background: transparent; color: var(--sidebar-text);
+            font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: left;
+        }
+        .sidebar-menu button:hover { background: var(--sidebar-hover); }
+        .sidebar-menu button.active { background: var(--sidebar-active); color: white; }
+        .sidebar-menu button .icon { font-size: 18px; min-width: 24px; text-align: center; }
+        .sidebar-menu button .sidebar-text { white-space: nowrap; transition: opacity 0.3s; }
+        .sidebar.collapsed .sidebar-menu button .sidebar-text { opacity: 0; width: 0; overflow: hidden; }
+        .sidebar.collapsed .sidebar-menu button { justify-content: center; padding: 12px 10px; }
+
+        .sidebar-footer { padding: 12px 8px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .logout-btn {
+            width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+            border: none; border-radius: 10px; background: rgba(239, 68, 68, 0.2); color: #fca5a5;
+            font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+        }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.3); }
+        .logout-btn .sidebar-text { white-space: nowrap; transition: opacity 0.3s; }
+        .sidebar.collapsed .logout-btn .sidebar-text { opacity: 0; width: 0; }
+        .sidebar.collapsed .logout-btn { justify-content: center; padding: 12px 10px; }
+
+        .main-content {
+            margin-left: var(--sidebar-width); min-height: 100vh; transition: margin-left 0.3s ease;
+            background: var(--bg-color); padding: 24px;
+        }
+        .sidebar.collapsed ~ .main-content { margin-left: var(--sidebar-collapsed); }
+
+        @media (max-width: 768px) {
+            .mobile-toggle { display: flex; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .sidebar .sidebar-toggle { display: none; }
+            .sidebar.collapsed { width: var(--sidebar-width); }
+            .sidebar .logo-container h2, .sidebar .sidebar-user-info, .sidebar .sidebar-section-title,
+            .sidebar .sidebar-menu button .sidebar-text, .sidebar .logout-btn .sidebar-text {
+                opacity: 1 !important; width: auto !important;
+            }
+            .sidebar .sidebar-header, .sidebar .sidebar-user, .sidebar .sidebar-menu button, .sidebar .logout-btn {
+                justify-content: flex-start !important; padding: 12px 14px !important;
+            }
+            .main-content { margin-left: 0; padding: 70px 16px 16px; }
+        }
+
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .sidebar { width: var(--sidebar-collapsed); }
+            .sidebar .logo-container h2, .sidebar .sidebar-user-info, .sidebar .sidebar-section-title,
+            .sidebar .sidebar-menu button .sidebar-text, .sidebar .logout-btn .sidebar-text { opacity: 0; width: 0; }
+            .sidebar .sidebar-toggle { display: none; }
+            .sidebar .sidebar-header, .sidebar .sidebar-user, .sidebar .sidebar-menu button, .sidebar .logout-btn { justify-content: center; }
+            .main-content { margin-left: var(--sidebar-collapsed); }
+            .sidebar:hover { width: var(--sidebar-width); }
+            .sidebar:hover .logo-container h2, .sidebar:hover .sidebar-user-info, .sidebar:hover .sidebar-section-title,
+            .sidebar:hover .sidebar-menu button .sidebar-text, .sidebar:hover .logout-btn .sidebar-text { opacity: 1; width: auto; }
+            .sidebar:hover .sidebar-header, .sidebar:hover .sidebar-user, .sidebar:hover .sidebar-menu button, .sidebar:hover .logout-btn { justify-content: flex-start; }
+        }
+
+        .neo-table { width: 100%; border-collapse: collapse; }
+        .neo-table th { background: var(--primary); color: white; padding: 12px; text-align: left; font-size: 13px; }
+        .neo-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+        .table-responsive { overflow-x: auto; }
+        .page-title { font-size: 24px; margin-bottom: 20px; }
+        code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <button class="mobile-toggle" id="mobileToggle" type="button">☰</button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-container">
+                <div class="logo-icon">👤</div>
+                <h2>Mi Panel</h2>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" type="button" title="Colapsar">
+                <span id="toggleIcon">◀</span>
+            </button>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="sidebar-user-avatar">🧑‍💼</div>
+            <div class="sidebar-user-info">
+                <div class="user-name" id="empleadoNombre">Empleado</div>
+                <div class="user-role" id="empleadoSucursal">Sucursal</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <div class="sidebar-section-title">Principal</div>
+            <button type="button" data-vista="dashboard" onclick="cargarVistaEmpleado('dashboard')">
+                <span class="icon">📊</span><span class="sidebar-text">Dashboard</span>
+            </button>
+            <button type="button" data-vista="catalogo" onclick="cargarVistaEmpleado('catalogo')">
+                <span class="icon">🛍️</span><span class="sidebar-text">Catálogo</span>
+            </button>
+            <button type="button" data-vista="registrar-venta" onclick="cargarVistaEmpleado('registrar-venta')">
+                <span class="icon">🛒</span><span class="sidebar-text">Registrar Venta</span>
+            </button>
+
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-title">Historial</div>
+            <button type="button" data-vista="mis-ventas" onclick="cargarVistaEmpleado('mis-ventas')">
+                <span class="icon">📋</span><span class="sidebar-text">Mis Ventas</span>
+            </button>
+
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-title">Cuenta</div>
+            <button type="button" data-vista="perfil" onclick="cargarVistaEmpleado('perfil')">
+                <span class="icon">⚙️</span><span class="sidebar-text">Mi Perfil</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="logout-btn" type="button" onclick="logoutEmpleado()">
+                <span class="icon">🚪</span><span class="sidebar-text">Cerrar Sesión</span>
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div id="contenidoEmpleado"></div>
+    </main>
+
+    <script src="js/ui.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/empleado.js"></script>
+
+    <script>
+        (function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const mobileToggle = document.getElementById('mobileToggle');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            if (window.innerWidth > 768) {
+                const saved = localStorage.getItem('sidebarEmpleadoCollapsed');
+                if (saved === 'true') {
+                    sidebar.classList.add('collapsed');
+                    toggleIcon.textContent = '▶';
+                }
+            }
+
+            sidebarToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                sidebar.classList.toggle('collapsed');
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                toggleIcon.textContent = isCollapsed ? '▶' : '◀';
+                localStorage.setItem('sidebarEmpleadoCollapsed', isCollapsed);
+            });
+
+            mobileToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+            });
+
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            });
+
+            document.querySelectorAll('.sidebar-menu button').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('mobile-open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+
+            window.marcarMenuActivoEmpleado = function(vista) {
+                document.querySelectorAll('.sidebar-menu button').forEach(function(btn) {
+                    btn.classList.remove('active');
+                    if (btn.dataset.vista === vista) btn.classList.add('active');
+                });
+            };
+        })();
+    </script>
+</body>
+</html>

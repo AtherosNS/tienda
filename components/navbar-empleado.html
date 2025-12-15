@@ -1,0 +1,182 @@
+<!-- BOTÓN TOGGLE MÓVIL -->
+<button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Abrir menú">☰</button>
+
+<!-- OVERLAY PARA MÓVIL -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR EMPLEADO -->
+<aside class="sidebar sidebar-empleado" id="sidebar">
+    
+    <!-- HEADER -->
+    <div class="sidebar-header">
+        <div class="logo-container">
+            <div class="logo-icon logo-empleado">👤</div>
+            <h2>Mi Panel</h2>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle" type="button" title="Colapsar menú">
+            <span id="toggleIcon">◀</span>
+        </button>
+    </div>
+
+    <!-- INFO USUARIO -->
+    <div class="sidebar-user">
+        <div class="sidebar-user-avatar avatar-empleado">🧑‍💼</div>
+        <div class="sidebar-user-info">
+            <div class="user-name" id="empleadoNombre">Empleado</div>
+            <div class="user-role" id="empleadoSucursal">Sucursal</div>
+        </div>
+    </div>
+
+    <!-- MENÚ PRINCIPAL -->
+    <nav class="sidebar-menu">
+        
+        <div class="sidebar-section-title">Principal</div>
+        
+        <button type="button" onclick="cargarVistaEmpleado('dashboard')" data-vista="dashboard" data-tooltip="Dashboard">
+            <span class="icon">📊</span>
+            <span class="sidebar-text">Dashboard</span>
+        </button>
+        
+        <button type="button" onclick="cargarVistaEmpleado('registrar-venta')" data-vista="registrar-venta" data-tooltip="Nueva Venta">
+            <span class="icon">🛒</span>
+            <span class="sidebar-text">Registrar Venta</span>
+        </button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-title">Historial</div>
+        
+        <button type="button" onclick="cargarVistaEmpleado('mis-ventas')" data-vista="mis-ventas" data-tooltip="Mis Ventas">
+            <span class="icon">📋</span>
+            <span class="sidebar-text">Mis Ventas</span>
+        </button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-title">Cuenta</div>
+        
+        <button type="button" onclick="cargarVistaEmpleado('perfil')" data-vista="perfil" data-tooltip="Mi Perfil">
+            <span class="icon">⚙️</span>
+            <span class="sidebar-text">Mi Perfil</span>
+        </button>
+
+    </nav>
+
+    <!-- FOOTER / LOGOUT -->
+    <div class="sidebar-footer">
+        <button class="logout-btn" type="button" onclick="logoutEmpleado()">
+            <span class="icon">🚪</span>
+            <span class="sidebar-text">Cerrar Sesión</span>
+        </button>
+    </div>
+
+</aside>
+
+<!-- CONTENIDO PRINCIPAL -->
+<main class="main-content">
+    <div id="contenidoEmpleado"></div>
+</main>
+
+<script>
+(function() {
+    function initSidebarEmpleado() {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const toggleIcon = document.getElementById('toggleIcon');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const overlay = document.getElementById('sidebarOverlay');
+        
+        if (!sidebar || !mobileToggle || !overlay) {
+            console.error('Elementos del sidebar no encontrados');
+            return;
+        }
+
+        // Recuperar estado guardado (solo desktop)
+        if (window.innerWidth > 768) {
+            const savedState = localStorage.getItem('sidebarEmpleadoCollapsed');
+            if (savedState === 'true') {
+                sidebar.classList.add('collapsed');
+                if (toggleIcon) toggleIcon.textContent = '▶';
+            }
+        }
+
+        // Toggle en desktop
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                sidebar.classList.toggle('collapsed');
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                
+                if (toggleIcon) {
+                    toggleIcon.textContent = isCollapsed ? '▶' : '◀';
+                }
+                
+                localStorage.setItem('sidebarEmpleadoCollapsed', isCollapsed);
+            });
+        }
+
+        // Toggle en móvil
+        mobileToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        });
+
+        // Cerrar con overlay
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        });
+
+        // Cerrar sidebar en móvil al hacer clic en menú
+        const menuButtons = document.querySelectorAll('.sidebar-menu button');
+        menuButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('mobile-open');
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Función global para marcar menú activo
+        window.marcarMenuActivoEmpleado = function(vista) {
+            document.querySelectorAll('.sidebar-menu button').forEach(function(btn) {
+                btn.classList.remove('active');
+                if (btn.dataset.vista === vista) {
+                    btn.classList.add('active');
+                }
+            });
+        };
+
+        console.log('Sidebar empleado inicializado');
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSidebarEmpleado);
+    } else {
+        initSidebarEmpleado();
+    }
+})();
+</script>
+
+<style>
+/* Colores específicos para empleado */
+.sidebar-empleado {
+    --sidebar-active: #10b981;
+}
+
+.logo-empleado {
+    background: linear-gradient(135deg, #10b981, #34d399) !important;
+}
+
+.avatar-empleado {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
+}
+
+.sidebar-empleado .sidebar-menu button.active {
+    background: var(--sidebar-active);
+}
+</style>

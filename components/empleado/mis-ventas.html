@@ -1,0 +1,262 @@
+<div class="page">
+
+    <h2 class="page-title">📋 Mis Ventas</h2>
+
+    <!-- FILTROS -->
+    <div class="card filtros-card">
+        <div class="filtros-row">
+            <div class="filtro-grupo">
+                <label>📅 Período</label>
+                <select id="filtroPeriodo">
+                    <option value="hoy">Hoy</option>
+                    <option value="semana">Esta semana</option>
+                    <option value="mes" selected>Este mes</option>
+                    <option value="anio">Este año</option>
+                    <option value="personalizado">Personalizado</option>
+                </select>
+            </div>
+            
+            <div class="filtro-grupo" id="filtroRangoFechas" style="display:none;">
+                <label>Desde</label>
+                <input type="date" id="filtroDesde">
+            </div>
+            
+            <div class="filtro-grupo" id="filtroRangoFechas2" style="display:none;">
+                <label>Hasta</label>
+                <input type="date" id="filtroHasta">
+            </div>
+            
+            <button class="btn-primary btn-buscar" id="btnFiltrarMisVentas">
+                🔍 Buscar
+            </button>
+        </div>
+    </div>
+
+    <!-- RESUMEN -->
+    <div class="resumen-cards">
+        <div class="resumen-card card-ventas">
+            <span class="resumen-icon">💵</span>
+            <div class="resumen-info">
+                <span class="resumen-label">Total Vendido</span>
+                <span class="resumen-value" id="resumenTotal">S/ 0.00</span>
+            </div>
+        </div>
+        <div class="resumen-card card-unidades">
+            <span class="resumen-icon">📦</span>
+            <div class="resumen-info">
+                <span class="resumen-label">Unidades</span>
+                <span class="resumen-value" id="resumenCantidad">0</span>
+            </div>
+        </div>
+        <div class="resumen-card card-trans">
+            <span class="resumen-icon">🧾</span>
+            <div class="resumen-info">
+                <span class="resumen-label">Transacciones</span>
+                <span class="resumen-value" id="resumenTransacciones">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card">
+        <div class="card-header">
+            <h3>📝 Historial de Ventas</h3>
+            <button class="btn-excel" onclick="exportarMisVentas()">
+                <span>📊</span> Exportar Excel
+            </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="neo-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaMisVentas"></tbody>
+            </table>
+        </div>
+        
+        <div class="empty-state" id="emptyState" style="display:none;">
+            <span>📭</span>
+            <p>No tienes ventas en el período seleccionado</p>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.filtros-card {
+    margin-bottom: 20px;
+}
+
+.filtros-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+}
+
+.filtro-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filtro-grupo label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.filtro-grupo select,
+.filtro-grupo input {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    font-size: 14px;
+    min-width: 150px;
+}
+
+.btn-buscar {
+    padding: 10px 20px;
+    height: fit-content;
+}
+
+.resumen-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.resumen-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 4px solid var(--primary);
+}
+
+.card-ventas { border-left-color: #10b981; }
+.card-unidades { border-left-color: #3b82f6; }
+.card-trans { border-left-color: #8b5cf6; }
+
+.resumen-icon {
+    font-size: 28px;
+}
+
+.resumen-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.resumen-label {
+    font-size: 11px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.resumen-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.card-header h3 {
+    margin: 0;
+}
+
+.btn-excel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-excel:hover {
+    background: #059669;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+}
+
+.empty-state span {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.neo-table code {
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .filtros-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filtro-grupo select,
+    .filtro-grupo input {
+        width: 100%;
+    }
+    
+    .btn-buscar {
+        width: 100%;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    
+    .btn-excel {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .resumen-value {
+        font-size: 18px;
+    }
+}
+</style>
+
+<script>
+// Mostrar/ocultar fechas personalizadas
+document.getElementById('filtroPeriodo')?.addEventListener('change', function() {
+    const mostrar = this.value === 'personalizado';
+    document.getElementById('filtroRangoFechas').style.display = mostrar ? 'flex' : 'none';
+    document.getElementById('filtroRangoFechas2').style.display = mostrar ? 'flex' : 'none';
+});
+</script>

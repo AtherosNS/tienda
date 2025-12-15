@@ -1,0 +1,736 @@
+<!--======================================================= CATÁLOGO DE PRODUCTOS - ADMINISTRADOR =======================================================-->
+<div class="page">
+    <div class="page-header">
+        <h2 class="page-title">🛍️ Catálogo de Productos</h2>
+        <div class="page-actions"> <button class="btn-icon" onclick="cargarVista('productos')"
+                title="Ir a gestión de productos"> ⚙️ Gestionar </button> </div>
+    </div> <!-- FILTROS -->
+    <div class="card filtros-catalogo">
+        <div class="filtros-grid">
+            <div class="filtro-grupo filtro-busqueda"> <label>🔍 Buscar</label> <input type="text" id="filtroBusqueda"
+                    placeholder="Nombre del producto..."> </div>
+            <div class="filtro-grupo" id="filtroSucursalContainer"> <label>🏬 Sucursal</label> <select
+                    id="filtroSucursal">
+                    <option value="">Todas</option>
+                </select> </div>
+            <div class="filtro-grupo"> <label>📁 Categoría</label> <select id="filtroCategoria">
+                    <option value="">Todas</option>
+                </select> </div>
+            <div class="filtro-grupo"> <label>👔 Tipo</label> <select id="filtroTipo">
+                    <option value="">Todos</option>
+                </select> </div>
+            <div class="filtro-grupo"> <label>📊 Ordenar</label> <select id="filtroOrden">
+                    <option value="nombre-asc">Nombre A-Z</option>
+                    <option value="nombre-desc">Nombre Z-A</option>
+                    <option value="precio-asc">Precio ↑</option>
+                    <option value="precio-desc">Precio ↓</option>
+                    <option value="stock-asc">Stock ↑</option>
+                    <option value="stock-desc">Stock ↓</option>
+                </select> </div>
+            <div class="filtro-grupo"> <label>📈 Estado Stock</label> <select id="filtroStock">
+                    <option value="">Todos</option>
+                    <option value="disponible">Con stock</option>
+                    <option value="bajo">Stock bajo (≤5)</option>
+                    <option value="agotado">Agotado</option>
+                </select> </div>
+        </div>
+        <div class="filtros-activos" id="filtrosActivos"></div>
+        <div class="resultados-info"> <span id="contadorResultados">0 productos</span>
+            <div class="vista-toggle"> <button class="btn-vista active" id="btnVistaGrid"
+                    title="Vista cuadrícula">▦</button> <button class="btn-vista" id="btnVistaLista"
+                    title="Vista lista">☰</button> </div> <button class="btn-limpiar" id="btnLimpiarFiltros">✕ Limpiar
+                filtros</button>
+        </div>
+    </div> <!-- RESUMEN RÁPIDO -->
+    <div class="resumen-catalogo">
+        <div class="resumen-item"> <span class="resumen-valor" id="totalProductos">0</span> <span
+                class="resumen-label">Total productos</span> </div>
+        <div class="resumen-item"> <span class="resumen-valor" id="totalStock">0</span> <span
+                class="resumen-label">Unidades en stock</span> </div>
+        <div class="resumen-item alerta"> <span class="resumen-valor" id="totalStockBajo">0</span> <span
+                class="resumen-label">Stock bajo</span> </div>
+        <div class="resumen-item danger"> <span class="resumen-valor" id="totalAgotados">0</span> <span
+                class="resumen-label">Agotados</span> </div>
+    </div> <!-- CATÁLOGO -->
+    <div class="catalogo-grid" id="catalogoProductos"></div>
+    <div class="empty-state" id="emptyState" style="display:none;"> <span class="empty-icon">📭</span>
+        <p>No se encontraron productos</p> <button class="btn-primary" onclick="limpiarFiltrosCatalogo()">Limpiar
+            filtros</button>
+    </div>
+    <div class="loading-state" id="loadingState" style="display:none;">
+        <div class="spinner-catalogo"></div>
+        <p>Cargando catálogo...</p>
+    </div>
+</div> <!-- MODAL DETALLE DE PRODUCTO -->
+<div class="modal-producto" id="modalProducto">
+    <div class="modal-producto-content"> <button class="modal-close" id="modalProductoClose">✕</button>
+        <div class="modal-producto-grid">
+            <div class="modal-producto-imagen"> <img id="modalImagen" src="" alt=""> </div>
+            <div class="modal-producto-info"> <span class="modal-categoria" id="modalCategoria">Categoría</span>
+                <h2 id="modalNombre">Nombre del Producto</h2>
+                <p class="modal-tipo" id="modalTipo">Tipo</p>
+                <div class="modal-precios">
+                    <div class="precio-item"> <span class="precio-label">Precio Compra</span> <span
+                            class="precio-valor compra" id="modalPrecioCompra">S/ 0.00</span> </div>
+                    <div class="precio-item"> <span class="precio-label">Precio Venta</span> <span
+                            class="precio-valor venta" id="modalPrecio">S/ 0.00</span> </div>
+                    <div class="precio-item"> <span class="precio-label">Margen</span> <span class="precio-valor margen"
+                            id="modalMargen">0%</span> </div>
+                </div>
+                <div class="modal-detalles">
+                    <div class="detalle-item"> <span class="detalle-icon">📦</span>
+                        <div> <span class="detalle-label">Stock</span> <span class="detalle-valor" id="modalStock">0
+                                unidades</span> </div>
+                    </div>
+                    <div class="detalle-item"> <span class="detalle-icon">🏬</span>
+                        <div> <span class="detalle-label">Sucursal</span> <span class="detalle-valor"
+                                id="modalSucursal">-</span> </div>
+                    </div>
+                    <div class="detalle-item"> <span class="detalle-icon">🏷️</span>
+                        <div> <span class="detalle-label">Código</span> <span class="detalle-valor"
+                                id="modalCodigo">-</span> </div>
+                    </div>
+                    <div class="detalle-item"> <span class="detalle-icon">📏</span>
+                        <div> <span class="detalle-label">Talla / Color</span> <span class="detalle-valor"
+                                id="modalTallaColor">-</span> </div>
+                    </div>
+                </div>
+                <div class="modal-acciones"> <button class="btn-secondary" onclick="editarProductoDesdeModal()"> ✏️
+                        Editar </button> <button class="btn-primary" onclick="cerrarModalProducto()"> Cerrar </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /* ===================================================== HEADER DE PÁGINA ===================================================== */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .page-title {
+        font-size: 24px;
+        margin: 0;
+        color: var(--text-color);
+    }
+
+    .page-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-icon {
+        padding: 10px 16px;
+        background: var(--card-bg);
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    /* ===================================================== FILTROS ===================================================== */
+    .filtros-catalogo {
+        margin-bottom: 20px;
+    }
+
+    .filtros-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .filtro-grupo {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .filtro-grupo label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-color);
+        opacity: 0.7;
+    }
+
+    .filtro-grupo input,
+    .filtro-grupo select {
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+        font-size: 13px;
+        background: var(--card-bg);
+        color: var(--text-color);
+        transition: border-color 0.2s;
+    }
+
+    .filtro-grupo input:focus,
+    .filtro-grupo select:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .filtro-busqueda {
+        grid-column: span 2;
+    }
+
+    .filtros-activos {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-height: 24px;
+        margin-bottom: 8px;
+    }
+
+    .filtro-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        background: var(--primary);
+        color: white;
+        border-radius: 20px;
+        font-size: 11px;
+    }
+
+    .filtro-chip button {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+    .resultados-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    #contadorResultados {
+        font-size: 13px;
+        color: #64748b;
+    }
+
+    .vista-toggle {
+        display: flex;
+        gap: 4px;
+    }
+
+    .btn-vista {
+        width: 36px;
+        height: 36px;
+        border: 1px solid #e2e8f0;
+        background: var(--card-bg);
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-vista.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .btn-limpiar {
+        background: none;
+        border: none;
+        color: #ef4444;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .btn-limpiar:hover {
+        text-decoration: underline;
+    }
+
+    /* ===================================================== RESUMEN RÁPIDO ===================================================== */
+    .resumen-catalogo {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .resumen-item {
+        background: var(--card-bg);
+        padding: 16px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .resumen-valor {
+        display: block;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 4px;
+    }
+
+    .resumen-label {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .resumen-item.alerta .resumen-valor {
+        color: #f59e0b;
+    }
+
+    .resumen-item.danger .resumen-valor {
+        color: #ef4444;
+    }
+
+    @media (max-width: 768px) {
+        .resumen-catalogo {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* ===================================================== CATÁLOGO GRID ===================================================== */
+    .catalogo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+    }
+
+    .catalogo-grid.vista-lista {
+        grid-template-columns: 1fr;
+    }
+
+    .producto-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .producto-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .vista-lista .producto-card {
+        display: flex;
+        flex-direction: row;
+    }
+
+    .vista-lista .producto-imagen {
+        width: 120px;
+        min-width: 120px;
+        height: 120px;
+    }
+
+    .vista-lista .producto-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .producto-imagen {
+        position: relative;
+        height: 200px;
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .producto-imagen img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 15px;
+    }
+
+    .producto-imagen-placeholder {
+        font-size: 50px;
+        color: #cbd5e1;
+    }
+
+    .producto-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+        background: var(--primary);
+        color: white;
+    }
+
+    .producto-badge.sin-stock {
+        background: #ef4444;
+    }
+
+    .producto-badge.stock-bajo {
+        background: #f59e0b;
+    }
+
+    .producto-info {
+        padding: 16px;
+    }
+
+    .producto-categoria {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--primary);
+        text-transform: uppercase;
+    }
+
+    .producto-nombre {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 6px 0;
+        color: var(--text-color);
+    }
+
+    .producto-tipo {
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 12px;
+    }
+
+    .producto-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .producto-precio {
+        font-size: 20px;
+        font-weight: 700;
+        color: #10b981;
+    }
+
+    .producto-stock {
+        font-size: 11px;
+        color: #64748b;
+        background: #f1f5f9;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+
+    .producto-stock.bajo {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .producto-stock.agotado {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .producto-sucursal {
+        font-size: 11px;
+        color: #94a3b8;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed #e2e8f0;
+    }
+
+    /* ===================================================== MODAL DETALLE PRODUCTO ===================================================== */
+    .modal-producto {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-producto.active {
+        display: flex;
+    }
+
+    .modal-producto-content {
+        background: var(--card-bg);
+        border-radius: 20px;
+        max-width: 800px;
+        width: 100%;
+        max-height: 90vh;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(0, 0, 0, 0.1);
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 10;
+        transition: background 0.2s;
+    }
+
+    .modal-close:hover {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-producto-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 700px) {
+        .modal-producto-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .modal-producto-imagen {
+        background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+        padding: 20px;
+    }
+
+    .modal-producto-imagen img {
+        max-width: 100%;
+        max-height: 350px;
+        object-fit: contain;
+    }
+
+    .modal-producto-info {
+        padding: 30px;
+        overflow-y: auto;
+        max-height: 90vh;
+    }
+
+    .modal-categoria {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .modal-producto-info h2 {
+        font-size: 24px;
+        margin: 8px 0;
+        color: var(--text-color);
+    }
+
+    .modal-tipo {
+        font-size: 14px;
+        color: #64748b;
+        margin-bottom: 20px;
+    }
+
+    .modal-precios {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .precio-item {
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .precio-label {
+        display: block;
+        font-size: 10px;
+        color: #64748b;
+        margin-bottom: 4px;
+    }
+
+    .precio-valor {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .precio-valor.compra {
+        color: #64748b;
+    }
+
+    .precio-valor.venta {
+        color: #10b981;
+    }
+
+    .precio-valor.margen {
+        color: var(--primary);
+    }
+
+    .modal-detalles {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .detalle-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 10px;
+    }
+
+    .detalle-icon {
+        font-size: 24px;
+    }
+
+    .detalle-label {
+        display: block;
+        font-size: 10px;
+        color: #64748b;
+    }
+
+    .detalle-valor {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    .modal-acciones {
+        display: flex;
+        gap: 12px;
+    }
+
+    .modal-acciones button {
+        flex: 1;
+        padding: 14px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-secondary {
+        background: #e2e8f0;
+        border: none;
+        color: #475569;
+    }
+
+    .btn-secondary:hover {
+        background: #cbd5e1;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #2563eb;
+    }
+
+    /* ===================================================== ESTADOS ===================================================== */
+    .empty-state,
+    .loading-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #94a3b8;
+    }
+
+    .empty-icon {
+        font-size: 64px;
+        display: block;
+        margin-bottom: 16px;
+    }
+
+    .empty-state p {
+        font-size: 16px;
+        margin-bottom: 16px;
+    }
+
+    .spinner-catalogo {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e2e8f0;
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ===================================================== RESPONSIVE ===================================================== */
+    @media (max-width: 768px) {
+        .filtro-busqueda {
+            grid-column: span 1;
+        }
+
+        .catalogo-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .producto-imagen {
+            height: 150px;
+        }
+
+        .producto-nombre {
+            font-size: 13px;
+        }
+
+        .producto-precio {
+            font-size: 16px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .catalogo-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .producto-imagen {
+            height: 180px;
+        }
+
+        .modal-precios {
+            grid-template-columns: 1fr;
+        }
+
+        .modal-detalles {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

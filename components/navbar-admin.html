@@ -1,0 +1,200 @@
+<!-- BOTÓN TOGGLE MÓVIL -->
+<button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Abrir menú">☰</button>
+
+<!-- OVERLAY PARA MÓVIL -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    
+    <!-- HEADER -->
+    <div class="sidebar-header">
+        <div class="logo-container">
+            <div class="logo-icon">👔</div>
+            <h2>TiendaApp</h2>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle" type="button" title="Colapsar menú">
+            <span id="toggleIcon">◀</span>
+        </button>
+    </div>
+
+    <!-- INFO USUARIO -->
+    <div class="sidebar-user">
+        <div class="sidebar-user-avatar">👤</div>
+        <div class="sidebar-user-info">
+            <div class="user-name" id="adminNombre">Administrador</div>
+            <div class="user-role">Admin</div>
+        </div>
+    </div>
+
+    <!-- MENÚ PRINCIPAL -->
+    <nav class="sidebar-menu">
+        
+        <div class="sidebar-section-title">Principal</div>
+        
+        <button type="button" onclick="cargarVista('dashboard')" data-vista="dashboard" data-tooltip="Dashboard">
+            <span class="icon">📊</span>
+            <span class="sidebar-text">Dashboard</span>
+        </button>
+        
+        <button type="button" onclick="cargarVista('productos')" data-vista="productos" data-tooltip="Productos">
+            <span class="icon">📦</span>
+            <span class="sidebar-text">Productos</span>
+        </button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-title">Gestión</div>
+        
+        <button type="button" onclick="cargarVista('usuarios')" data-vista="usuarios" data-tooltip="Usuarios">
+            <span class="icon">👥</span>
+            <span class="sidebar-text">Usuarios</span>
+        </button>
+        
+        <button type="button" onclick="cargarVista('sucursales')" data-vista="sucursales" data-tooltip="Sucursales">
+            <span class="icon">🏬</span>
+            <span class="sidebar-text">Sucursales</span>
+        </button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-title">Reportes</div>
+        
+        <button type="button" onclick="cargarVista('ventas-totales')" data-vista="ventas-totales" data-tooltip="Ventas Totales">
+            <span class="icon">💰</span>
+            <span class="sidebar-text">Ventas Totales</span>
+        </button>
+        
+        <button type="button" onclick="cargarVista('ventas-tienda')" data-vista="ventas-tienda" data-tooltip="Por Tienda">
+            <span class="icon">🏪</span>
+            <span class="sidebar-text">Por Tienda</span>
+        </button>
+        
+        <button type="button" onclick="cargarVista('ventas-empleado')" data-vista="ventas-empleado" data-tooltip="Por Empleado">
+            <span class="icon">🧑‍💼</span>
+            <span class="sidebar-text">Por Empleado</span>
+        </button>
+        
+        <button type="button" onclick="cargarVista('rentabilidad')" data-vista="rentabilidad" data-tooltip="Rentabilidad">
+            <span class="icon">💹</span>
+            <span class="sidebar-text">Rentabilidad</span>
+        </button>
+
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-section-title">Sistema</div>
+        
+        <button type="button" onclick="cargarVista('stock-alertas')" data-vista="stock-alertas" data-tooltip="Alertas Stock">
+            <span class="icon">⚠️</span>
+            <span class="sidebar-text">Alertas Stock</span>
+        </button>
+        
+        <button type="button" onclick="cargarVista('configuracion')" data-vista="configuracion" data-tooltip="Configuración">
+            <span class="icon">⚙️</span>
+            <span class="sidebar-text">Configuración</span>
+        </button>
+
+    </nav>
+
+    <!-- FOOTER / LOGOUT -->
+    <div class="sidebar-footer">
+        <button class="logout-btn" type="button" onclick="logoutAdmin()">
+            <span class="icon">🚪</span>
+            <span class="sidebar-text">Cerrar Sesión</span>
+        </button>
+    </div>
+
+</aside>
+
+<!-- CONTENIDO PRINCIPAL -->
+<main class="main-content">
+    <div id="contenido"></div>
+</main>
+
+<script>
+(function() {
+    // Esperar a que el DOM esté listo
+    function initSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const toggleIcon = document.getElementById('toggleIcon');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const overlay = document.getElementById('sidebarOverlay');
+        
+        if (!sidebar || !mobileToggle || !overlay) {
+            console.error('Elementos del sidebar no encontrados');
+            return;
+        }
+
+        // Recuperar estado guardado (solo desktop)
+        if (window.innerWidth > 768) {
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState === 'true') {
+                sidebar.classList.add('collapsed');
+                if (toggleIcon) toggleIcon.textContent = '▶';
+            }
+        }
+
+        // Toggle en desktop (botón ◀/▶)
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                sidebar.classList.toggle('collapsed');
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                
+                if (toggleIcon) {
+                    toggleIcon.textContent = isCollapsed ? '▶' : '◀';
+                }
+                
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+                console.log('Sidebar colapsado:', isCollapsed);
+            });
+        }
+
+        // Toggle en móvil (botón hamburguesa ☰)
+        mobileToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+            console.log('Mobile toggle clicked, sidebar open:', sidebar.classList.contains('mobile-open'));
+        });
+
+        // Cerrar con overlay
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        });
+
+        // Cerrar sidebar en móvil al hacer clic en un enlace del menú
+        const menuButtons = document.querySelectorAll('.sidebar-menu button');
+        menuButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('mobile-open');
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        // Función global para marcar menú activo
+        window.marcarMenuActivo = function(vista) {
+            document.querySelectorAll('.sidebar-menu button').forEach(function(btn) {
+                btn.classList.remove('active');
+                if (btn.dataset.vista === vista) {
+                    btn.classList.add('active');
+                }
+            });
+        };
+
+        console.log('Sidebar inicializado correctamente');
+    }
+
+    // Ejecutar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSidebar);
+    } else {
+        initSidebar();
+    }
+})();
+</script>

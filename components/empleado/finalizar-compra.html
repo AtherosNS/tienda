@@ -1,0 +1,840 @@
+<!-- =======================================================
+     FINALIZAR COMPRA - CON 3 OPCIONES DE DOCUMENTO
+     Ubicación: components/empleado/finalizar-compra.html
+======================================================= -->
+
+<div class="checkout-container">
+    <!-- Header -->
+    <div class="checkout-header">
+        <button class="btn-volver" id="btnVolverCatalogo">
+            ← Volver al catálogo
+        </button>
+        <h1>🛒 Finalizar Compra</h1>
+    </div>
+
+    <div class="checkout-grid">
+        <!-- Columna Izquierda: Resumen de productos -->
+        <div class="checkout-resumen">
+            <div class="card">
+                <div class="card-header">
+                    <h3>📦 Resumen del Pedido</h3>
+                    <span class="items-count" id="itemsCount">0 productos</span>
+                </div>
+                
+                <div class="checkout-productos" id="checkoutProductos">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                
+                <div class="checkout-totales">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span id="checkoutSubtotal">S/ 0.00</span>
+                    </div>
+                    <div class="total-row total-final">
+                        <span>TOTAL A PAGAR:</span>
+                        <span id="checkoutTotal">S/ 0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Datos del cliente -->
+        <div class="checkout-datos">
+            <div class="card">
+                <div class="card-header">
+                    <h3>📋 Tipo de Comprobante</h3>
+                </div>
+                
+                <!-- Selector de tipo de documento: 3 OPCIONES -->
+                <div class="tipo-doc-selector">
+                    <label class="tipo-doc-option">
+                        <input type="radio" name="tipoDoc" value="NOTA" checked>
+                        <span class="tipo-doc-btn">
+                            <span class="tipo-icon">🧾</span>
+                            <span class="tipo-label">Solo Nota</span>
+                            <span class="tipo-desc">Sin datos de cliente</span>
+                        </span>
+                    </label>
+                    <label class="tipo-doc-option">
+                        <input type="radio" name="tipoDoc" value="DNI">
+                        <span class="tipo-doc-btn">
+                            <span class="tipo-icon">🪪</span>
+                            <span class="tipo-label">Con DNI</span>
+                            <span class="tipo-desc">Persona natural</span>
+                        </span>
+                    </label>
+                    <label class="tipo-doc-option">
+                        <input type="radio" name="tipoDoc" value="RUC">
+                        <span class="tipo-doc-btn">
+                            <span class="tipo-icon">🏢</span>
+                            <span class="tipo-label">Con RUC</span>
+                            <span class="tipo-desc">Empresa / Factura</span>
+                        </span>
+                    </label>
+                </div>
+
+                <!-- Aviso Solo Nota -->
+                <div class="campos-cliente" id="camposNota" style="display: block;">
+                    <div class="aviso-nota">
+                        <div class="aviso-icono">ℹ️</div>
+                        <div class="aviso-contenido">
+                            <strong>Nota de Venta Simple</strong>
+                            <p>Esta venta se registrará sin datos del cliente. La nota se archivará automáticamente y no podrá emitirse boleta o factura posteriormente.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos DNI -->
+                <div class="campos-cliente" id="camposDNI" style="display: none;">
+                    <div class="form-group">
+                        <label>Número de DNI</label>
+                        <div class="input-con-boton">
+                            <input type="text" id="clienteDNI" maxlength="8" 
+                                   placeholder="Ingrese 8 dígitos" pattern="[0-9]{8}"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            <button type="button" class="btn-buscar" id="btnBuscarDNI" onclick="buscarDNI()">
+                                <span id="btnBuscarDNIIcon">🔍</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombres</label>
+                            <input type="text" id="clienteNombres" readonly placeholder="Se autocompletará">
+                        </div>
+                        <div class="form-group">
+                            <label>Apellidos</label>
+                            <input type="text" id="clienteApellidos" readonly placeholder="Se autocompletará">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos RUC -->
+                <div class="campos-cliente" id="camposRUC" style="display: none;">
+                    <div class="form-group">
+                        <label>Número de RUC</label>
+                        <div class="input-con-boton">
+                            <input type="text" id="clienteRUC" maxlength="11" 
+                                   placeholder="Ingrese 11 dígitos" pattern="[0-9]{11}"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            <button type="button" class="btn-buscar" id="btnBuscarRUC" onclick="buscarRUC()">
+                                <span id="btnBuscarRUCIcon">🔍</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Razón Social</label>
+                        <input type="text" id="clienteRazonSocial" readonly placeholder="Se autocompletará">
+                    </div>
+                    <div class="form-group">
+                        <label>Dirección</label>
+                        <input type="text" id="clienteDireccion" readonly placeholder="Se autocompletará">
+                    </div>
+                </div>
+
+                <!-- Campos comunes (solo si NO es Solo Nota) -->
+                <div class="campos-contacto" id="camposContacto" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Celular <span class="required">*</span></label>
+                            <input type="tel" id="clienteCelular" maxlength="9" 
+                                   placeholder="9 dígitos" pattern="[0-9]{9}"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                        <div class="form-group">
+                            <label>Correo <span class="opcional">(opcional)</span></label>
+                            <input type="email" id="clienteCorreo" placeholder="ejemplo@correo.com">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Método de Pago -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>💳 Método de Pago</h3>
+                </div>
+                
+                <div class="metodos-pago">
+                    <label class="metodo-option">
+                        <input type="radio" name="metodoPago" value="EFECTIVO" checked>
+                        <span class="metodo-btn">
+                            <span class="metodo-icon">💵</span>
+                            <span>Efectivo</span>
+                        </span>
+                    </label>
+                    <label class="metodo-option">
+                        <input type="radio" name="metodoPago" value="YAPE">
+                        <span class="metodo-btn">
+                            <span class="metodo-icon">📱</span>
+                            <span>Yape</span>
+                        </span>
+                    </label>
+                    <label class="metodo-option">
+                        <input type="radio" name="metodoPago" value="PLIN">
+                        <span class="metodo-btn">
+                            <span class="metodo-icon">📲</span>
+                            <span>Plin</span>
+                        </span>
+                    </label>
+                    <label class="metodo-option">
+                        <input type="radio" name="metodoPago" value="TARJETA">
+                        <span class="metodo-btn">
+                            <span class="metodo-icon">💳</span>
+                            <span>Tarjeta</span>
+                        </span>
+                    </label>
+                    <label class="metodo-option">
+                        <input type="radio" name="metodoPago" value="TRANSFERENCIA">
+                        <span class="metodo-btn">
+                            <span class="metodo-icon">🏦</span>
+                            <span>Transfer.</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Botón Finalizar -->
+            <button class="btn-finalizar" id="btnFinalizarCompra">
+                ✓ Finalizar Compra
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Nota de Venta Final -->
+<div class="modal-nota-venta" id="modalNotaVentaFinal">
+    <div class="modal-nota-content">
+        <div class="nota-venta-preview" id="notaVentaPreview">
+            <!-- Se genera dinámicamente -->
+        </div>
+        <div class="modal-nota-actions">
+            <button class="btn-secondary" onclick="cerrarNotaYNueva()">
+                🛒 Nueva Venta
+            </button>
+            <button class="btn-primary" onclick="descargarNotaVentaFinal()">
+                📄 Descargar PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* =====================================================
+   ESTILOS CHECKOUT
+   ===================================================== */
+.checkout-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.checkout-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.checkout-header h1 {
+    font-size: 24px;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.btn-volver {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.btn-volver:hover {
+    background: #eff6ff;
+}
+
+.checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (max-width: 900px) {
+    .checkout-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =====================================================
+   CARDS
+   ===================================================== */
+.card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 16px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+.items-count {
+    font-size: 13px;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+/* =====================================================
+   PRODUCTOS EN CHECKOUT
+   ===================================================== */
+.checkout-productos {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+}
+
+.checkout-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 10px;
+    margin-bottom: 8px;
+}
+
+.checkout-item-img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: white;
+    padding: 4px;
+}
+
+.checkout-item-info {
+    flex: 1;
+}
+
+.checkout-item-nombre {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 2px;
+}
+
+.checkout-item-detalle {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.checkout-item-subtotal {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+/* =====================================================
+   TOTALES
+   ===================================================== */
+.checkout-totales {
+    border-top: 2px dashed #e2e8f0;
+    padding-top: 16px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.total-final {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-color);
+    padding-top: 8px;
+    border-top: 1px solid #e2e8f0;
+    margin-top: 8px;
+}
+
+.total-final span:last-child {
+    color: #10b981;
+}
+
+/* =====================================================
+   SELECTOR TIPO DOCUMENTO - 3 OPCIONES
+   ===================================================== */
+.tipo-doc-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .tipo-doc-selector {
+        grid-template-columns: 1fr;
+    }
+}
+
+.tipo-doc-option input {
+    display: none;
+}
+
+.tipo-doc-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    text-align: center;
+    min-height: 90px;
+}
+
+.tipo-doc-btn:hover {
+    border-color: var(--primary);
+    background: #f8fafc;
+}
+
+.tipo-doc-option input:checked + .tipo-doc-btn {
+    border-color: var(--primary);
+    background: #eff6ff;
+}
+
+.tipo-icon {
+    font-size: 24px;
+    margin-bottom: 6px;
+}
+
+.tipo-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.tipo-desc {
+    font-size: 10px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+/* =====================================================
+   AVISO SOLO NOTA
+   ===================================================== */
+.aviso-nota {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: 12px;
+    border-left: 4px solid #f59e0b;
+}
+
+.aviso-icono {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.aviso-contenido strong {
+    display: block;
+    font-size: 14px;
+    color: #92400e;
+    margin-bottom: 4px;
+}
+
+.aviso-contenido p {
+    margin: 0;
+    font-size: 12px;
+    color: #a16207;
+    line-height: 1.5;
+}
+
+/* =====================================================
+   CAMPOS DE CLIENTE
+   ===================================================== */
+.campos-cliente,
+.campos-contacto {
+    margin-top: 16px;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.form-group label .required {
+    color: #ef4444;
+}
+
+.form-group label .opcional {
+    font-weight: 400;
+    color: #94a3b8;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group input[readonly] {
+    background: #f8fafc;
+    color: #64748b;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+@media (max-width: 500px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.input-con-boton {
+    display: flex;
+    gap: 8px;
+}
+
+.input-con-boton input {
+    flex: 1;
+}
+
+.btn-buscar {
+    width: 48px;
+    height: 48px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-buscar:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+/* =====================================================
+   MÉTODOS DE PAGO
+   ===================================================== */
+.metodos-pago {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+@media (max-width: 600px) {
+    .metodos-pago {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.metodo-option input {
+    display: none;
+}
+
+.metodo-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+}
+
+.metodo-btn:hover {
+    border-color: var(--primary);
+}
+
+.metodo-option input:checked + .metodo-btn {
+    border-color: var(--primary);
+    background: #eff6ff;
+}
+
+.metodo-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.metodo-btn span:last-child {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+/* =====================================================
+   BOTÓN FINALIZAR
+   ===================================================== */
+.btn-finalizar {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-finalizar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-finalizar:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* =====================================================
+   MODAL NOTA DE VENTA
+   ===================================================== */
+.modal-nota-venta {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+
+.modal-nota-venta.active {
+    display: flex;
+}
+
+.modal-nota-content {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.nota-venta-preview {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+}
+
+.modal-nota-actions {
+    display: flex;
+    gap: 10px;
+    padding: 16px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+}
+
+.modal-nota-actions button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-secondary {
+    background: white;
+    border: 1px solid #e2e8f0;
+    color: var(--text-color);
+}
+
+.btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+}
+
+/* =====================================================
+   ESTILOS NOTA DE VENTA PREVIEW
+   ===================================================== */
+.nota-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.nota-logo {
+    font-size: 40px;
+}
+
+.nota-titulo {
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin: 8px 0 4px;
+}
+
+.nota-subtitulo {
+    font-size: 11px;
+    color: #666;
+}
+
+.nota-badge-archivada {
+    display: inline-block;
+    background: #fef3c7;
+    color: #92400e;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.nota-info {
+    margin-bottom: 12px;
+}
+
+.nota-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+    font-size: 11px;
+}
+
+.nota-info-row span {
+    color: #666;
+}
+
+.nota-divider {
+    border-top: 1px dashed #ccc;
+    margin: 12px 0;
+}
+
+.nota-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.nota-tabla th {
+    text-align: left;
+    padding: 6px 2px;
+    border-bottom: 1px solid #ddd;
+    font-size: 9px;
+    color: #666;
+}
+
+.nota-tabla td {
+    padding: 6px 2px;
+}
+
+.nota-tabla td:last-child {
+    text-align: right;
+    font-weight: bold;
+}
+
+.nota-totales {
+    margin-top: 12px;
+}
+
+.nota-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+.nota-total-final {
+    font-size: 16px;
+    font-weight: bold;
+    padding-top: 8px;
+    border-top: 2px solid #000;
+    margin-top: 8px;
+}
+
+.nota-footer {
+    text-align: center;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px dashed #ccc;
+}
+
+.nota-footer p {
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0 0 4px;
+}
+
+.nota-footer small {
+    font-size: 9px;
+    color: #999;
+}
+</style>

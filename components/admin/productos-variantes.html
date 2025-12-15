@@ -1,0 +1,1041 @@
+<!-- =======================================================
+     GESTIÓN DE PRODUCTOS CON VARIANTES (TALLA/COLOR)
+     Ubicación: components/admin/productos.html
+======================================================= -->
+
+<div class="page">
+    <div class="page-header">
+        <h2 class="page-title">📦 Gestión de Productos</h2>
+        <div class="header-actions">
+            <span id="productoCount" class="badge-count">0 productos</span>
+            <button class="btn-export" onclick="exportarProductos()">📥 Exportar</button>
+        </div>
+    </div>
+
+    <!-- FORMULARIO NUEVO PRODUCTO -->
+    <div class="card form-producto">
+        <h3>➕ Nuevo Producto</h3>
+        
+        <div class="form-grid">
+            <!-- Columna izquierda: Datos básicos -->
+            <div class="form-section">
+                <h4>📝 Información General</h4>
+                
+                <div class="form-group">
+                    <label>Nombre del Producto *</label>
+                    <input type="text" id="prodNombre" placeholder="Ej: Polo Algodón Premium">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Categoría *</label>
+                        <select id="prodCategoria">
+                            <option value="">Seleccionar...</option>
+                            <option value="Polo">Polo</option>
+                            <option value="Camisa">Camisa</option>
+                            <option value="Pantalón">Pantalón</option>
+                            <option value="Jean">Jean</option>
+                            <option value="Casaca">Casaca</option>
+                            <option value="Chompa">Chompa</option>
+                            <option value="Vestido">Vestido</option>
+                            <option value="Falda">Falda</option>
+                            <option value="Short">Short</option>
+                            <option value="Ropa Interior">Ropa Interior</option>
+                            <option value="Accesorio">Accesorio</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Género *</label>
+                        <select id="prodTipo">
+                            <option value="">Seleccionar...</option>
+                            <option value="Hombre">👨 Hombre</option>
+                            <option value="Mujer">👩 Mujer</option>
+                            <option value="Unisex">👤 Unisex</option>
+                            <option value="Niño">👦 Niño</option>
+                            <option value="Niña">👧 Niña</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Precio Compra (S/)</label>
+                        <input type="number" id="prodPrecioCompra" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio Venta (S/) *</label>
+                        <input type="number" id="prodPrecio" step="0.01" min="0" placeholder="0.00">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Sucursal *</label>
+                    <select id="prodSucursal"></select>
+                </div>
+                
+                <!-- Preview de margen -->
+                <div class="margen-preview">
+                    <div class="margen-item">
+                        <span>Ganancia:</span>
+                        <span id="previewGanancia" class="ganancia-valor">S/ 0.00</span>
+                    </div>
+                    <div class="margen-item">
+                        <span>Margen:</span>
+                        <span id="previewMargen" class="margen-valor">0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Columna derecha: Imagen y Variantes -->
+            <div class="form-section">
+                <h4>🖼️ Imagen del Producto</h4>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-empty" id="uploadEmpty">
+                        <span class="upload-icon">📷</span>
+                        <p>Haz clic o arrastra una imagen</p>
+                        <small>JPG, PNG (máx 2MB)</small>
+                    </div>
+                    <div class="preview-wrapper" id="previewWrapper" style="display:none;">
+                        <img id="prodPreview" src="" alt="Preview">
+                        <button type="button" class="btn-remove-img" onclick="removerImagen()">✕</button>
+                    </div>
+                    <input type="file" id="prodImagen" accept="image/*" hidden>
+                </div>
+                
+                <div id="imageLoading" class="image-loading" style="display:none;">
+                    <div class="spinner"></div>
+                    <span>Subiendo imagen...</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECCIÓN DE VARIANTES -->
+        <div class="variantes-section">
+            <h4>📏 Variantes (Tallas y Colores)</h4>
+            <p class="variantes-info">Define las combinaciones de talla/color disponibles con su stock inicial.</p>
+            
+            <div class="variantes-controles">
+                <div class="control-group">
+                    <label>Colores disponibles:</label>
+                    <div class="colores-selector" id="coloresSelector">
+                        <label class="color-check"><input type="checkbox" value="Negro"> ⬛ Negro</label>
+                        <label class="color-check"><input type="checkbox" value="Blanco"> ⬜ Blanco</label>
+                        <label class="color-check"><input type="checkbox" value="Gris"> 🔘 Gris</label>
+                        <label class="color-check"><input type="checkbox" value="Azul"> 🔵 Azul</label>
+                        <label class="color-check"><input type="checkbox" value="Rojo"> 🔴 Rojo</label>
+                        <label class="color-check"><input type="checkbox" value="Verde"> 🟢 Verde</label>
+                        <label class="color-check"><input type="checkbox" value="Amarillo"> 🟡 Amarillo</label>
+                        <label class="color-check"><input type="checkbox" value="Rosado"> 🩷 Rosado</label>
+                        <label class="color-check"><input type="checkbox" value="Morado"> 🟣 Morado</label>
+                        <label class="color-check"><input type="checkbox" value="Naranja"> 🟠 Naranja</label>
+                        <label class="color-check"><input type="checkbox" value="Beige"> 🟤 Beige</label>
+                        <label class="color-check"><input type="checkbox" value="Celeste"> 🩵 Celeste</label>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Tallas disponibles:</label>
+                    <div class="tallas-selector" id="tallasSelector">
+                        <label class="talla-check"><input type="checkbox" value="XS"> XS</label>
+                        <label class="talla-check"><input type="checkbox" value="S"> S</label>
+                        <label class="talla-check"><input type="checkbox" value="M"> M</label>
+                        <label class="talla-check"><input type="checkbox" value="L"> L</label>
+                        <label class="talla-check"><input type="checkbox" value="XL"> XL</label>
+                        <label class="talla-check"><input type="checkbox" value="XXL"> XXL</label>
+                        <label class="talla-check"><input type="checkbox" value="XXXL"> XXXL</label>
+                    </div>
+                    <div class="tallas-numericas">
+                        <label class="talla-check"><input type="checkbox" value="28"> 28</label>
+                        <label class="talla-check"><input type="checkbox" value="30"> 30</label>
+                        <label class="talla-check"><input type="checkbox" value="32"> 32</label>
+                        <label class="talla-check"><input type="checkbox" value="34"> 34</label>
+                        <label class="talla-check"><input type="checkbox" value="36"> 36</label>
+                        <label class="talla-check"><input type="checkbox" value="38"> 38</label>
+                        <label class="talla-check"><input type="checkbox" value="40"> 40</label>
+                        <label class="talla-check"><input type="checkbox" value="42"> 42</label>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn-generar-variantes" onclick="generarTablaVariantes()">
+                    🔄 Generar Combinaciones
+                </button>
+            </div>
+            
+            <!-- Tabla de variantes generadas -->
+            <div class="variantes-tabla-container" id="variantesContainer" style="display:none;">
+                <div class="variantes-header">
+                    <span>Variantes generadas</span>
+                    <div class="stock-rapido">
+                        <label>Stock para todas:</label>
+                        <input type="number" id="stockTodas" min="0" value="0" style="width:60px;">
+                        <button type="button" onclick="aplicarStockTodas()">Aplicar</button>
+                    </div>
+                </div>
+                <table class="tabla-variantes">
+                    <thead>
+                        <tr>
+                            <th>Color</th>
+                            <th>Talla</th>
+                            <th>SKU</th>
+                            <th>Stock</th>
+                            <th>Activo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaVariantes"></tbody>
+                </table>
+                <div class="variantes-resumen">
+                    <span id="resumenVariantes">0 variantes</span>
+                    <span id="resumenStockTotal">Stock total: 0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="button" class="btn-secondary" onclick="limpiarFormularioProducto()">
+                🔄 Limpiar
+            </button>
+            <button type="button" class="btn-primary" id="btnGuardarProducto">
+                💾 Guardar Producto
+            </button>
+        </div>
+    </div>
+
+    <!-- TABLA DE PRODUCTOS -->
+    <div class="card">
+        <div class="card-header">
+            <h3>📋 Lista de Productos</h3>
+            <div class="filtros-tabla">
+                <input type="text" id="buscarProducto" placeholder="🔍 Buscar producto...">
+                <select id="filtroCategoriaProd">
+                    <option value="">Todas las categorías</option>
+                </select>
+                <select id="filtroSucursalProd">
+                    <option value="">Todas las sucursales</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Imagen</th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Género</th>
+                        <th>P. Compra</th>
+                        <th>P. Venta</th>
+                        <th>Margen</th>
+                        <th>Variantes</th>
+                        <th>Stock Total</th>
+                        <th>Sucursal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaProductos"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR PRODUCTO -->
+<div class="modal-overlay" id="modalEditarProducto">
+    <div class="modal-content modal-grande">
+        <div class="modal-header">
+            <h3>✏️ Editar Producto</h3>
+            <button class="modal-close" onclick="cerrarModalEditar()">✕</button>
+        </div>
+        
+        <div class="modal-body">
+            <input type="hidden" id="editProdId">
+            
+            <div class="form-grid-modal">
+                <div class="form-group">
+                    <label>Nombre *</label>
+                    <input type="text" id="editProdNombre">
+                </div>
+                <div class="form-group">
+                    <label>Categoría *</label>
+                    <select id="editProdCategoria">
+                        <option value="Polo">Polo</option>
+                        <option value="Camisa">Camisa</option>
+                        <option value="Pantalón">Pantalón</option>
+                        <option value="Jean">Jean</option>
+                        <option value="Casaca">Casaca</option>
+                        <option value="Chompa">Chompa</option>
+                        <option value="Vestido">Vestido</option>
+                        <option value="Falda">Falda</option>
+                        <option value="Short">Short</option>
+                        <option value="Accesorio">Accesorio</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Género *</label>
+                    <select id="editProdTipo">
+                        <option value="Hombre">👨 Hombre</option>
+                        <option value="Mujer">👩 Mujer</option>
+                        <option value="Unisex">👤 Unisex</option>
+                        <option value="Niño">👦 Niño</option>
+                        <option value="Niña">👧 Niña</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Precio Compra (S/)</label>
+                    <input type="number" id="editProdPrecioCompra" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Precio Venta (S/) *</label>
+                    <input type="number" id="editProdPrecio" step="0.01" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Sucursal</label>
+                    <select id="editProdSucursal"></select>
+                </div>
+            </div>
+            
+            <!-- Variantes del producto -->
+            <div class="edit-variantes-section">
+                <h4>📏 Variantes del Producto</h4>
+                <table class="tabla-variantes">
+                    <thead>
+                        <tr>
+                            <th>Color</th>
+                            <th>Talla</th>
+                            <th>SKU</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="editTablaVariantes"></tbody>
+                </table>
+                <button type="button" class="btn-add-variante" onclick="agregarVarianteEdicion()">
+                    + Agregar Variante
+                </button>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="cerrarModalEditar()">Cancelar</button>
+            <button class="btn-primary" onclick="confirmarEdicion()">💾 Guardar Cambios</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CONFIRMAR ACCIÓN (CONTRASEÑA) -->
+<div class="modal-overlay" id="modalConfirmarAccion">
+    <div class="modal-content modal-confirmacion">
+        <div class="modal-header warning">
+            <h3 id="modalConfirmTitulo">⚠️ Confirmar Acción</h3>
+            <button class="modal-close" onclick="cerrarModalConfirm()">✕</button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="confirm-icon" id="confirmIcon">⚠️</div>
+            <p id="modalConfirmMensaje">¿Está seguro que desea realizar esta acción?</p>
+            <p class="confirm-detail" id="modalConfirmDetalle"></p>
+            
+            <div class="form-group password-confirm">
+                <label>🔐 Ingrese contraseña de administrador:</label>
+                <input type="password" id="confirmPassword" placeholder="Contraseña">
+                <small class="password-hint">Por seguridad, ingrese su contraseña para confirmar</small>
+            </div>
+            
+            <div class="error-message" id="confirmError" style="display:none;">
+                ❌ Contraseña incorrecta
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="cerrarModalConfirm()">Cancelar</button>
+            <button class="btn-danger" id="btnConfirmarAccion" onclick="ejecutarAccionConfirmada()">
+                Confirmar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL VER VARIANTES -->
+<div class="modal-overlay" id="modalVerVariantes">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📏 Variantes de <span id="variantesProductoNombre"></span></h3>
+            <button class="modal-close" onclick="cerrarModalVariantes()">✕</button>
+        </div>
+        
+        <div class="modal-body">
+            <table class="tabla-variantes">
+                <thead>
+                    <tr>
+                        <th>Color</th>
+                        <th>Talla</th>
+                        <th>SKU</th>
+                        <th>Stock</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaVerVariantes"></tbody>
+            </table>
+        </div>
+        
+        <div class="modal-footer">
+            <button class="btn-primary" onclick="cerrarModalVariantes()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* =====================================================
+   FORMULARIO DE PRODUCTO
+   ===================================================== */
+.form-producto { padding: 24px; }
+.form-producto h3 { margin: 0 0 20px 0; font-size: 18px; }
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 24px;
+}
+
+.form-section h4 {
+    font-size: 14px;
+    color: var(--primary);
+    margin: 0 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.form-group { margin-bottom: 16px; }
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* Margen Preview */
+.margen-preview {
+    display: flex;
+    gap: 20px;
+    padding: 12px 16px;
+    background: #f0fdf4;
+    border-radius: 10px;
+    margin-top: 16px;
+}
+
+.margen-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.margen-item span:first-child {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.ganancia-valor, .margen-valor {
+    font-size: 18px;
+    font-weight: 700;
+    color: #10b981;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-area:hover { border-color: var(--primary); background: #f8fafc; }
+.upload-area.dragover { border-color: var(--primary); background: #eff6ff; }
+
+.upload-empty { color: #94a3b8; }
+.upload-icon { font-size: 48px; display: block; margin-bottom: 8px; }
+.upload-empty p { margin: 0 0 4px 0; font-size: 14px; }
+.upload-empty small { font-size: 11px; }
+
+.preview-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.preview-wrapper img {
+    max-width: 100%;
+    max-height: 160px;
+    border-radius: 8px;
+    object-fit: contain;
+}
+
+.btn-remove-img {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 28px;
+    height: 28px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.image-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    color: #64748b;
+}
+
+/* =====================================================
+   SECCIÓN DE VARIANTES
+   ===================================================== */
+.variantes-section {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.variantes-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+.variantes-info {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0 0 16px 0;
+}
+
+.variantes-controles {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.control-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.colores-selector,
+.tallas-selector,
+.tallas-numericas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.color-check,
+.talla-check {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.color-check:has(input:checked),
+.talla-check:has(input:checked) {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.color-check input,
+.talla-check input {
+    display: none;
+}
+
+.tallas-numericas {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #e2e8f0;
+}
+
+.btn-generar-variantes {
+    align-self: flex-start;
+    padding: 10px 20px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+.btn-generar-variantes:hover { background: #2563eb; }
+
+/* Tabla de Variantes */
+.variantes-tabla-container {
+    margin-top: 20px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.variantes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.variantes-header span {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.stock-rapido {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.stock-rapido input {
+    padding: 4px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.stock-rapido button {
+    padding: 4px 12px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.tabla-variantes {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.tabla-variantes th {
+    background: #f8fafc;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #475569;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tabla-variantes td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.tabla-variantes input[type="number"] {
+    width: 70px;
+    padding: 6px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.tabla-variantes input[type="text"] {
+    width: 100px;
+    padding: 6px 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: monospace;
+}
+
+.variantes-resumen {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #f8fafc;
+    font-size: 13px;
+    color: #64748b;
+}
+
+#resumenStockTotal {
+    font-weight: 600;
+    color: #10b981;
+}
+
+/* =====================================================
+   ACCIONES DEL FORMULARIO
+   ===================================================== */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover { background: #2563eb; }
+.btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+
+.btn-secondary {
+    background: white;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+}
+
+.btn-secondary:hover { background: #f8fafc; }
+
+/* =====================================================
+   TABLA DE PRODUCTOS
+   ===================================================== */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.card-header h3 { margin: 0; }
+
+.filtros-tabla {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filtros-tabla input,
+.filtros-tabla select {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.filtros-tabla input { width: 200px; }
+
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th {
+    background: #f8fafc;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #475569;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.table td {
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.table tr:hover { background: #f8fafc; }
+
+.product-img-cell {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #f1f5f9;
+    cursor: pointer;
+}
+
+.product-img-placeholder {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border-radius: 8px;
+    font-size: 24px;
+}
+
+.btn-action {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 4px;
+}
+
+.btn-edit { background: #fef3c7; }
+.btn-edit:hover { background: #fde68a; }
+.btn-delete { background: #fee2e2; }
+.btn-delete:hover { background: #fecaca; }
+.btn-view { background: #e0e7ff; }
+.btn-view:hover { background: #c7d2fe; }
+
+.variantes-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: #e0e7ff;
+    color: #4f46e5;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.variantes-badge:hover { background: #c7d2fe; }
+
+.stock-bajo { color: #ef4444; font-weight: 600; }
+.stock-ok { color: #10b981; }
+
+/* =====================================================
+   MODALES
+   ===================================================== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-grande { max-width: 700px; }
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header.warning { background: #fef3c7; }
+.modal-header.danger { background: #fee2e2; }
+
+.modal-header h3 { margin: 0; font-size: 18px; }
+
+.modal-close {
+    width: 32px; height: 32px;
+    border: none;
+    background: #f1f5f9;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 20px;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+/* Modal Confirmación */
+.modal-confirmacion { max-width: 420px; }
+
+.confirm-icon {
+    font-size: 64px;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.modal-confirmacion p {
+    text-align: center;
+    font-size: 15px;
+    margin: 0 0 8px 0;
+}
+
+.confirm-detail {
+    color: #64748b;
+    font-size: 13px !important;
+}
+
+.password-confirm {
+    margin-top: 20px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 10px;
+}
+
+.password-confirm label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.password-confirm input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.password-confirm input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.password-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.error-message {
+    text-align: center;
+    color: #ef4444;
+    padding: 10px;
+    background: #fee2e2;
+    border-radius: 8px;
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-danger:hover { background: #dc2626; }
+
+/* Form Grid Modal */
+.form-grid-modal {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.edit-variantes-section {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.edit-variantes-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+}
+
+.btn-add-variante {
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: #f1f5f9;
+    border: 1px dashed #cbd5e1;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.btn-add-variante:hover {
+    background: #e2e8f0;
+    color: var(--primary);
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+@media (max-width: 900px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid-modal { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+    .form-row { grid-template-columns: 1fr; }
+    .card-header { flex-direction: column; align-items: flex-start; }
+    .filtros-tabla { width: 100%; }
+    .filtros-tabla input { width: 100%; }
+}
+</style>

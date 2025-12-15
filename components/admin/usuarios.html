@@ -1,0 +1,64 @@
+<div class="page">
+
+    <h2 class="page-title">Gestión de Usuarios</h2>
+
+    <div class="card form-card">
+        <h3>Registrar Usuario</h3>
+
+        <form id="formUsuario" autocomplete="off">
+            <div class="form-grid">
+                <div class="input-group">
+                    <input type="text" id="userNombre" required autocomplete="off">
+                    <label>Nombre Completo</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" id="userEmail" required autocomplete="off">
+                    <label>Email</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="userPassword" required autocomplete="new-password">
+                    <label>Contraseña</label>
+                </div>
+
+                <div class="input-group">
+                    <select id="userRol">
+                        <option value="EMPLEADO">Empleado</option>
+                        <option value="ADMIN">Administrador</option>
+                    </select>
+                    <label class="label-select">Rol</label>
+                </div>
+
+                <div class="input-group">
+                    <select id="userSucursal"></select>
+                    <label class="label-select">Sucursal</label>
+                </div>
+            </div>
+
+            <button type="button" class="btn-primary" id="btnGuardarUsuario">
+                Crear Usuario
+            </button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Usuarios Registrados</h3>
+
+        <div class="table-responsive">
+            <table class="neo-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Sucursal</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaUsuarios"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

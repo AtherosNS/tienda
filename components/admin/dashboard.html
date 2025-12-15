@@ -1,0 +1,44 @@
+<!-- Dashboard general administrador -->
+<div class="page">
+    <h2 class="page-title">Resumen General</h2>
+
+    <!-- KPIs -->
+    <div class="cards-grid">
+        <div class="card">
+            <h3>💰 Ventas del Día</h3>
+            <p id="kpiVentasDia">S/ 0</p>
+        </div>
+        <div class="card">
+            <h3>📈 Ventas del Mes</h3>
+            <p id="kpiVentasMes">S/ 0</p>
+        </div>
+        <div class="card">
+            <h3>🏬 Total Sucursales</h3>
+            <p id="kpiSucursales">0</p>
+        </div>
+        <div class="card">
+            <h3>⚠️ Stock Bajo</h3>
+            <p id="kpiStockBajo">0</p>
+        </div>
+    </div>
+
+    <!-- Tabla últimas ventas -->
+    <div class="card">
+        <h3>Últimas Ventas</h3>
+        <div class="table-responsive">
+            <table class="neo-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Sucursal</th>
+                        <th>Empleado</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaUltimasVentas"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

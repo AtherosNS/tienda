@@ -1,0 +1,48 @@
+<div class="page">
+
+    <h2 class="page-title">Gestión de Sucursales</h2>
+
+    <div class="card form-card">
+        <h3>Registrar Sucursal</h3>
+
+        <div class="form-grid">
+
+            <div class="input-group">
+                <input type="text" id="sucNombre" required>
+                <label>Nombre de la Sucursal</label>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="sucDireccion">
+                <label>Dirección</label>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="sucTelefono">
+                <label>Teléfono</label>
+            </div>
+
+        </div>
+
+        <button class="btn-primary" id="btnGuardarSucursal">
+            Guardar Sucursal
+        </button>
+    </div>
+
+    <div class="card">
+        <h3>Sucursales Registradas</h3>
+
+        <table class="neo-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Dirección</th>
+                    <th>Teléfono</th>
+                </tr>
+            </thead>
+            <tbody id="tablaSucursales"></tbody>
+        </table>
+    </div>
+
+</div>

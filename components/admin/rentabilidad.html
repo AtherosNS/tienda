@@ -1,0 +1,318 @@
+<div class="page">
+
+    <h2 class="page-title">💹 Análisis de Rentabilidad</h2>
+
+    <!-- Filtros -->
+    <div class="card form-card">
+        <h3>Filtros</h3>
+
+        <div class="filtros-ventas">
+            <div class="filtro-grupo">
+                <label>Período</label>
+                <select id="filtroPeriodo">
+                    <option value="hoy">Hoy</option>
+                    <option value="semana">Esta semana</option>
+                    <option value="mes" selected>Este mes</option>
+                    <option value="anio">Este año</option>
+                    <option value="personalizado">Personalizado</option>
+                </select>
+            </div>
+
+            <div class="filtro-grupo">
+                <label>Sucursal</label>
+                <select id="filtroSucursal">
+                    <option value="">Todas</option>
+                </select>
+            </div>
+
+            <div class="filtro-rango" id="filtroRangoFechas" style="display: none;">
+                <div class="filtro-grupo">
+                    <label>Desde</label>
+                    <input type="date" id="filtroDesde">
+                </div>
+                <div class="filtro-grupo">
+                    <label>Hasta</label>
+                    <input type="date" id="filtroHasta">
+                </div>
+            </div>
+
+            <button class="btn-primary btn-buscar" id="btnBuscarRentabilidad">
+                🔍 Analizar
+            </button>
+        </div>
+    </div>
+
+    <!-- Resumen de Rentabilidad -->
+    <div class="cards-grid">
+        <div class="card card-big">
+            <h3>💰 Total Ventas</h3>
+            <p id="rentTotalVentas">S/ 0</p>
+        </div>
+        <div class="card card-big card-cost">
+            <h3>📦 Total Costos</h3>
+            <p id="rentTotalCostos">S/ 0</p>
+        </div>
+        <div class="card card-big card-profit">
+            <h3>💵 Ganancia Bruta</h3>
+            <p id="rentGananciaBruta">S/ 0</p>
+        </div>
+        <div class="card card-big">
+            <h3>📊 Margen Promedio</h3>
+            <p id="rentMargenPromedio">0%</p>
+        </div>
+    </div>
+
+    <!-- Gráfico de resumen -->
+    <div class="card chart-card">
+        <h3>📈 Distribución de Ingresos</h3>
+        <div class="distribucion-chart">
+            <div class="bar-container">
+                <div class="bar-label">Costos</div>
+                <div class="bar-track">
+                    <div class="bar-fill bar-costo" id="barCosto" style="width: 0%"></div>
+                </div>
+                <div class="bar-value" id="barCostoVal">0%</div>
+            </div>
+            <div class="bar-container">
+                <div class="bar-label">Ganancia</div>
+                <div class="bar-track">
+                    <div class="bar-fill bar-ganancia" id="barGanancia" style="width: 0%"></div>
+                </div>
+                <div class="bar-value" id="barGananciaVal">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de rentabilidad por producto -->
+    <div class="card">
+        <h3>📦 Rentabilidad por Producto</h3>
+
+        <div class="table-responsive">
+            <table class="neo-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Unidades</th>
+                        <th>P. Compra</th>
+                        <th>P. Venta</th>
+                        <th>Costo Total</th>
+                        <th>Venta Total</th>
+                        <th>Ganancia</th>
+                        <th>Margen %</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaRentabilidadProductos"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tabla de rentabilidad por sucursal -->
+    <div class="card">
+        <h3>🏬 Rentabilidad por Sucursal</h3>
+
+        <div class="table-responsive">
+            <table class="neo-table">
+                <thead>
+                    <tr>
+                        <th>Sucursal</th>
+                        <th>Ventas</th>
+                        <th>Costos</th>
+                        <th>Ganancia</th>
+                        <th>Margen %</th>
+                        <th>Transacciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaRentabilidadSucursales"></tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.card-big p {
+    font-size: 28px;
+}
+
+.chart-card {
+    margin-bottom: 24px;
+}
+
+.distribucion-chart {
+    padding: 20px 0;
+}
+
+.bar-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.bar-label {
+    width: 80px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.bar-track {
+    flex: 1;
+    height: 32px;
+    background: #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    color: white;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.bar-costo {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.bar-ganancia {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.bar-value {
+    width: 60px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.margen-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.margen-excelente {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.margen-bueno {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.margen-regular {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.margen-bajo {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.ganancia-positiva {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.ganancia-negativa {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.filtros-ventas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+}
+
+.filtro-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 150px;
+}
+
+.filtro-grupo label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+.filtro-grupo select,
+.filtro-grupo input {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    font-size: 14px;
+    outline: none;
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+.filtro-grupo select:focus,
+.filtro-grupo input:focus {
+    border-color: var(--primary);
+}
+
+.filtro-rango {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-buscar {
+    height: 42px;
+    padding: 0 24px;
+}
+
+@media (max-width: 768px) {
+    .filtros-ventas {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filtro-grupo {
+        width: 100%;
+    }
+    
+    .filtro-rango {
+        flex-direction: column;
+    }
+    
+    .btn-buscar {
+        width: 100%;
+    }
+    
+    .bar-label {
+        width: 60px;
+        font-size: 12px;
+    }
+}
+</style>
+
+<script>
+(function() {
+    const selectPeriodo = document.getElementById('filtroPeriodo');
+    const rangoFechas = document.getElementById('filtroRangoFechas');
+    
+    selectPeriodo.addEventListener('change', () => {
+        rangoFechas.style.display = selectPeriodo.value === 'personalizado' ? 'flex' : 'none';
+    });
+    
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('filtroDesde').value = hoy;
+    document.getElementById('filtroHasta').value = hoy;
+})();
+</script>

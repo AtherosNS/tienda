@@ -1,0 +1,128 @@
+<!-- Dashboard del empleado -->
+<div class="page">
+    <h2 class="page-title">📊 Mi Resumen</h2>
+
+    <!-- KPIs -->
+    <div class="cards-grid">
+        <div class="card card-success">
+            <h3>💰 Ventas de Hoy</h3>
+            <p id="kpiVentasDiaEmpleado">S/ 0</p>
+        </div>
+        <div class="card card-primary">
+            <h3>📈 Ventas del Mes</h3>
+            <p id="kpiVentasMesEmpleado">S/ 0</p>
+        </div>
+        <div class="card">
+            <h3>🛒 Transacciones Hoy</h3>
+            <p id="kpiTransaccionesHoy">0</p>
+        </div>
+        <div class="card">
+            <h3>📦 Unidades Vendidas</h3>
+            <p id="kpiUnidadesHoy">0</p>
+        </div>
+    </div>
+
+    <!-- Acceso Rápido -->
+    <div class="card quick-actions">
+        <h3>⚡ Acceso Rápido</h3>
+        <div class="actions-grid">
+            <button class="action-btn action-primary" onclick="cargarVistaEmpleado('registrar-venta')">
+                <span class="action-icon">🛒</span>
+                <span>Nueva Venta</span>
+            </button>
+            <button class="action-btn action-secondary" onclick="cargarVistaEmpleado('mis-ventas')">
+                <span class="action-icon">📋</span>
+                <span>Ver Historial</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabla últimas ventas -->
+    <div class="card">
+        <h3>🕐 Mis Últimas Ventas</h3>
+        <div class="table-responsive">
+            <table class="neo-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaUltimasVentasEmpleado"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.card-success p {
+    color: #10b981 !important;
+}
+
+.card-primary p {
+    color: #3b82f6 !important;
+}
+
+.quick-actions {
+    margin-bottom: 24px;
+}
+
+.actions-grid {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-primary {
+    background: linear-gradient(135deg, #10b981, #34d399);
+    color: white;
+}
+
+.action-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.action-secondary {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border: 2px solid #e2e8f0;
+}
+
+.action-secondary:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.action-icon {
+    font-size: 24px;
+}
+
+@media (max-width: 480px) {
+    .actions-grid {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>

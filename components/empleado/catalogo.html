@@ -1,0 +1,557 @@
+<div class="page">
+
+    <h2 class="page-title">🛍️ Catálogo de Productos</h2>
+
+    <!-- FILTROS -->
+    <div class="card filtros-catalogo">
+        <div class="filtros-grid">
+            <div class="filtro-grupo filtro-busqueda">
+                <label>🔍 Buscar</label>
+                <input type="text" id="filtroBusqueda" placeholder="Nombre del producto...">
+            </div>
+            <div class="filtro-grupo" id="filtroSucursalContainer" style="display:none;">
+                <label>🏬 Sucursal</label>
+                <select id="filtroSucursal"><option value="">Todas</option></select>
+            </div>
+            <div class="filtro-grupo">
+                <label>📁 Categoría</label>
+                <select id="filtroCategoria"><option value="">Todas</option></select>
+            </div>
+            <div class="filtro-grupo">
+                <label>👔 Tipo</label>
+                <select id="filtroTipo"><option value="">Todos</option></select>
+            </div>
+            <div class="filtro-grupo">
+                <label>📊 Ordenar</label>
+                <select id="filtroOrden">
+                    <option value="nombre-asc">Nombre A-Z</option>
+                    <option value="nombre-desc">Nombre Z-A</option>
+                    <option value="precio-asc">Precio ↑</option>
+                    <option value="precio-desc">Precio ↓</option>
+                </select>
+            </div>
+        </div>
+        <div class="filtros-activos" id="filtrosActivos"></div>
+        <div class="resultados-info">
+            <span id="contadorResultados">0 productos</span>
+            <button class="btn-limpiar" id="btnLimpiarFiltros">✕ Limpiar</button>
+        </div>
+    </div>
+
+    <!-- CATÁLOGO -->
+    <div class="catalogo-grid" id="catalogoProductos"></div>
+    
+    <div class="empty-state" id="emptyState" style="display:none;">
+        <span class="empty-icon">📭</span>
+        <p>No se encontraron productos</p>
+    </div>
+    
+    <div class="loading-state" id="loadingState" style="display:none;">
+        <div class="spinner-catalogo"></div>
+        <p>Cargando...</p>
+    </div>
+
+</div>
+
+<!-- BOTÓN FLOTANTE DEL CARRITO -->
+<div class="carrito-flotante" id="carritoFlotante" onclick="abrirCarrito()">
+    <span class="carrito-icon">🛒</span>
+    <span class="carrito-badge" id="carritoBadge">0</span>
+</div>
+
+<!-- MODAL CARRITO -->
+<div class="modal-carrito" id="modalCarrito">
+    <div class="modal-carrito-content">
+        <div class="modal-carrito-header">
+            <h2>🛒 Mi Carrito</h2>
+            <button class="modal-close" id="cerrarCarrito">✕</button>
+        </div>
+        
+        <div class="carrito-items" id="carritoItems">
+            <!-- Items del carrito -->
+        </div>
+        
+        <div class="carrito-vacio" id="carritoVacio">
+            <span>🛒</span>
+            <p>Tu carrito está vacío</p>
+            <small>Agrega productos desde el catálogo</small>
+        </div>
+        
+        <div class="carrito-footer" id="carritoFooter">
+            <div class="carrito-total">
+                <span>Total:</span>
+                <span class="total-valor" id="carritoTotal">S/ 0.00</span>
+            </div>
+            <div class="carrito-acciones">
+                <button class="btn-secondary" onclick="vaciarCarrito()">🗑️ Vaciar</button>
+                <button class="btn-primary" onclick="irAFinalizarCompra()">
+                    Finalizar Compra →
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL AGREGAR AL CARRITO -->
+<div class="modal-agregar" id="modalAgregar">
+    <div class="modal-agregar-content">
+        <button class="modal-close" id="cerrarModalAgregar">✕</button>
+        
+        <div class="modal-producto-img">
+            <img id="modalAgregarImg" src="" alt="">
+        </div>
+        
+        <div class="modal-producto-datos">
+            <span class="modal-cat" id="modalAgregarCat">Categoría</span>
+            <h3 id="modalAgregarNombre">Producto</h3>
+            <p class="modal-tipo" id="modalAgregarTipo">Tipo</p>
+            
+            <div class="modal-precio-stock">
+                <span class="modal-precio" id="modalAgregarPrecio">S/ 0.00</span>
+                <span class="modal-stock" id="modalAgregarStock">Stock: 0</span>
+            </div>
+            
+            <div class="cantidad-selector">
+                <label>Cantidad:</label>
+                <div class="cantidad-control">
+                    <button type="button" onclick="cambiarCantidadModal(-1)">−</button>
+                    <input type="number" id="modalCantidad" value="1" min="1">
+                    <button type="button" onclick="cambiarCantidadModal(1)">+</button>
+                </div>
+            </div>
+            
+            <div class="modal-subtotal">
+                <span>Subtotal:</span>
+                <span id="modalSubtotal">S/ 0.00</span>
+            </div>
+            
+            <button class="btn-agregar-carrito" id="btnAgregarCarrito">
+                🛒 Agregar al Carrito
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* =====================================================
+   FILTROS
+   ===================================================== */
+.filtros-catalogo { margin-bottom: 20px; }
+.filtros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.filtro-grupo { display: flex; flex-direction: column; gap: 4px; }
+.filtro-grupo label { font-size: 11px; font-weight: 600; color: var(--text-color); opacity: 0.7; }
+.filtro-grupo input, .filtro-grupo select {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    font-size: 13px;
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+.filtro-busqueda { grid-column: span 2; }
+.filtros-activos { display: flex; flex-wrap: wrap; gap: 8px; min-height: 24px; margin-bottom: 8px; }
+.filtro-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; background: var(--primary); color: white;
+    border-radius: 20px; font-size: 11px;
+}
+.filtro-chip button { background: none; border: none; color: white; cursor: pointer; font-size: 12px; }
+.resultados-info { display: flex; justify-content: space-between; align-items: center; }
+#contadorResultados { font-size: 13px; color: #64748b; }
+.btn-limpiar { background: none; border: none; color: #ef4444; font-size: 12px; cursor: pointer; }
+
+/* =====================================================
+   CATÁLOGO GRID
+   ===================================================== */
+.catalogo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.producto-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+    cursor: pointer;
+}
+.producto-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+}
+
+.producto-imagen {
+    position: relative;
+    height: 180px;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+}
+.producto-imagen img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    padding: 12px;
+}
+.producto-imagen-placeholder {
+    font-size: 50px; color: #cbd5e1;
+}
+.producto-badge {
+    position: absolute; top: 10px; left: 10px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 600;
+    background: var(--primary); color: white;
+}
+.producto-badge.sin-stock { background: #ef4444; }
+.producto-badge.stock-bajo { background: #f59e0b; }
+
+.producto-info { padding: 14px; }
+.producto-categoria { font-size: 10px; font-weight: 600; color: var(--primary); text-transform: uppercase; }
+.producto-nombre { font-size: 14px; font-weight: 600; margin: 4px 0; color: var(--text-color); }
+.producto-tipo { font-size: 12px; color: #64748b; margin-bottom: 10px; }
+.producto-footer { display: flex; justify-content: space-between; align-items: center; }
+.producto-precio { font-size: 18px; font-weight: 700; color: #10b981; }
+.producto-stock { font-size: 11px; color: #64748b; background: #f1f5f9; padding: 4px 10px; border-radius: 20px; }
+.producto-stock.bajo { background: #fef3c7; color: #92400e; }
+.producto-stock.agotado { background: #fee2e2; color: #991b1b; }
+
+/* Botón agregar en card */
+.btn-agregar-card {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-agregar-card:hover { background: #2563eb; }
+.btn-agregar-card:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+/* =====================================================
+   CARRITO FLOTANTE
+   ===================================================== */
+.carrito-flotante {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), #2563eb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+    z-index: 1000;
+    transition: transform 0.3s;
+}
+.carrito-flotante:hover { transform: scale(1.1); }
+.carrito-icon { font-size: 28px; }
+.carrito-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 24px;
+    height: 24px;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.carrito-badge.vacio { display: none; }
+
+/* =====================================================
+   MODAL CARRITO
+   ===================================================== */
+.modal-carrito {
+    display: none;
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 420px;
+    max-width: 100%;
+    background: var(--card-bg);
+    z-index: 9999;
+    box-shadow: -4px 0 30px rgba(0,0,0,0.2);
+    flex-direction: column;
+}
+.modal-carrito.active { display: flex; }
+
+.modal-carrito-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+.modal-carrito-header h2 { margin: 0; font-size: 20px; }
+.modal-close {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #f1f5f9;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.carrito-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.carrito-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+.carrito-item-img {
+    width: 70px; height: 70px;
+    border-radius: 8px;
+    object-fit: contain;
+    background: white;
+    padding: 4px;
+}
+.carrito-item-info { flex: 1; }
+.carrito-item-nombre { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.carrito-item-precio { font-size: 13px; color: #10b981; font-weight: 600; }
+.carrito-item-cantidad {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+.carrito-item-cantidad button {
+    width: 28px; height: 28px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.carrito-item-cantidad input {
+    width: 40px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 4px;
+}
+.carrito-item-subtotal {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-color);
+    text-align: right;
+}
+.carrito-item-eliminar {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+}
+
+.carrito-vacio {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+    text-align: center;
+}
+.carrito-vacio span { font-size: 64px; margin-bottom: 16px; }
+.carrito-vacio p { font-size: 16px; margin: 0; }
+.carrito-vacio small { font-size: 13px; }
+.carrito-vacio.visible { display: flex; }
+
+.carrito-footer {
+    padding: 20px;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+.carrito-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-size: 18px;
+}
+.total-valor { font-size: 28px; font-weight: 700; color: #10b981; }
+.carrito-acciones { display: flex; gap: 12px; }
+.carrito-acciones button { flex: 1; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-secondary { background: #e2e8f0; border: none; color: #475569; }
+.btn-primary { background: var(--primary); border: none; color: white; }
+
+/* =====================================================
+   MODAL AGREGAR
+   ===================================================== */
+.modal-agregar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9998;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-agregar.active { display: flex; }
+
+.modal-agregar-content {
+    background: var(--card-bg);
+    border-radius: 20px;
+    max-width: 400px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.modal-producto-img {
+    height: 200px;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-producto-img img {
+    max-width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+}
+
+.modal-producto-datos { padding: 20px; }
+.modal-cat { font-size: 11px; font-weight: 600; color: var(--primary); text-transform: uppercase; }
+.modal-producto-datos h3 { margin: 6px 0; font-size: 20px; }
+.modal-tipo { font-size: 13px; color: #64748b; margin-bottom: 16px; }
+
+.modal-precio-stock {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.modal-precio { font-size: 28px; font-weight: 700; color: #10b981; }
+.modal-stock { font-size: 13px; color: #64748b; background: #f1f5f9; padding: 6px 14px; border-radius: 20px; }
+
+.cantidad-selector {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.cantidad-selector label { font-size: 14px; font-weight: 600; }
+.cantidad-control { display: flex; align-items: center; }
+.cantidad-control button {
+    width: 40px; height: 40px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    font-size: 18px;
+    cursor: pointer;
+}
+.cantidad-control button:first-child { border-radius: 8px 0 0 8px; }
+.cantidad-control button:last-child { border-radius: 0 8px 8px 0; }
+.cantidad-control input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: 2px solid #e2e8f0;
+    border-left: none;
+    border-right: none;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.modal-subtotal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+.modal-subtotal span:first-child { font-size: 14px; color: #64748b; }
+.modal-subtotal span:last-child { font-size: 22px; font-weight: 700; color: #10b981; }
+
+.btn-agregar-carrito {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--primary), #2563eb);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.btn-agregar-carrito:hover { transform: scale(1.02); }
+
+/* =====================================================
+   OVERLAY CARRITO
+   ===================================================== */
+.overlay-carrito {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9998;
+}
+.overlay-carrito.active { display: block; }
+
+/* =====================================================
+   ESTADOS
+   ===================================================== */
+.empty-state, .loading-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+}
+.empty-icon { font-size: 64px; }
+.spinner-catalogo {
+    width: 40px; height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+@media (max-width: 768px) {
+    .filtro-busqueda { grid-column: span 1; }
+    .catalogo-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .producto-imagen { height: 140px; }
+    .producto-nombre { font-size: 13px; }
+    .producto-precio { font-size: 16px; }
+    .modal-carrito { width: 100%; }
+    .carrito-flotante { bottom: 20px; right: 20px; width: 56px; height: 56px; }
+}
+
+@media (max-width: 480px) {
+    .catalogo-grid { grid-template-columns: 1fr; }
+    .producto-imagen { height: 180px; }
+}
+</style>
