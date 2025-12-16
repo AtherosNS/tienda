@@ -2,7 +2,6 @@
  *  PRODUCTOS CON VARIANTES - ADMIN
  *******************************************/
 
-let variantesActuales = [];
 let productoEditando = null;
 let accionPendiente = null;
 
@@ -82,60 +81,6 @@ async function cargarSucursalesSelect() {
             select.innerHTML += `<option value="${s.id}">${s.nombre}</option>`;
         });
     }
-}
-
-// Agregar nueva variante al formulario
-function agregarVariante() {
-    const container = document.getElementById('variantesContainer');
-    if (!container) return;
-    
-    const index = variantesActuales.length;
-    
-    const varianteHTML = `
-        <div class="variante-item" data-index="${index}">
-            <select class="var-color" required>
-                <option value="">Color...</option>
-                <option value="Negro">Negro</option>
-                <option value="Blanco">Blanco</option>
-                <option value="Gris">Gris</option>
-                <option value="Azul">Azul</option>
-                <option value="Rojo">Rojo</option>
-                <option value="Verde">Verde</option>
-                <option value="Amarillo">Amarillo</option>
-                <option value="Rosado">Rosado</option>
-                <option value="Morado">Morado</option>
-                <option value="Naranja">Naranja</option>
-                <option value="Beige">Beige</option>
-                <option value="Marrón">Marrón</option>
-            </select>
-            
-            <select class="var-talla" required>
-                <option value="">Talla...</option>
-                <option value="XS">XS</option>
-                <option value="S">S</option>
-                <option value="M">M</option>
-                <option value="L">L</option>
-                <option value="XL">XL</option>
-                <option value="XXL">XXL</option>
-                <option value="XXXL">XXXL</option>
-            </select>
-            
-            <input type="text" class="var-sku" placeholder="SKU" required>
-            
-            <input type="number" class="var-stock" placeholder="Stock" min="0" value="0" required>
-            
-            <button type="button" class="btn-remove-variante" onclick="eliminarVariante(${index})">
-                🗑️
-            </button>
-        </div>
-    `;
-    
-    if (container.querySelector('.variante-empty')) {
-        container.innerHTML = '';
-    }
-    
-    container.insertAdjacentHTML('beforeend', varianteHTML);
-    variantesActuales.push({ index });
 }
 
 // Eliminar variante del formulario

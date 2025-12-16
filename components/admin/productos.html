@@ -5,7 +5,9 @@
     <!-- TARJETA DE FORMULARIO -->
     <div class="card form-card">
         <h3>➕ Agregar Producto</h3>
-
+        <h3><button class="btn-excel" onclick="exportarProductosConVariantes()">
+    <span>📊</span> Exportar Excel
+</button></h3>
         <div class="form-grid">
 
             <div class="input-group">
@@ -14,17 +16,22 @@
             </div>
 
             <div class="input-group">
-                <label>Categoria</label>
+                <label>Categoría</label>
                 <input type="text" id="prodCategoria" placeholder="Ej: Polo, Pantalón, Zapatilla">
             </div>
 
             <div class="input-group">
-                <label>Genero</label>
-                <select id="filtroOrden">
+                <label>Género</label>
+                <select id="prodTipo">
                     <option value="Hombre">Hombre</option>
                     <option value="Mujer">Mujer</option>
                     <option value="Unisex">Unisex</option>
                 </select>
+            </div>
+
+            <div class="input-group">
+                <label>SKU</label>
+                <input type="text" id="prodSKU" placeholder="Se genera automáticamente" readonly style="background: #f1f5f9; cursor: not-allowed; color: #64748b;">
             </div>
 
             <div class="input-group">
@@ -47,6 +54,19 @@
                 <select id="prodSucursal">
                     <option value="">Seleccione...</option>
                 </select>
+            </div>
+
+            <!-- CHECKBOX TIENE VARIANTES -->
+            <div class="input-group variantes-toggle">
+                <label>¿Tiene Variantes? (Tallas/Colores)</label>
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="prodTieneVariantes">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label" id="toggleLabel">No - Producto Simple</span>
+                </div>
+                <small class="toggle-help">Activa si el producto tiene múltiples tallas o colores</small>
             </div>
 
             <!-- PREVIEW MARGEN -->
@@ -111,13 +131,14 @@
                         <th style="width:80px;">Imagen</th>
                         <th>Nombre</th>
                         <th>Categoría</th>
-                        <th>Genero</th>
+                        <th>Género</th>
                         <th>P. Compra</th>
                         <th>P. Venta</th>
                         <th>Margen</th>
                         <th>Stock</th>
+                        <th>Variantes</th>
                         <th>Sucursal</th>
-                        <th style="width:100px;">Acciones</th>
+                        <th style="width:120px;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tablaProductos"></tbody>
@@ -126,84 +147,223 @@
     </div>
 
 </div>
+
+<!-- MODAL EDITAR PRODUCTO -->
 <div class="modal" id="modalEditarProducto">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>✏️ Editar Producto</h3>
-      <button class="modal-close" onclick="cerrarModalEditarManual()">✕</button>
-    </div>
-
-    <input type="hidden" id="editProdId">
-
-    <div class="modal-body form-grid">
-      
-      <!-- IMAGEN DEL PRODUCTO -->
-<div class="input-group" style="grid-column: span 2; margin-bottom: 20px;">
-    <label>📷 Imagen del Producto</label>
-    <div style="display: flex; align-items: center; gap: 24px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 2px dashed #e2e8f0; margin-top: 8px;">
-        <div style="width: 120px; height: 120px; min-width: 120px; min-height: 120px; border-radius: 12px; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; position: relative;">
-            <img id="editProdImagenPreview" src="" alt="Preview" style="width: 100%; height: 100%; object-fit: contain; padding: 8px; display: none;">
-            <div id="editProdImagenPlaceholder" style="font-size: 48px; color: #cbd5e1; position: absolute;">👔</div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>✏️ Editar Producto</h3>
+            <button class="modal-close" onclick="cerrarModalEditarManual()">✕</button>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-            <input type="file" id="editProdImagen" accept="image/*" hidden>
-            <button type="button" onclick="document.getElementById('editProdImagen').click()" style="padding: 12px 20px; font-size: 14px; background: #e2e8f0; border: none; border-radius: 8px; cursor: pointer;">
-                📷 Cambiar imagen
-            </button>
-            <button type="button" onclick="eliminarImagenEditar()" style="padding: 10px 20px; background: #fee2e2; color: #991b1b; border: none; border-radius: 8px; font-size: 14px; cursor: pointer;">
-                🗑️ Quitar
-            </button>
+
+        <input type="hidden" id="editProdId">
+
+        <div class="modal-body form-grid">
+            
+            <!-- IMAGEN DEL PRODUCTO -->
+            <div class="input-group" style="grid-column: span 2; margin-bottom: 20px;">
+                <label>📷 Imagen del Producto</label>
+                <div style="display: flex; align-items: center; gap: 24px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 2px dashed #e2e8f0; margin-top: 8px;">
+                    <div style="width: 120px; height: 120px; min-width: 120px; min-height: 120px; border-radius: 12px; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; position: relative;">
+                        <img id="editProdImagenPreview" src="" alt="Preview" style="width: 100%; height: 100%; object-fit: contain; padding: 8px; display: none;">
+                        <div id="editProdImagenPlaceholder" style="font-size: 48px; color: #cbd5e1; position: absolute;">👔</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <input type="file" id="editProdImagen" accept="image/*" hidden>
+                        <button type="button" onclick="document.getElementById('editProdImagen').click()" style="padding: 12px 20px; font-size: 14px; background: #e2e8f0; border: none; border-radius: 8px; cursor: pointer;">
+                            📷 Cambiar imagen
+                        </button>
+                        <button type="button" onclick="eliminarImagenEditar()" style="padding: 10px 20px; background: #fee2e2; color: #991b1b; border: none; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                            🗑️ Quitar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Nombre</label>
+                <input id="editProdNombre">
+            </div>
+
+            <div class="input-group">
+                <label>Categoría</label>
+                <input id="editProdCategoria">
+            </div>
+
+            <div class="input-group">
+                <label>Género</label>
+                <select id="editProdGenero">
+                    <option value="Hombre">Hombre</option>
+                    <option value="Mujer">Mujer</option>
+                    <option value="Unisex">Unisex</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>SKU</label>
+                <input id="editProdSKU">
+            </div>
+
+            <div class="input-group">
+                <label>Precio Compra</label>
+                <input type="number" id="editProdPrecioCompra" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label>Precio Venta</label>
+                <input type="number" id="editProdPrecioVenta" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label>Stock</label>
+                <input type="number" id="editProdStock">
+            </div>
+
+            <div class="input-group">
+                <label>Sucursal</label>
+                <select id="editProdSucursal"></select>
+            </div>
+
+            <!-- TOGGLE TIENE VARIANTES EN EDICIÓN -->
+            <div class="input-group variantes-toggle" style="grid-column: span 2;">
+                <label>¿Tiene Variantes?</label>
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="editProdTieneVariantes" onchange="actualizarToggleLabelEditar()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label" id="editToggleLabel">No - Producto Simple</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <div class="modal-acciones">
+    <button type="button" class="btn-secondary" onclick="cerrarModalEditarManual()">Cancelar</button>
+    <button type="button" class="btn-variantes-edit" id="btnVariantesEnEditar" onclick="irAVariantesDesdeEditar()" style="display: none;">🎨 Gestionar Variantes</button>
+    <button type="button" class="btn-primary" onclick="guardarEdicionProducto()">💾 Guardar Cambios</button>
+</div>
         </div>
     </div>
 </div>
 
+<!-- MODAL GESTIONAR VARIANTES -->
+<div class="modal" id="modalVariantes">
+    <div class="modal-content modal-variantes-content">
+        <div class="modal-header">
+            <h3>🎨 Gestionar Variantes</h3>
+            <button class="modal-close" onclick="cerrarModalVariantes()">✕</button>
+        </div>
 
-      <div class="input-group">
-        <label>Nombre</label>
-        <input id="editProdNombre">
-      </div>
+        <div class="modal-body">
+            <!-- Info del producto -->
+            <div class="variantes-producto-info">
+                <span class="variantes-producto-nombre" id="variantesProductoNombre">Producto</span>
+                <span class="variantes-producto-id" id="variantesProductoId">ID: 0</span>
+            </div>
 
-      <div class="input-group">
-        <label>Categoría</label>
-        <input id="editProdCategoria">
-      </div>
+            <!-- Formulario agregar variante -->
+            <div class="variantes-form">
+                <h4>➕ Agregar Variante</h4>
+                <div class="variantes-form-grid">
+                    <div class="input-group">
+                        <label>Color</label>
+                        <select id="varianteColor">
+                            <option value="">Seleccionar...</option>
+                            <option value="Negro">Negro</option>
+                            <option value="Blanco">Blanco</option>
+                            <option value="Gris">Gris</option>
+                            <option value="Azul">Azul</option>
+                            <option value="Rojo">Rojo</option>
+                            <option value="Verde">Verde</option>
+                            <option value="Amarillo">Amarillo</option>
+                            <option value="Rosado">Rosado</option>
+                            <option value="Morado">Morado</option>
+                            <option value="Naranja">Naranja</option>
+                            <option value="Beige">Beige</option>
+                            <option value="Celeste">Celeste</option>
+                            <option value="Marron">Marrón</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Talla</label>
+                        <select id="varianteTalla">
+                            <option value="">Seleccionar...</option>
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                            <option value="XXXL">XXXL</option>
+                            <option value="28">28</option>
+                            <option value="30">30</option>
+                            <option value="32">32</option>
+                            <option value="34">34</option>
+                            <option value="36">36</option>
+                            <option value="38">38</option>
+                            <option value="40">40</option>
+                            <option value="42">42</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Stock</label>
+                        <input type="number" id="varianteStock" placeholder="0" min="0" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>SKU Variante</label>
+                        <input type="text" id="varianteSKU" placeholder="Automático" readonly style="background: #f1f5f9;">
+                    </div>
+                </div>
+                <button class="btn-primary btn-agregar-variante" onclick="agregarVariante()">
+                    ➕ Agregar Variante
+                </button>
+            </div>
 
-      <div class="input-group">
-        <label>Género</label>
-        <select id="editProdGenero">
-          <option>Hombre</option>
-          <option>Mujer</option>
-          <option>Unisex</option>
-        </select>
-      </div>
+            <!-- Lista de variantes -->
+            <div class="variantes-lista">
+                <h4>📋 Variantes Registradas</h4>
+                <div class="variantes-tabla-container">
+                    <table class="variantes-tabla">
+                        <thead>
+                            <tr>
+                                <th>Color</th>
+                                <th>Talla</th>
+                                <th>SKU</th>
+                                <th>Stock</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaVariantes">
+                            <!-- Se llena dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="variantes-empty" id="variantesEmpty" style="display:none;">
+                    <span>📭</span>
+                    <p>No hay variantes registradas</p>
+                </div>
+            </div>
 
-      <div class="input-group">
-        <label>Precio Compra</label>
-        <input type="number" id="editProdPrecioCompra">
-      </div>
+            <!-- Resumen -->
+            <div class="variantes-resumen">
+                <div class="resumen-item">
+                    <span>Total Variantes:</span>
+                    <strong id="totalVariantes">0</strong>
+                </div>
+                <div class="resumen-item">
+                    <span>Stock Total:</span>
+                    <strong id="stockTotalVariantes">0</strong>
+                </div>
+            </div>
+        </div>
 
-      <div class="input-group">
-        <label>Precio Venta</label>
-        <input type="number" id="editProdPrecioVenta">
-      </div>
-
-      <div class="input-group">
-        <label>Stock</label>
-        <input type="number" id="editProdStock">
-      </div>
-
-      <div class="input-group">
-        <label>Sucursal</label>
-        <select id="editProdSucursal"></select>
-      </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="cerrarModalVariantes()">Cerrar</button>
+        </div>
     </div>
-
-    <div class="modal-footer">
-      <button class="btn-primary" onclick="guardarEdicionProducto()">💾 Guardar Cambios</button>
-    </div>
-  </div>
 </div>
-
 
 <!-- MODAL VER IMAGEN GRANDE -->
 <div class="modal-imagen" id="modalImagen">
@@ -257,6 +417,81 @@
 
 .input-group input::placeholder {
     color: #94a3b8;
+}
+
+/* =====================================================
+   TOGGLE TIENE VARIANTES
+   ===================================================== */
+.variantes-toggle {
+    background: #f0f9ff;
+    padding: 16px;
+    border-radius: 12px;
+    border: 2px solid #bae6fd;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.3s;
+    border-radius: 28px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #3b82f6;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+.toggle-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.toggle-help {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 8px;
 }
 
 /* =====================================================
@@ -485,6 +720,33 @@
     color: #94a3b8;
 }
 
+/* Badge de variantes */
+.badge-variantes {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-variantes.tiene {
+    background: #dbeafe;
+    color: #1e40af;
+    cursor: pointer;
+}
+
+.badge-variantes.tiene:hover {
+    background: #bfdbfe;
+}
+
+.badge-variantes.no-tiene {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+/* Margen badges */
 .margen-badge {
     display: inline-block;
     padding: 4px 10px;
@@ -538,6 +800,15 @@
     background: #bfdbfe;
 }
 
+.btn-variantes {
+    background: #f0fdf4;
+    color: #166534;
+}
+
+.btn-variantes:hover {
+    background: #dcfce7;
+}
+
 .btn-delete {
     background: #fee2e2;
     color: #991b1b;
@@ -556,8 +827,8 @@
     left: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
-    width: 100% !important;    /* ← NUEVA LÍNEA */
-    height: 100% !important;   /* ← NUEVA LÍNEA */
+    width: 100% !important;
+    height: 100% !important;
     background: rgba(0, 0, 0, 0.6) !important;
     backdrop-filter: blur(4px);
     display: none;
@@ -568,6 +839,7 @@
     z-index: 2147483647 !important;
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
+
 .modal.active {
     display: flex !important;
     opacity: 1 !important;
@@ -586,6 +858,10 @@
     animation: modalSlideIn 0.3s ease-out;
     position: relative !important;
     z-index: 2147483647 !important;
+}
+
+.modal-variantes-content {
+    max-width: 700px !important;
 }
 
 @keyframes modalSlideIn {
@@ -645,6 +921,152 @@
     gap: 12px;
     padding-top: 15px;
     border-top: 2px solid #e3e7ed;
+}
+
+.btn-secondary {
+    padding: 12px 24px;
+    background: #e2e8f0;
+    border: none;
+    border-radius: 10px;
+    color: #475569;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: #cbd5e1;
+}
+
+/* =====================================================
+   MODAL VARIANTES
+   ===================================================== */
+.variantes-producto-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.variantes-producto-nombre {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.variantes-producto-id {
+    font-size: 12px;
+    color: #64748b;
+    background: #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.variantes-form {
+    background: #f0fdf4;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #bbf7d0;
+}
+
+.variantes-form h4 {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: #166534;
+}
+
+.variantes-form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.btn-agregar-variante {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+}
+
+.variantes-lista {
+    margin-bottom: 20px;
+}
+
+.variantes-lista h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #475569;
+}
+
+.variantes-tabla-container {
+    max-height: 250px;
+    overflow-y: auto;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.variantes-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.variantes-tabla th {
+    background: #f1f5f9;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #475569;
+    position: sticky;
+    top: 0;
+}
+
+.variantes-tabla td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.variantes-tabla tr:hover {
+    background: #f8fafc;
+}
+
+.variantes-empty {
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+}
+
+.variantes-empty span {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.variantes-resumen {
+    display: flex;
+    gap: 20px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 10px;
+}
+
+.resumen-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.resumen-item span {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.resumen-item strong {
+    font-size: 18px;
+    color: #1e293b;
 }
 
 /* =====================================================
@@ -718,6 +1140,10 @@
         align-items: flex-start;
         gap: 10px;
     }
+    
+    .variantes-form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 
 @keyframes spin {
@@ -726,7 +1152,44 @@
 </style>
 
 <script>
+// Variables para gestión de variantes
+let productoVariantesActual = null;
+let variantesActuales = [];
 
+// Toggle de variantes
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleCrear = document.getElementById('prodTieneVariantes');
+    const toggleLabelCrear = document.getElementById('toggleLabel');
+    
+    if (toggleCrear) {
+        toggleCrear.addEventListener('change', function() {
+            if (this.checked) {
+                toggleLabelCrear.textContent = 'Sí - Tiene múltiples tallas/colores';
+                toggleLabelCrear.style.color = '#3b82f6';
+            } else {
+                toggleLabelCrear.textContent = 'No - Producto Simple';
+                toggleLabelCrear.style.color = '#475569';
+            }
+        });
+    }
+    
+    const toggleEditar = document.getElementById('editProdTieneVariantes');
+    const toggleLabelEditar = document.getElementById('editToggleLabel');
+    
+    if (toggleEditar) {
+        toggleEditar.addEventListener('change', function() {
+            if (this.checked) {
+                toggleLabelEditar.textContent = 'Sí - Tiene múltiples tallas/colores';
+                toggleLabelEditar.style.color = '#3b82f6';
+            } else {
+                toggleLabelEditar.textContent = 'No - Producto Simple';
+                toggleLabelEditar.style.color = '#475569';
+            }
+        });
+    }
+});
+
+// Abrir modal de imagen
 function abrirModalImagen(url) {
     const modal = document.getElementById('modalImagen');
     const img = document.getElementById('imagenGrande');
@@ -736,14 +1199,14 @@ function abrirModalImagen(url) {
     }
 }
 
-// FORZAR LA FUNCIÓN CORRECTA
+// Editar producto
 window.editarProducto = function(id) {
     console.log('🔍 editarProducto llamado, ID:', id);
     
     const producto = productosCache.find(p => p.id == id);
     
     if (!producto) {
-        alert('Producto no encontrado');
+        toast('❌ Producto no encontrado');
         return;
     }
 
@@ -751,10 +1214,31 @@ window.editarProducto = function(id) {
     document.getElementById("editProdId").value = producto.id;
     document.getElementById("editProdNombre").value = producto.nombre || '';
     document.getElementById("editProdCategoria").value = producto.categoria || '';
-    document.getElementById("editProdGenero").value = producto.tipo || '';
+    document.getElementById("editProdGenero").value = producto.tipo || 'Unisex';
+    document.getElementById("editProdSKU").value = producto.sku || '';
     document.getElementById("editProdPrecioCompra").value = producto.precioCompra || 0;
     document.getElementById("editProdPrecioVenta").value = producto.precioVenta || 0;
     document.getElementById("editProdStock").value = producto.stock || 0;
+    
+    // Toggle de variantes
+    const tieneVariantes = producto.tieneVariantes === 'SI';
+    document.getElementById("editProdTieneVariantes").checked = tieneVariantes;
+    document.getElementById("editToggleLabel").textContent = tieneVariantes 
+        ? 'Sí - Tiene múltiples tallas/colores' 
+        : 'No - Producto Simple';
+    document.getElementById("editToggleLabel").style.color = tieneVariantes ? '#3b82f6' : '#475569';
+
+    // Imagen
+    const preview = document.getElementById("editProdImagenPreview");
+    const placeholder = document.getElementById("editProdImagenPlaceholder");
+    if (producto.imagenUrl) {
+        preview.src = convertirUrlGoogleDrive(producto.imagenUrl);
+        preview.style.display = 'block';
+        placeholder.style.display = 'none';
+    } else {
+        preview.style.display = 'none';
+        placeholder.style.display = 'block';
+    }
 
     // Cargar sucursales
     cargarSelectSucursales("editProdSucursal").then(() => {
@@ -763,9 +1247,233 @@ window.editarProducto = function(id) {
 
     // Abrir modal
     const modal = document.getElementById("modalEditarProducto");
-    modal.setAttribute("style", "display: flex !important; width: 100% !important; height: 100% !important; opacity: 1 !important; visibility: visible !important;");
     modal.classList.add("active");
 };
 
-</script>
+// Cerrar modal editar
+function cerrarModalEditarManual() {
+    const modal = document.getElementById("modalEditarProducto");
+    modal.classList.remove("active");
+}
 
+// Abrir modal de variantes
+window.abrirModalVariantes = function(id) {
+    const producto = productosCache.find(p => p.id == id);
+    if (!producto) {
+        toast('❌ Producto no encontrado');
+        return;
+    }
+    
+    productoVariantesActual = producto;
+    
+    // Mostrar info del producto
+    document.getElementById('variantesProductoNombre').textContent = producto.nombre;
+    document.getElementById('variantesProductoId').textContent = 'ID: ' + producto.id;
+    
+    // Limpiar formulario
+    document.getElementById('varianteColor').value = '';
+    document.getElementById('varianteTalla').value = '';
+    document.getElementById('varianteStock').value = '0';
+    document.getElementById('varianteSKU').value = '';
+    
+    // Cargar variantes existentes
+    cargarVariantesProducto(id);
+    
+    // Abrir modal
+    document.getElementById('modalVariantes').classList.add('active');
+};
+
+// Cargar variantes del producto
+async function cargarVariantesProducto(productoId) {
+    try {
+        const resp = await apiCall({ action: 'getVariantesPorProducto', productoId: productoId });
+        variantesActuales = resp.variantes || [];
+        renderizarTablaVariantes();
+    } catch (error) {
+        console.error('Error cargando variantes:', error);
+        variantesActuales = [];
+        renderizarTablaVariantes();
+    }
+}
+
+// Renderizar tabla de variantes
+function renderizarTablaVariantes() {
+    const tbody = document.getElementById('tablaVariantes');
+    const empty = document.getElementById('variantesEmpty');
+    
+    const activas = variantesActuales.filter(v => v.estado !== 'INACTIVO');
+    
+    if (activas.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        document.getElementById('totalVariantes').textContent = '0';
+        document.getElementById('stockTotalVariantes').textContent = '0';
+        return;
+    }
+    
+    empty.style.display = 'none';
+    
+    tbody.innerHTML = activas.map(v => `
+        <tr>
+            <td><span class="color-badge" style="background: ${getColorHex(v.color)}; padding: 4px 10px; border-radius: 12px; color: ${v.color === 'Blanco' || v.color === 'Amarillo' ? '#333' : '#fff'}; font-size: 12px;">${v.color}</span></td>
+            <td><strong>${v.talla}</strong></td>
+            <td><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${v.sku || '-'}</code></td>
+            <td>${v.stock}</td>
+            <td>
+                <button class="btn-action btn-edit" onclick="editarVariante('${v.id}')" title="Editar">✏️</button>
+                <button class="btn-action btn-delete" onclick="eliminarVariante('${v.id}')" title="Eliminar">🗑️</button>
+            </td>
+        </tr>
+    `).join('');
+    
+    // Actualizar resumen
+    document.getElementById('totalVariantes').textContent = activas.length;
+    document.getElementById('stockTotalVariantes').textContent = activas.reduce((sum, v) => sum + (Number(v.stock) || 0), 0);
+}
+
+// Obtener color hex
+function getColorHex(color) {
+    const colores = {
+        'Negro': '#1e1e1e',
+        'Blanco': '#ffffff',
+        'Gris': '#6b7280',
+        'Azul': '#3b82f6',
+        'Rojo': '#ef4444',
+        'Verde': '#22c55e',
+        'Amarillo': '#eab308',
+        'Rosado': '#ec4899',
+        'Morado': '#a855f7',
+        'Naranja': '#f97316',
+        'Beige': '#d4a574',
+        'Celeste': '#38bdf8',
+        'Marron': '#92400e'
+    };
+    return colores[color] || '#6b7280';
+}
+
+// Agregar variante
+async function agregarVariante() {
+    const color = document.getElementById('varianteColor').value;
+    const talla = document.getElementById('varianteTalla').value;
+    const stock = document.getElementById('varianteStock').value;
+    
+    if (!color || !talla) {
+        toast('⚠️ Selecciona color y talla');
+        return;
+    }
+    
+    // Verificar si ya existe
+    const existe = variantesActuales.find(v => 
+        v.color === color && 
+        v.talla === talla && 
+        v.estado !== 'INACTIVO'
+    );
+    
+    if (existe) {
+        toast('⚠️ Ya existe una variante con ese color y talla');
+        return;
+    }
+    
+    // Generar SKU
+    const skuBase = productoVariantesActual.sku || productoVariantesActual.nombre.substring(0, 3).toUpperCase();
+    const skuVariante = `${skuBase}-${color.substring(0, 3).toUpperCase()}-${talla}`;
+    
+    try {
+        const resp = await apiCall({
+            action: 'crearVariante',
+            productoId: productoVariantesActual.id,
+            color: color,
+            talla: talla,
+            stock: Number(stock) || 0,
+            sku: skuVariante,
+            estado: 'ACTIVO'
+        });
+        
+        if (resp.success) {
+            toast('✅ Variante agregada');
+            
+            // Limpiar formulario
+            document.getElementById('varianteColor').value = '';
+            document.getElementById('varianteTalla').value = '';
+            document.getElementById('varianteStock').value = '0';
+            
+            // Recargar variantes
+            await cargarVariantesProducto(productoVariantesActual.id);
+            
+            // Actualizar producto como "tiene variantes"
+            if (productoVariantesActual.tieneVariantes !== 'SI') {
+                await apiCall({
+                    action: 'actualizarProducto',
+                    id: productoVariantesActual.id,
+                    tieneVariantes: 'SI'
+                });
+            }
+        } else {
+            toast('❌ Error: ' + (resp.error || 'No se pudo agregar'));
+        }
+    } catch (error) {
+        console.error('Error agregando variante:', error);
+        toast('❌ Error al agregar variante');
+    }
+}
+
+// Editar variante (solo stock)
+async function editarVariante(id) {
+    const variante = variantesActuales.find(v => v.id == id);
+    if (!variante) return;
+    
+    const nuevoStock = prompt(`Stock actual: ${variante.stock}\n\nIngresa el nuevo stock:`, variante.stock);
+    if (nuevoStock === null) return;
+    
+    try {
+        const resp = await apiCall({
+            action: 'actualizarVariante',
+            id: id,
+            stock: Number(nuevoStock) || 0
+        });
+        
+        if (resp.success) {
+            toast('✅ Stock actualizado');
+            await cargarVariantesProducto(productoVariantesActual.id);
+        } else {
+            toast('❌ Error al actualizar');
+        }
+    } catch (error) {
+        toast('❌ Error al actualizar');
+    }
+}
+
+// Eliminar variante
+async function eliminarVariante(id) {
+    if (!confirm('¿Eliminar esta variante?')) return;
+    
+    try {
+        const resp = await apiCall({
+            action: 'actualizarVariante',
+            id: id,
+            estado: 'INACTIVO'
+        });
+        
+        if (resp.success) {
+            toast('🗑️ Variante eliminada');
+            await cargarVariantesProducto(productoVariantesActual.id);
+        } else {
+            toast('❌ Error al eliminar');
+        }
+    } catch (error) {
+        toast('❌ Error al eliminar');
+    }
+}
+
+// Cerrar modal variantes
+function cerrarModalVariantes() {
+    document.getElementById('modalVariantes').classList.remove('active');
+    productoVariantesActual = null;
+    variantesActuales = [];
+    
+    // Recargar lista de productos para actualizar stock
+    if (typeof cargarProductos === 'function') {
+        cargarProductos();
+    }
+}
+</script>

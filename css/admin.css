@@ -1001,3 +1001,10 @@ body {
         gap: 10px;
     }
 }
+/* Toast por encima de todo */
+.toast,
+.toast-container,
+#toast,
+[class*="toast"] {
+    z-index: 2147483647 !important;
+}

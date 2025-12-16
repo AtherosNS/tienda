@@ -65,40 +65,73 @@
 <div class="modal-producto" id="modalProducto">
     <div class="modal-producto-content"> <button class="modal-close" id="modalProductoClose">✕</button>
         <div class="modal-producto-grid">
-            <div class="modal-producto-imagen"> <img id="modalImagen" src="" alt=""> </div>
-            <div class="modal-producto-info"> <span class="modal-categoria" id="modalCategoria">Categoría</span>
-                <h2 id="modalNombre">Nombre del Producto</h2>
-                <p class="modal-tipo" id="modalTipo">Tipo</p>
-                <div class="modal-precios">
-                    <div class="precio-item"> <span class="precio-label">Precio Compra</span> <span
-                            class="precio-valor compra" id="modalPrecioCompra">S/ 0.00</span> </div>
-                    <div class="precio-item"> <span class="precio-label">Precio Venta</span> <span
-                            class="precio-valor venta" id="modalPrecio">S/ 0.00</span> </div>
-                    <div class="precio-item"> <span class="precio-label">Margen</span> <span class="precio-valor margen"
-                            id="modalMargen">0%</span> </div>
-                </div>
-                <div class="modal-detalles">
-                    <div class="detalle-item"> <span class="detalle-icon">📦</span>
-                        <div> <span class="detalle-label">Stock</span> <span class="detalle-valor" id="modalStock">0
-                                unidades</span> </div>
-                    </div>
-                    <div class="detalle-item"> <span class="detalle-icon">🏬</span>
-                        <div> <span class="detalle-label">Sucursal</span> <span class="detalle-valor"
-                                id="modalSucursal">-</span> </div>
-                    </div>
-                    <div class="detalle-item"> <span class="detalle-icon">🏷️</span>
-                        <div> <span class="detalle-label">Código</span> <span class="detalle-valor"
-                                id="modalCodigo">-</span> </div>
-                    </div>
-                    <div class="detalle-item"> <span class="detalle-icon">📏</span>
-                        <div> <span class="detalle-label">Talla / Color</span> <span class="detalle-valor"
-                                id="modalTallaColor">-</span> </div>
-                    </div>
-                </div>
-                <div class="modal-acciones"> <button class="btn-secondary" onclick="editarProductoDesdeModal()"> ✏️
-                        Editar </button> <button class="btn-primary" onclick="cerrarModalProducto()"> Cerrar </button>
-                </div>
+           <div class="modal-producto-imagen">
+    <img id="modalImagen" src="" alt="">
+</div>
+<div class="modal-producto-info">
+    <span class="modal-categoria" id="modalCategoria">Categoría</span>
+    <h2 id="modalNombre">Nombre del Producto</h2>
+    <p class="modal-tipo" id="modalTipo">Tipo</p>
+    
+    <div class="modal-precios">
+        <div class="precio-item">
+            <span class="precio-label">Precio Compra</span>
+            <span class="precio-valor compra" id="modalPrecioCompra">S/ 0.00</span>
+        </div>
+        <div class="precio-item">
+            <span class="precio-label">Precio Venta</span>
+            <span class="precio-valor venta" id="modalPrecio">S/ 0.00</span>
+        </div>
+        <div class="precio-item">
+            <span class="precio-label">Margen</span>
+            <span class="precio-valor margen" id="modalMargen">0%</span>
+        </div>
+    </div>
+    
+    <div class="modal-detalles">
+        <div class="detalle-item">
+            <span class="detalle-icon">📦</span>
+            <div>
+                <span class="detalle-label">Stock Total</span>
+                <span class="detalle-valor" id="modalStock">0 unidades</span>
             </div>
+        </div>
+        <div class="detalle-item">
+            <span class="detalle-icon">🏬</span>
+            <div>
+                <span class="detalle-label">Sucursal</span>
+                <span class="detalle-valor" id="modalSucursal">-</span>
+            </div>
+        </div>
+        <div class="detalle-item">
+            <span class="detalle-icon">🏷️</span>
+            <div>
+                <span class="detalle-label">SKU</span>
+                <span class="detalle-valor" id="modalCodigo">-</span>
+            </div>
+        </div>
+        <div class="detalle-item">
+            <span class="detalle-icon">🎨</span>
+            <div>
+                <span class="detalle-label">Variantes</span>
+                <span class="detalle-valor" id="modalTieneVariantes">No</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SECCIÓN DE VARIANTES (SOLO LECTURA) -->
+<div class="modal-variantes-section" id="modalVariantesSection" style="display: none;">
+    <h4>🎨 Variantes Disponibles</h4>
+    <div class="variantes-lista-modal" id="variantesListaModal">
+        <!-- Se llena dinámicamente -->
+    </div>
+</div>
+    
+    <div class="modal-acciones">
+        <button class="btn-secondary" onclick="editarProductoDesdeModal()">✏️ Editar</button>
+        <button class="btn-primary" onclick="cerrarModalProducto()">Cerrar</button>
+    </div>
+</div>
         </div>
     </div>
 </div>

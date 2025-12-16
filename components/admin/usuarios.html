@@ -54,6 +54,8 @@
                         <th>Email</th>
                         <th>Rol</th>
                         <th>Sucursal</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tablaUsuarios"></tbody>
@@ -62,3 +64,67 @@
     </div>
 
 </div>
+
+<style>
+/* Badge de estado */
+.badge-estado {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-activo {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-inactivo {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Botones de acción */
+.btn-action {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    margin: 0 2px;
+}
+
+.btn-toggle-activo {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.btn-toggle-activo:hover {
+    background: #fecaca;
+}
+
+.btn-toggle-inactivo {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.btn-toggle-inactivo:hover {
+    background: #bbf7d0;
+}
+
+.btn-edit {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.btn-edit:hover {
+    background: #bfdbfe;
+}
+
+/* Fila de usuario inactivo */
+.usuario-inactivo {
+    opacity: 0.6;
+}
+</style>

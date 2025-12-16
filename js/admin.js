@@ -7,62 +7,30 @@
 let formProductosInicializado = false;
 
 function initProductosForm() {
-    if (formProductosInicializado) {
+    if (window.formProductosInicializado) {
         console.log('⚠️ Formulario ya inicializado, saltando...');
         return;
     }
     
     console.log('🔄 Inicializando formulario de productos...');
     
+    // =========================================================
+    //  UPLOAD DE IMAGEN
+    // =========================================================
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('prodImagen');
     const preview = document.getElementById('prodPreview');
     const previewWrapper = document.getElementById('previewWrapper');
     const uploadEmpty = document.getElementById('uploadEmpty');
-    const btnRemove = document.getElementById('btnRemoveImg');
-    
-    if (!uploadArea) {
-        console.error('❌ uploadArea no encontrado');
+
+    if (!uploadArea || !fileInput) {
+        console.error('❌ Elementos de imagen no encontrados');
         return;
     }
-    if (!fileInput) {
-        console.error('❌ prodImagen no encontrado');
-        return;
-    }
-    
-    console.log('✅ Elementos encontrados correctamente');
-    
-    // ⚠️ LIMPIAR eventos anteriores clonando el elemento
-    const nuevoUploadArea = uploadArea.cloneNode(true);
-    uploadArea.parentNode.replaceChild(nuevoUploadArea, uploadArea);
-    
-    // ⚠️ Usar onclick en lugar de addEventListener
-    document.getElementById('uploadArea').onclick = function(e) {
-        console.log('🖱️ Click detectado');
-        
-        // Evitar si se hace click en el botón de remover
-        if (e.target.closest('.btn-remove-img')) {
-            console.log('⚠️ Click en botón remover, ignorando...');
-            return;
-        }
-        
-        console.log('📂 Abriendo selector...');
-        document.getElementById('prodImagen').click();
-    };
-    
-    // Change en input file
-    fileInput.onchange = function(e) {
-        console.log('📷 Archivo seleccionado');
-        const file = e.target.files[0];
-        if (file) {
-            handleImageSelect(file);
-        }
-    };
-    
-    // Función para manejar la imagen seleccionada
+
     function handleImageSelect(file) {
         if (file.size > 5 * 1024 * 1024) {
-            alert('La imagen no debe superar los 5MB');
+            toast('⚠️ La imagen no debe superar los 5MB');
             return;
         }
         
@@ -71,49 +39,146 @@ function initProductosForm() {
             preview.src = e.target.result;
             if (previewWrapper) previewWrapper.style.display = 'block';
             if (uploadEmpty) uploadEmpty.style.display = 'none';
-            console.log('✅ Preview cargado');
         };
         reader.readAsDataURL(file);
     }
-    
-    // Botón remover imagen
-    if (btnRemove) {
-        btnRemove.onclick = function(e) {
-            e.stopPropagation();
-            fileInput.value = '';
-            preview.src = '';
-            if (previewWrapper) previewWrapper.style.display = 'none';
-            if (uploadEmpty) uploadEmpty.style.display = 'flex';
-            console.log('🗑️ Imagen removida');
-        };
+
+    function removeImage(e) {
+        e.stopPropagation();
+        fileInput.value = '';
+        preview.src = '';
+        if (previewWrapper) previewWrapper.style.display = 'none';
+        if (uploadEmpty) uploadEmpty.style.display = 'flex';
     }
-    
+
+    // Click en área de upload (delegación de eventos)
+    uploadArea.onclick = function(e) {
+        // Si click en botón eliminar
+        if (e.target.closest('.btn-remove-img')) {
+            removeImage(e);
+            return;
+        }
+        // Si no, abrir selector de archivo
+        fileInput.click();
+    };
+
+    // Change en input file
+    fileInput.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) handleImageSelect(file);
+    };
+
     // Drag & Drop
-    const area = document.getElementById('uploadArea');
-    
-    area.ondragover = function(e) {
+    uploadArea.ondragover = function(e) {
         e.preventDefault();
-        area.classList.add('dragover');
+        uploadArea.classList.add('dragover');
     };
-    
-    area.ondragleave = function() {
-        area.classList.remove('dragover');
+
+    uploadArea.ondragleave = function() {
+        uploadArea.classList.remove('dragover');
     };
-    
-    area.ondrop = function(e) {
+
+    uploadArea.ondrop = function(e) {
         e.preventDefault();
-        area.classList.remove('dragover');
+        uploadArea.classList.remove('dragover');
         const file = e.dataTransfer.files[0];
         if (file && file.type.startsWith('image/')) {
             handleImageSelect(file);
         }
     };
-    
-    formProductosInicializado = true;
-    console.log('✅ Formulario inicializado correctamente');
+
+    // =========================================================
+    //  SKU AUTOMÁTICO
+    // =========================================================
+    const inputNombre = document.getElementById('prodNombre');
+    const inputCategoria = document.getElementById('prodCategoria');
+    const inputSKU = document.getElementById('prodSKU');
+
+    function generarSKU() {
+        const nombre = (inputNombre?.value || '').trim();
+        const categoria = (inputCategoria?.value || '').trim();
+        
+        if (nombre.length >= 2) {
+            const nombreCode = nombre
+                .toUpperCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^A-Z0-9]/g, '')
+                .substring(0, 3)
+                .padEnd(3, 'X');
+            
+            const catCode = categoria
+                ? categoria
+                    .toUpperCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^A-Z0-9]/g, '')
+                    .substring(0, 3)
+                    .padEnd(3, 'X')
+                : 'GEN';
+            
+            const num = String(Date.now()).slice(-3);
+            
+            if (inputSKU) inputSKU.value = `${nombreCode}-${catCode}-${num}`;
+        } else {
+            if (inputSKU) inputSKU.value = '';
+        }
+    }
+
+    if (inputNombre) inputNombre.oninput = generarSKU;
+    if (inputCategoria) inputCategoria.oninput = generarSKU;
+
+    // =========================================================
+    //  CÁLCULO DE MARGEN EN TIEMPO REAL
+    // =========================================================
+    const inputPrecioCompra = document.getElementById('prodPrecioCompra');
+    const inputPrecioVenta = document.getElementById('prodPrecio');
+    const previewGanancia = document.getElementById('previewGanancia');
+    const previewMargen = document.getElementById('previewMargen');
+
+    function calcularMargen() {
+        const compra = Number(inputPrecioCompra?.value) || 0;
+        const venta = Number(inputPrecioVenta?.value) || 0;
+        
+        const ganancia = venta - compra;
+        const margen = venta > 0 ? (ganancia / venta) * 100 : 0;
+        
+        if (previewGanancia) {
+            previewGanancia.textContent = `S/ ${ganancia.toFixed(2)}`;
+            previewGanancia.style.color = ganancia >= 0 ? '#10b981' : '#ef4444';
+        }
+        
+        if (previewMargen) {
+            previewMargen.textContent = `${margen.toFixed(1)}%`;
+            previewMargen.className = `margen-value margen-badge ${getMargenClass(margen)}`;
+        }
+    }
+
+    if (inputPrecioCompra) inputPrecioCompra.oninput = calcularMargen;
+    if (inputPrecioVenta) inputPrecioVenta.oninput = calcularMargen;
+
+    // =========================================================
+    //  TOGGLE DE VARIANTES
+    // =========================================================
+    const toggle = document.getElementById('prodTieneVariantes');
+    const toggleLabel = document.getElementById('toggleLabel');
+
+    if (toggle && toggleLabel) {
+        toggle.onchange = function() {
+            if (this.checked) {
+                toggleLabel.textContent = 'Sí - Tiene múltiples tallas/colores';
+                toggleLabel.style.color = '#3b82f6';
+            } else {
+                toggleLabel.textContent = 'No - Producto Simple';
+                toggleLabel.style.color = '#475569';
+            }
+        };
+    }
+
+    // =========================================================
+    //  MARCAR COMO INICIALIZADO
+    // =========================================================
+    window.formProductosInicializado = true;
+    console.log('✅ Formulario de productos inicializado');
 }
-
-
 // =======================================================
 //  FUNCIÓN PARA ABRIR MODAL DE IMAGEN (agrégala si no existe)
 // =======================================================
@@ -147,6 +212,7 @@ async function inicializarProductos() {
     initProductosForm();
     const btn = document.getElementById("btnGuardarProducto");
     if (btn) btn.onclick = guardarProducto;
+    
 }
 
 
@@ -312,6 +378,18 @@ function getProductoPorId(id) {
     return productosCache.find(p => String(p.id) === String(id));
 }
 
+function actualizarToggleLabelEditar() {
+    const toggle = document.getElementById('editProdTieneVariantes');
+    const label = document.getElementById('editToggleLabel');
+    
+    if (toggle.checked) {
+        label.textContent = 'Sí - Tiene múltiples tallas/colores';
+        label.style.color = '#3b82f6';
+    } else {
+        label.textContent = 'No - Producto Simple';
+        label.style.color = '#475569';
+    }
+}
 // =======================================================
 //  HELPERS DE FECHAS
 // =======================================================
@@ -388,7 +466,69 @@ function formatearFecha(fechaISO) {
     minute: "2-digit"
   });
 }
-
+function inicializarCalculoMargen() {
+    const inputPrecioCompra = document.getElementById('prodPrecioCompra');
+    const inputPrecioVenta = document.getElementById('prodPrecio');
+    const previewGanancia = document.getElementById('previewGanancia');
+    const previewMargen = document.getElementById('previewMargen');
+    
+    if (!inputPrecioCompra || !inputPrecioVenta) return;
+    
+    function calcularMargen() {
+        const compra = Number(inputPrecioCompra.value) || 0;
+        const venta = Number(inputPrecioVenta.value) || 0;
+        
+        const ganancia = venta - compra;
+        const margen = venta > 0 ? (ganancia / venta) * 100 : 0;
+        
+        if (previewGanancia) {
+            previewGanancia.textContent = `S/ ${ganancia.toFixed(2)}`;
+            previewGanancia.style.color = ganancia >= 0 ? '#10b981' : '#ef4444';
+        }
+        
+        if (previewMargen) {
+            previewMargen.textContent = `${margen.toFixed(1)}%`;
+            previewMargen.className = `margen-value margen-badge ${getMargenClass(margen)}`;
+        }
+    }
+    
+    inputPrecioCompra.addEventListener('input', calcularMargen);
+    inputPrecioVenta.addEventListener('input', calcularMargen);
+}
+function inicializarVistaProductos() {
+    inicializarSKUAutomatico();
+    inicializarCalculoMargen();
+    cargarSelectSucursales('prodSucursal');
+    renderizarTablaProductos();
+    
+    // Toggle de variantes
+    const toggle = document.getElementById('prodTieneVariantes');
+    const toggleLabel = document.getElementById('toggleLabel');
+    
+    if (toggle && toggleLabel) {
+        toggle.addEventListener('change', function() {
+            if (this.checked) {
+                toggleLabel.textContent = 'Sí - Tiene múltiples tallas/colores';
+                toggleLabel.style.color = '#3b82f6';
+            } else {
+                toggleLabel.textContent = 'No - Producto Simple';
+                toggleLabel.style.color = '#475569';
+            }
+        });
+    }
+    
+    // Evento del botón guardar
+    const btnGuardar = document.getElementById('btnGuardarProducto');
+    if (btnGuardar) {
+        btnGuardar.addEventListener('click', guardarProducto);
+    }
+}
+function getMargenClass(margen) {
+    if (margen >= 40) return 'margen-excelente';
+    if (margen >= 25) return 'margen-bueno';
+    if (margen >= 10) return 'margen-regular';
+    return 'margen-bajo';
+}
 
 // =======================================================
 //  HELPERS DE RENTABILIDAD
@@ -627,14 +767,14 @@ async function renderizarTablaProductos() {
     if (!tbody) return;
 
     tbody.innerHTML = productosCache.map(p => {
-        // ✅ CONVERSIÓN SEGURA DE NÚMEROS
+        // Conversión segura de números
         const precioCompra = isNaN(Number(p.precioCompra)) ? 0 : Number(p.precioCompra);
         const precioVenta = isNaN(Number(p.precioVenta)) ? 0 : Number(p.precioVenta);
         const ganancia = precioVenta - precioCompra;
         const margen = precioVenta > 0 ? (ganancia / precioVenta) * 100 : 0;
         const stock = isNaN(Number(p.stock)) ? 0 : Number(p.stock);
         
-        // ✅ CONVERTIR URL DE GOOGLE DRIVE
+        // Convertir URL de Google Drive
         const imagenUrl = convertirUrlGoogleDrive(p.imagenUrl);
         
         // Imagen con manejo de error
@@ -645,6 +785,17 @@ async function renderizarTablaProductos() {
                     onerror="this.outerHTML='<div class=\\'product-img-placeholder\\'>👔</div>'"
                     loading="lazy">`
             : `<div class="product-img-placeholder">👔</div>`;
+        
+        // Badge de variantes
+        const tieneVariantes = p.tieneVariantes === 'SI';
+        const variantesHtml = tieneVariantes
+            ? `<span class="badge-variantes tiene" onclick="abrirModalVariantes('${p.id}')" title="Click para gestionar">🎨 Sí</span>`
+            : `<span class="badge-variantes no-tiene">➖ No</span>`;
+        
+        // Botón de variantes (solo si tiene variantes habilitado)
+        const btnVariantes = tieneVariantes
+            ? `<button class="btn-action btn-variantes" onclick="abrirModalVariantes('${p.id}')" title="Gestionar Variantes">🎨</button>`
+            : '';
         
         return `
             <tr>
@@ -657,16 +808,17 @@ async function renderizarTablaProductos() {
                 <td><span style="color:#10b981;font-weight:600;">S/ ${precioVenta.toFixed(2)}</span></td>
                 <td><span class="margen-badge ${getMargenClass(margen)}">${margen.toFixed(1)}%</span></td>
                 <td><span class="${stock <= 5 ? 'stock-bajo' : ''}">${stock}</span></td>
+                <td>${variantesHtml}</td>
                 <td>${getNombreSucursal(p.sucursalId)}</td>
                 <td>
-                    <button class="btn-action btn-edit" onclick="editarProducto(${p.id})" title="Editar">✏️</button>
-                    <button class="btn-action btn-delete" onclick="eliminarProducto(${p.id})" title="Eliminar">🗑️</button>
+                    <button class="btn-action btn-edit" onclick="editarProducto('${p.id}')" title="Editar">✏️</button>
+                    ${btnVariantes}
+                    <button class="btn-action btn-delete" onclick="eliminarProducto('${p.id}')" title="Eliminar">🗑️</button>
                 </td>
             </tr>
         `;
     }).join("");
 }
-
 // =======================================================
 //  FUNCIÓN PARA ABRIR MODAL DE IMAGEN (agrégala si no existe)
 // =======================================================
@@ -688,47 +840,59 @@ function abrirModalImagen(url) {
 async function guardarProducto() {
     const nombre = document.getElementById("prodNombre").value.trim();
     const categoria = document.getElementById("prodCategoria").value.trim();
-    const tipo = document.getElementById("prodTipo")?.value.trim() || '';
-    const precioCompra = Number(document.getElementById("prodPrecioCompra").value || 0);
-    const precioVenta = Number(document.getElementById("prodPrecio").value || 0);
-    const stock = Number(document.getElementById("prodStock").value || 0);
+    const tipo = document.getElementById("prodTipo")?.value || 'Unisex';
+    const sku = document.getElementById("prodSKU").value.trim();
+    const precioCompra = document.getElementById("prodPrecioCompra").value;
+    const precioVenta = document.getElementById("prodPrecio").value;
+    const stock = document.getElementById("prodStock").value;
     const sucursalId = document.getElementById("prodSucursal").value;
+    const tieneVariantes = document.getElementById("prodTieneVariantes")?.checked ? 'SI' : 'NO';
 
+    // =========================================================
+    //  VALIDACIONES
+    // =========================================================
     if (!nombre) {
-        toast("❌ El nombre es requerido");
+        toast("⚠️ El nombre es obligatorio");
+        document.getElementById("prodNombre").focus();
         return;
     }
-
-    if (precioVenta <= 0) {
-        toast("❌ El precio de venta debe ser mayor a 0");
-        return;
-    }
-
-    const loadingEl = document.getElementById("imageLoading");
-    const btnGuardar = document.getElementById("btnGuardarProducto");
     
-    if (loadingEl) loadingEl.style.display = "flex";
-    if (btnGuardar) btnGuardar.disabled = true;
+    if (!sucursalId) {
+        toast("⚠️ Debes seleccionar una sucursal/tienda");
+        document.getElementById("prodSucursal").focus();
+        return;
+    }
+    
+    if (!precioVenta || Number(precioVenta) <= 0) {
+        toast("⚠️ El precio de venta debe ser mayor a 0");
+        document.getElementById("prodPrecio").focus();
+        return;
+    }
+
+    // Imagen en base64
+    let imagenBase64 = null;
+    const preview = document.getElementById("prodPreview");
+    if (preview && preview.src && preview.src.startsWith('data:image')) {
+        imagenBase64 = preview.src;
+    }
+
+    const btn = document.getElementById("btnGuardarProducto");
+    const textoOriginal = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-small"></span> Guardando...';
 
     try {
-        const fileInput = document.getElementById("prodImagen");
-        const file = fileInput?.files[0] || null;
-        let imagenBase64 = "";
-
-        if (file) {
-            const base64Full = await fileToBase64(file);
-            imagenBase64 = base64Full.split(",")[1];
-        }
-
         const resp = await apiCall({
             action: "crearProducto",
             nombre,
             categoria,
             tipo,
-            precioCompra,
-            precioVenta,
-            stock,
+            sku,
+            precioCompra: Number(precioCompra) || 0,
+            precioVenta: Number(precioVenta) || 0,
+            stock: Number(stock) || 0,
             sucursalId,
+            tieneVariantes,
             imagenBase64
         });
 
@@ -736,41 +900,89 @@ async function guardarProducto() {
             toast("✅ Producto guardado correctamente");
             limpiarFormularioProducto();
             await renderizarTablaProductos();
+            
+            if (tieneVariantes === 'SI' && resp.id) {
+                if (confirm('¿Deseas agregar variantes (tallas/colores) ahora?')) {
+                    setTimeout(() => abrirModalVariantes(resp.id), 300);
+                }
+            }
         } else {
             toast("❌ Error: " + (resp.error || "No se pudo guardar"));
         }
-
     } catch (error) {
         console.error("Error guardando producto:", error);
-        toast("❌ Error inesperado al guardar");
+        toast("❌ Error al guardar el producto");
     } finally {
-        if (loadingEl) loadingEl.style.display = "none";
-        if (btnGuardar) btnGuardar.disabled = false;
+        btn.disabled = false;
+        btn.innerHTML = textoOriginal;
     }
 }
-
 function limpiarFormularioProducto() {
-    ['prodNombre', 'prodCategoria', 'prodTipo', 'prodPrecioCompra', 'prodPrecio', 'prodStock', 'prodSucursal'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-    });
+    document.getElementById("prodNombre").value = '';
+    document.getElementById("prodCategoria").value = '';
+    document.getElementById("prodTipo").value = 'Hombre';
+    document.getElementById("prodSKU").value = '';
+    document.getElementById("prodPrecioCompra").value = '';
+    document.getElementById("prodPrecio").value = '';
+    document.getElementById("prodStock").value = '';
+    document.getElementById("prodSucursal").value = '';
+    document.getElementById("prodTieneVariantes").checked = false;
+    document.getElementById("toggleLabel").textContent = 'No - Producto Simple';
+    document.getElementById("toggleLabel").style.color = '#475569';
     
-    const fileInput = document.getElementById("prodImagen");
+    // Limpiar imagen
     const preview = document.getElementById("prodPreview");
     const previewWrapper = document.getElementById("previewWrapper");
     const uploadEmpty = document.getElementById("uploadEmpty");
-    const previewGanancia = document.getElementById("previewGanancia");
-    const previewMargen = document.getElementById("previewMargen");
+    const fileInput = document.getElementById("prodImagen");
     
-    if (fileInput) fileInput.value = "";
-    if (preview) preview.src = "";
-    if (previewWrapper) previewWrapper.style.display = "none";
-    if (uploadEmpty) uploadEmpty.style.display = "flex";
-    if (previewGanancia) previewGanancia.textContent = "S/ 0.00";
-    if (previewMargen) previewMargen.textContent = "0%";
+    if (preview) preview.src = '';
+    if (previewWrapper) previewWrapper.style.display = 'none';
+    if (uploadEmpty) uploadEmpty.style.display = 'flex';
+    if (fileInput) fileInput.value = '';
+    
+    // Reset margen preview
+    document.getElementById("previewGanancia").textContent = 'S/ 0.00';
+    document.getElementById("previewMargen").textContent = '0%';
 }
 
-
+function inicializarSKUAutomatico() {
+    const inputNombre = document.getElementById('prodNombre');
+    const inputCategoria = document.getElementById('prodCategoria');
+    const inputSKU = document.getElementById('prodSKU');
+    
+    if (!inputNombre || !inputSKU) return;
+    
+    function generarSKU() {
+        const nombre = inputNombre.value.trim();
+        const categoria = inputCategoria ? inputCategoria.value.trim() : '';
+        
+        if (nombre.length >= 2) {
+            // Limpiar y obtener primeras letras
+            const nombreCode = nombre
+                .toUpperCase()
+                .replace(/[^A-Z0-9]/g, '')
+                .substring(0, 3)
+                .padEnd(3, 'X');
+            
+            const catCode = categoria
+                ? categoria.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 3).padEnd(3, 'X')
+                : 'GEN';
+            
+            // Número basado en timestamp para unicidad
+            const num = String(Date.now()).slice(-3);
+            
+            inputSKU.value = `${nombreCode}-${catCode}-${num}`;
+        } else {
+            inputSKU.value = '';
+        }
+    }
+    
+    inputNombre.addEventListener('input', generarSKU);
+    if (inputCategoria) {
+        inputCategoria.addEventListener('input', generarSKU);
+    }
+}
 
 async function eliminarProducto(id) {
     if (!confirm("¿Estás seguro de eliminar este producto?")) return;
@@ -868,6 +1080,19 @@ async function buscarRentabilidad() {
         }))
         .sort((a, b) => b.ganancia - a.ganancia);
     
+    // ✅ GUARDAR EN CACHE PARA EXPORTAR
+    rentabilidadCache = productosArray.map(p => ({
+        codigo: p.id,
+        producto: getNombreProducto(p.id),
+        cantidadVendida: p.cantidad,
+        precioCompra: p.precioCompra,
+        precioVenta: p.precioVenta,
+        costos: p.costoTotal,
+        ingresos: p.ventaTotal,
+        ganancia: p.ganancia,
+        margen: p.margen
+    }));
+    
     const tbodyProd = document.getElementById("tablaRentabilidadProductos");
     if (tbodyProd) {
         tbodyProd.innerHTML = productosArray.map(p => `
@@ -933,15 +1158,31 @@ async function inicializarUsuarios() {
     
     const tbody = document.getElementById("tablaUsuarios");
     if (tbody && data.usuarios) {
-        tbody.innerHTML = data.usuarios.map(u => `
-            <tr>
-                <td>${u.id}</td>
-                <td>${u.nombre}</td>
-                <td>${u.email}</td>
-                <td><span class="badge ${u.rol === 'ADMIN' ? 'badge-admin' : 'badge-empleado'}">${u.rol}</span></td>
-                <td>${getNombreSucursal(u.sucursalId)}</td>
-            </tr>
-        `).join("");
+        tbody.innerHTML = data.usuarios.map(u => {
+            const esActivo = u.estado === 'ACTIVO';
+            const badgeEstado = esActivo 
+                ? '<span class="badge-estado badge-activo">Activo</span>'
+                : '<span class="badge-estado badge-inactivo">Inactivo</span>';
+            
+            const btnToggle = esActivo
+                ? `<button class="btn-action btn-toggle-activo" onclick="toggleEstadoUsuario('${u.id}', 'INACTIVO')" title="Desactivar">🚫</button>`
+                : `<button class="btn-action btn-toggle-inactivo" onclick="toggleEstadoUsuario('${u.id}', 'ACTIVO')" title="Activar">✅</button>`;
+            
+            return `
+                <tr class="${!esActivo ? 'usuario-inactivo' : ''}">
+                    <td>${u.id}</td>
+                    <td>${u.nombre}</td>
+                    <td>${u.email}</td>
+                    <td><span class="badge ${u.rol === 'ADMIN' ? 'badge-admin' : 'badge-empleado'}">${u.rol}</span></td>
+                    <td>${getNombreSucursal(u.sucursalId)}</td>
+                    <td>${badgeEstado}</td>
+                    <td>
+                        <button class="btn-action btn-edit" onclick="editarUsuario('${u.id}')" title="Editar">✏️</button>
+                        ${btnToggle}
+                    </td>
+                </tr>
+            `;
+        }).join("");
     }
 
     const btn = document.getElementById("btnGuardarUsuario");
@@ -972,6 +1213,43 @@ async function inicializarUsuarios() {
         };
     }
 }
+
+// Toggle estado de usuario (Activar/Desactivar)
+window.toggleEstadoUsuario = async function(id, nuevoEstado) {
+    const accion = nuevoEstado === 'ACTIVO' ? 'activar' : 'desactivar';
+    
+    if (!confirm(`¿Estás seguro de ${accion} este usuario?`)) return;
+    
+    try {
+        const resp = await apiCall({
+            action: 'actualizarUsuario',
+            id: id,
+            estado: nuevoEstado
+        });
+        
+        if (resp.success) {
+            toast(nuevoEstado === 'ACTIVO' ? '✅ Usuario activado' : '🚫 Usuario desactivado');
+            inicializarUsuarios();
+        } else {
+            toast('❌ Error: ' + (resp.error || 'No se pudo actualizar'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        toast('❌ Error al actualizar usuario');
+    }
+};
+
+// Editar usuario (placeholder - puedes expandir)
+window.editarUsuario = function(id) {
+    const usuario = usuariosCache.find(u => String(u.id) === String(id));
+    if (!usuario) {
+        toast('❌ Usuario no encontrado');
+        return;
+    }
+    
+    // Por ahora solo muestra info, puedes agregar modal de edición después
+    toast(`📝 Editar: ${usuario.nombre}`);
+};
 
 // =======================================================
 //  SUCURSALES
@@ -1102,6 +1380,18 @@ async function buscarVentasTienda() {
     if (!data.ventas) return;
     
     const ventasFiltradas = filtrarVentasPorFecha(data.ventas, desde, hasta);
+    
+    // ✅ GUARDAR EN CACHE PARA EXPORTAR
+    ventasTiendaCache = ventasFiltradas.map(v => ({
+        fecha: v.fechaISO,
+        sucursalNombre: getNombreSucursal(v.sucursalId),
+        empleadoNombre: getNombreEmpleado(v.empleadoId),
+        codigo: v.productoId,
+        producto: getNombreProducto(v.productoId),
+        cantidad: v.cantidad,
+        total: v.total
+    }));
+    
     const resumen = calcularResumenRentabilidad(ventasFiltradas);
     
     document.getElementById("resumenTotal").textContent = `S/ ${resumen.ventas.toFixed(2)}`;
@@ -1594,16 +1884,156 @@ function verDetalleProducto(id) {
     document.getElementById('modalTipo').textContent = producto.tipo || '-';
     document.getElementById('modalPrecio').textContent = `S/ ${Number(producto.precioVenta).toFixed(2)}`;
     
+    // Precio compra y margen
+    const precioCompra = Number(producto.precioCompra) || 0;
+    const precioVenta = Number(producto.precioVenta) || 0;
+    const margen = precioVenta > 0 ? ((precioVenta - precioCompra) / precioVenta * 100).toFixed(1) : 0;
+    
+    const modalPrecioCompra = document.getElementById('modalPrecioCompra');
+    if (modalPrecioCompra) modalPrecioCompra.textContent = `S/ ${precioCompra.toFixed(2)}`;
+    
+    const modalMargen = document.getElementById('modalMargen');
+    if (modalMargen) modalMargen.textContent = `${margen}%`;
+    
     const stockEl = document.getElementById('modalStock');
     stockEl.textContent = stock === 0 ? 'Agotado' : `${stock} unidades disponibles`;
     stockEl.className = `stock-valor ${stockClass}`;
     
     document.getElementById('modalSucursal').textContent = getNombreSucursal(producto.sucursalId);
-    document.getElementById('modalCodigo').textContent = producto.id;
+    document.getElementById('modalCodigo').textContent = producto.sku || producto.id;
+
+    // ✅ MOSTRAR ESTADO DE VARIANTES
+    const tieneVariantes = producto.tieneVariantes === 'SI';
+    const modalTieneVariantes = document.getElementById('modalTieneVariantes');
+    if (modalTieneVariantes) {
+        modalTieneVariantes.textContent = tieneVariantes ? 'Sí' : 'No';
+        modalTieneVariantes.style.color = tieneVariantes ? '#10b981' : '#64748b';
+    }
+    
+    // ✅ GUARDAR PRODUCTO ACTUAL PARA VARIANTES
+    productoModalActual = producto;
+    
+    // ✅ CARGAR VARIANTES SI TIENE
+    const variantesSection = document.getElementById('modalVariantesSection');
+    if (variantesSection) {
+        if (tieneVariantes) {
+            variantesSection.style.display = 'block';
+            cargarVariantesModal(producto.id);
+        } else {
+            variantesSection.style.display = 'none';
+        }
+    }
 
     modal.classList.add('active');
 }
+// Variable para producto actual en modal catálogo
+let productoModalActual = null;
+let variantesModalActuales = [];
 
+// Cargar variantes en el modal del catálogo
+async function cargarVariantesModal(productoId) {
+    const section = document.getElementById('modalVariantesSection');
+    const lista = document.getElementById('variantesListaModal');
+    
+    if (!section || !lista) return;
+    
+    if (!productoModalActual || productoModalActual.tieneVariantes !== 'SI') {
+        section.style.display = 'none';
+        return;
+    }
+    
+    section.style.display = 'block';
+    lista.innerHTML = '<div class="variantes-empty">Cargando...</div>';
+    
+    try {
+        const resp = await apiCall({ action: 'getVariantesPorProducto', productoId: productoId });
+        variantesModalActuales = (resp.variantes || []).filter(v => v.estado !== 'INACTIVO');
+        
+        renderizarVariantesModal();
+    } catch (error) {
+        lista.innerHTML = '<div class="variantes-empty">Error al cargar</div>';
+    }
+}
+
+// Renderizar lista de variantes en modal
+function renderizarVariantesModal() {
+    const lista = document.getElementById('variantesListaModal');
+    if (!lista) return;
+    
+    if (variantesModalActuales.length === 0) {
+        lista.innerHTML = '<div class="variantes-empty">📭 No hay variantes registradas</div>';
+        return;
+    }
+    
+    let stockTotal = 0;
+    
+    const html = variantesModalActuales.map(v => {
+        const stock = Number(v.stock) || 0;
+        stockTotal += stock;
+        
+        let stockClass = '';
+        if (stock === 0) stockClass = 'agotado';
+        else if (stock <= 3) stockClass = 'bajo';
+        
+        return `
+            <div class="variante-item-modal">
+                <div class="variante-color-dot" style="background: ${getColorHex(v.color)};"></div>
+                <div class="variante-detalle">
+                    <span class="variante-talla-label">${v.talla}</span>
+                    <span class="variante-color-label">${v.color}</span>
+                </div>
+                <span class="variante-stock-badge ${stockClass}">${stock} uds</span>
+            </div>
+        `;
+    }).join('');
+    
+    lista.innerHTML = html + `
+        <div class="variantes-resumen">
+            <span>Total variantes: <strong>${variantesModalActuales.length}</strong></span>
+            <span>Stock total: <strong>${stockTotal} unidades</strong></span>
+        </div>
+    `;
+}
+// Editar stock de variante desde modal
+async function editarStockVarianteModal(id, stockActual) {
+    const nuevoStock = prompt(`Stock actual: ${stockActual}\nNuevo stock:`, stockActual);
+    if (nuevoStock === null) return;
+    
+    try {
+        const resp = await apiCall({
+            action: 'actualizarVariante',
+            id: id,
+            stock: Number(nuevoStock) || 0
+        });
+        
+        if (resp.success) {
+            toast('✅ Stock actualizado');
+            await cargarVariantesModal(productoModalActual.id);
+        }
+    } catch (error) {
+        toast('❌ Error');
+    }
+}
+
+// Eliminar variante desde modal
+async function eliminarVarianteModal(id) {
+    if (!confirm('¿Eliminar esta variante?')) return;
+    
+    try {
+        const resp = await apiCall({
+            action: 'actualizarVariante',
+            id: id,
+            estado: 'INACTIVO'
+        });
+        
+        if (resp.success) {
+            toast('🗑️ Variante eliminada');
+            await cargarVariantesModal(productoModalActual.id);
+        }
+    } catch (error) {
+        toast('❌ Error');
+    }
+}
 // =======================================================
 //  FUNCIONES PARA NOTA DE VENTA PDF Y EXPORTAR EXCEL
 //  Agregar al final de empleado.js y admin.js
@@ -1761,8 +2191,11 @@ function exportarExcel(datos, nombreArchivo, columnas) {
     // Crear contenido CSV con BOM para caracteres especiales
     let csv = '\uFEFF'; // BOM para UTF-8
     
+    // Separador para Excel en Latinoamérica
+    const separador = ';';
+    
     // Encabezados
-    csv += columnas.map(c => `"${c.titulo}"`).join(',') + '\n';
+    csv += columnas.map(c => `"${c.titulo}"`).join(separador) + '\n';
     
     // Filas de datos
     datos.forEach(row => {
@@ -1783,10 +2216,10 @@ function exportarExcel(datos, nombreArchivo, columnas) {
             // Escapar comillas y envolver en comillas
             return `"${String(valor).replace(/"/g, '""')}"`;
         });
-        csv += fila.join(',') + '\n';
+        csv += fila.join(separador) + '\n';
     });
     
-    // Crear blob y descargar
+    // Crear blob y descargar como .csv
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -1852,34 +2285,138 @@ function exportarVentasTotales() {
     ]);
 }
 
-// Exportar Ventas por Tienda
-function exportarVentasTienda() {
-    const tbody = document.getElementById('tablaVentasTienda');
-    if (!tbody) return;
+// Exportar ventas por empleado
+function exportarVentasEmpleado() {
+    if (!ventasEmpleadoCache || ventasEmpleadoCache.length === 0) {
+        toast('❌ No hay datos para exportar');
+        return;
+    }
     
-    const filas = Array.from(tbody.querySelectorAll('tr'));
-    const datos = filas.map(tr => {
-        const celdas = tr.querySelectorAll('td');
-        return {
-            fecha: celdas[0]?.textContent || '',
-            sucursal: celdas[1]?.textContent || '',
-            empleado: celdas[2]?.textContent || '',
-            codigoProducto: celdas[3]?.textContent || '',
-            producto: celdas[4]?.textContent || '',
-            cantidad: celdas[5]?.textContent || '',
-            total: celdas[6]?.textContent?.replace('S/ ', '').replace(',', '') || ''
-        };
-    });
-    
-    exportarExcel(datos, 'Ventas_por_Tienda', [
-        { titulo: 'Fecha', campo: 'fecha', tipo: 'texto' },
-        { titulo: 'Sucursal', campo: 'sucursal', tipo: 'texto' },
-        { titulo: 'Empleado', campo: 'empleado', tipo: 'texto' },
-        { titulo: 'Código', campo: 'codigoProducto', tipo: 'texto' },
+    const columnas = [
+        { titulo: 'Fecha', campo: 'fecha', tipo: 'fecha' },
+        { titulo: 'Empleado', campo: 'empleadoNombre', tipo: 'texto' },
+        { titulo: 'Sucursal', campo: 'sucursalNombre', tipo: 'texto' },
+        { titulo: 'Código', campo: 'codigo', tipo: 'texto' },
         { titulo: 'Producto', campo: 'producto', tipo: 'texto' },
         { titulo: 'Cantidad', campo: 'cantidad', tipo: 'numero' },
-        { titulo: 'Total (S/)', campo: 'total', tipo: 'moneda' }
-    ]);
+        { titulo: 'Total', campo: 'total', tipo: 'moneda' }
+    ];
+    
+    exportarExcel(ventasEmpleadoCache, 'ventas-empleado', columnas);
+}
+// Exportar Ventas por Tienda
+let ventasTiendaCache = [];
+let ventasEmpleadoCache = [];
+let rentabilidadCache = [];
+let ventasTotalesCache = [];
+function exportarVentasTienda() {
+    if (!ventasTiendaCache || ventasTiendaCache.length === 0) {
+        toast('❌ No hay datos para exportar');
+        return;
+    }
+    
+    const columnas = [
+        { titulo: 'Fecha', campo: 'fecha', tipo: 'fecha' },
+        { titulo: 'Sucursal', campo: 'sucursalNombre', tipo: 'texto' },
+        { titulo: 'Empleado', campo: 'empleadoNombre', tipo: 'texto' },
+        { titulo: 'Código', campo: 'codigo', tipo: 'texto' },
+        { titulo: 'Producto', campo: 'producto', tipo: 'texto' },
+        { titulo: 'Cantidad', campo: 'cantidad', tipo: 'numero' },
+        { titulo: 'Total', campo: 'total', tipo: 'moneda' }
+    ];
+    
+    exportarExcel(ventasTiendaCache, 'ventas-tienda', columnas);
+}
+async function exportarProductosConVariantes() {
+    if (!productosCache || productosCache.length === 0) {
+        toast('❌ No hay datos para exportar');
+        return;
+    }
+    
+    toast('⏳ Generando reporte...');
+    
+    const datosExportar = [];
+    
+    for (const producto of productosCache) {
+        if (producto.tieneVariantes === 'SI') {
+            // Obtener variantes del producto
+            try {
+                const resp = await apiCall({ action: 'getVariantesPorProducto', productoId: producto.id });
+                const variantes = (resp.variantes || []).filter(v => v.estado !== 'INACTIVO');
+                
+                if (variantes.length > 0) {
+                    // Agregar una fila por cada variante
+                    variantes.forEach(v => {
+                        datosExportar.push({
+                            id: producto.id,
+                            nombre: producto.nombre,
+                            categoria: producto.categoria,
+                            tipo: producto.tipo,
+                            skuProducto: producto.sku,
+                            precioCompra: producto.precioCompra,
+                            precioVenta: producto.precioVenta,
+                            color: v.color,
+                            talla: v.talla,
+                            skuVariante: v.sku,
+                            stockVariante: v.stock,
+                            tieneVariantes: 'SI'
+                        });
+                    });
+                } else {
+                    // Producto con variantes pero sin variantes registradas
+                    datosExportar.push({
+                        id: producto.id,
+                        nombre: producto.nombre,
+                        categoria: producto.categoria,
+                        tipo: producto.tipo,
+                        skuProducto: producto.sku,
+                        precioCompra: producto.precioCompra,
+                        precioVenta: producto.precioVenta,
+                        color: '-',
+                        talla: '-',
+                        skuVariante: '-',
+                        stockVariante: producto.stock,
+                        tieneVariantes: 'SI (sin variantes)'
+                    });
+                }
+            } catch (error) {
+                console.error('Error obteniendo variantes:', error);
+            }
+        } else {
+            // Producto simple sin variantes
+            datosExportar.push({
+                id: producto.id,
+                nombre: producto.nombre,
+                categoria: producto.categoria,
+                tipo: producto.tipo,
+                skuProducto: producto.sku,
+                precioCompra: producto.precioCompra,
+                precioVenta: producto.precioVenta,
+                color: '-',
+                talla: '-',
+                skuVariante: '-',
+                stockVariante: producto.stock,
+                tieneVariantes: 'NO'
+            });
+        }
+    }
+    
+    const columnas = [
+        { titulo: 'ID', campo: 'id', tipo: 'texto' },
+        { titulo: 'Producto', campo: 'nombre', tipo: 'texto' },
+        { titulo: 'Categoría', campo: 'categoria', tipo: 'texto' },
+        { titulo: 'Género', campo: 'tipo', tipo: 'texto' },
+        { titulo: 'SKU Producto', campo: 'skuProducto', tipo: 'texto' },
+        { titulo: 'P. Compra', campo: 'precioCompra', tipo: 'moneda' },
+        { titulo: 'P. Venta', campo: 'precioVenta', tipo: 'moneda' },
+        { titulo: 'Color', campo: 'color', tipo: 'texto' },
+        { titulo: 'Talla', campo: 'talla', tipo: 'texto' },
+        { titulo: 'SKU Variante', campo: 'skuVariante', tipo: 'texto' },
+        { titulo: 'Stock', campo: 'stockVariante', tipo: 'numero' },
+        { titulo: 'Tiene Variantes', campo: 'tieneVariantes', tipo: 'texto' }
+    ];
+    
+    exportarExcel(datosExportar, 'productos-inventario', columnas);
 }
 
 // Exportar Ventas por Empleado
@@ -1912,68 +2449,26 @@ function exportarVentasEmpleado() {
     ]);
 }
 
-// Exportar Rentabilidad por Producto
-function exportarRentabilidadProductos() {
-    const tbody = document.getElementById('tablaRentabilidadProductos');
-    if (!tbody) return;
+function exportarRentabilidad() {
+    if (!rentabilidadCache || rentabilidadCache.length === 0) {
+        toast('❌ No hay datos para exportar');
+        return;
+    }
     
-    const filas = Array.from(tbody.querySelectorAll('tr'));
-    const datos = filas.map(tr => {
-        const celdas = tr.querySelectorAll('td');
-        return {
-            codigo: celdas[0]?.textContent || '',
-            producto: celdas[1]?.textContent || '',
-            cantidad: celdas[2]?.textContent || '',
-            precioCompra: celdas[3]?.textContent?.replace('S/ ', '') || '',
-            precioVenta: celdas[4]?.textContent?.replace('S/ ', '') || '',
-            costoTotal: celdas[5]?.textContent?.replace('S/ ', '') || '',
-            ventaTotal: celdas[6]?.textContent?.replace('S/ ', '') || '',
-            ganancia: celdas[7]?.textContent?.replace('S/ ', '') || '',
-            margen: celdas[8]?.textContent?.replace('%', '') || ''
-        };
-    });
-    
-    exportarExcel(datos, 'Rentabilidad_Productos', [
-        { titulo: 'Código', campo: 'codigo', tipo: 'texto' },
+    const columnas = [
         { titulo: 'Producto', campo: 'producto', tipo: 'texto' },
-        { titulo: 'Cantidad', campo: 'cantidad', tipo: 'numero' },
-        { titulo: 'P. Compra (S/)', campo: 'precioCompra', tipo: 'moneda' },
-        { titulo: 'P. Venta (S/)', campo: 'precioVenta', tipo: 'moneda' },
-        { titulo: 'Costo Total (S/)', campo: 'costoTotal', tipo: 'moneda' },
-        { titulo: 'Venta Total (S/)', campo: 'ventaTotal', tipo: 'moneda' },
-        { titulo: 'Ganancia (S/)', campo: 'ganancia', tipo: 'moneda' },
-        { titulo: 'Margen (%)', campo: 'margen', tipo: 'numero' }
-    ]);
-}
-
-// Exportar Rentabilidad por Sucursal
-function exportarRentabilidadSucursales() {
-    const tbody = document.getElementById('tablaRentabilidadSucursales');
-    if (!tbody) return;
+        { titulo: 'Categoría', campo: 'categoria', tipo: 'texto' },
+        { titulo: 'Cantidad Vendida', campo: 'cantidadVendida', tipo: 'numero' },
+        { titulo: 'Precio Compra', campo: 'precioCompra', tipo: 'moneda' },
+        { titulo: 'Precio Venta', campo: 'precioVenta', tipo: 'moneda' },
+        { titulo: 'Ingresos', campo: 'ingresos', tipo: 'moneda' },
+        { titulo: 'Costos', campo: 'costos', tipo: 'moneda' },
+        { titulo: 'Ganancia', campo: 'ganancia', tipo: 'moneda' },
+        { titulo: 'Margen %', campo: 'margen', tipo: 'numero' }
+    ];
     
-    const filas = Array.from(tbody.querySelectorAll('tr'));
-    const datos = filas.map(tr => {
-        const celdas = tr.querySelectorAll('td');
-        return {
-            sucursal: celdas[0]?.textContent || '',
-            ventas: celdas[1]?.textContent?.replace('S/ ', '') || '',
-            costos: celdas[2]?.textContent?.replace('S/ ', '') || '',
-            ganancia: celdas[3]?.textContent?.replace('S/ ', '') || '',
-            margen: celdas[4]?.textContent?.replace('%', '') || '',
-            transacciones: celdas[5]?.textContent || ''
-        };
-    });
-    
-    exportarExcel(datos, 'Rentabilidad_Sucursales', [
-        { titulo: 'Sucursal', campo: 'sucursal', tipo: 'texto' },
-        { titulo: 'Ventas (S/)', campo: 'ventas', tipo: 'moneda' },
-        { titulo: 'Costos (S/)', campo: 'costos', tipo: 'moneda' },
-        { titulo: 'Ganancia (S/)', campo: 'ganancia', tipo: 'moneda' },
-        { titulo: 'Margen (%)', campo: 'margen', tipo: 'numero' },
-        { titulo: 'Transacciones', campo: 'transacciones', tipo: 'numero' }
-    ]);
+    exportarExcel(rentabilidadCache, 'rentabilidad', columnas);
 }
-
 // Exportar Mis Ventas (empleado)
 function exportarMisVentas() {
     const tbody = document.getElementById('tablaMisVentas');
@@ -2056,6 +2551,7 @@ function inicializarNotificaciones() {
 // Llamar al cargar la página del admin
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(inicializarNotificaciones, 1000);
+    inicializarSKUAutomatico()
 });
 
 // =======================================================
@@ -2309,6 +2805,26 @@ async function editarProducto(id) {
     document.getElementById("editProdPrecioCompra").value = producto.precioCompra;
     document.getElementById("editProdPrecioVenta").value = producto.precioVenta;
     document.getElementById("editProdStock").value = producto.stock;
+    
+    // ✅ CARGAR SKU
+    const skuField = document.getElementById("editProdSKU");
+    if (skuField) skuField.value = producto.sku || '';
+
+    // ✅ CARGAR TOGGLE DE VARIANTES
+    const tieneVariantes = producto.tieneVariantes === 'SI';
+    const toggleEdit = document.getElementById("editProdTieneVariantes");
+    const toggleLabelEdit = document.getElementById("editToggleLabel");
+    
+    if (toggleEdit) {
+        toggleEdit.checked = tieneVariantes;
+    }
+    
+    if (toggleLabelEdit) {
+        toggleLabelEdit.textContent = tieneVariantes 
+            ? 'Sí - Tiene múltiples tallas/colores' 
+            : 'No - Producto Simple';
+        toggleLabelEdit.style.color = tieneVariantes ? '#3b82f6' : '#475569';
+    }
 
     // Mostrar imagen actual
     if (producto.imagenUrl) {
@@ -2323,14 +2839,40 @@ async function editarProducto(id) {
 
     // ABRIR MODAL
     const modal = document.getElementById("modalEditarProducto");
+    // Mostrar/ocultar botón de variantes
+    const btnVariantesEnEditar = document.getElementById('btnVariantesEnEditar');
+    if (btnVariantesEnEditar) {
+        btnVariantesEnEditar.style.display = producto.tieneVariantes === 'SI' ? 'inline-flex' : 'none';
+    }
     modal.classList.add("active");
     console.log('✅ Modal abierto');
 }
 
-
-function cerrarModalEditarManual() {
-  const modal = document.getElementById("modalEditarProducto");
-  modal.classList.remove("active");
+// Ir a gestionar variantes desde modal editar
+function irAVariantesDesdeEditar() {
+    const id = document.getElementById('editProdId').value;
+    if (!id) return;
+    
+    cerrarModalEditarManual();
+    
+    setTimeout(() => {
+        abrirModalVariantes(id);
+    }, 300);
+}
+function cerrarModalVariantes() {
+    document.getElementById('modalVariantes').classList.remove('active');
+    productoVariantesActual = null;
+    variantesActuales = [];
+    
+    // Recargar catálogo si estamos en catálogo
+    if (typeof cargarCatalogoProductos === 'function') {
+        cargarCatalogoProductos();
+    }
+    
+    // Recargar tabla productos si estamos en productos
+    if (typeof renderizarTablaProductos === 'function') {
+        renderizarTablaProductos();
+    }
 }
 function confirmarAccion() {
     if (!accionPendiente) return;
@@ -2372,48 +2914,72 @@ function cerrarModalEditarManual() {
 }
 async function guardarEdicionProducto() {
     const id = document.getElementById("editProdId").value;
+    const nombre = document.getElementById("editProdNombre").value.trim();
+    const categoria = document.getElementById("editProdCategoria").value.trim();
+    const tipo = document.getElementById("editProdGenero").value;
+    const sku = document.getElementById("editProdSKU").value.trim();
+    const precioCompra = document.getElementById("editProdPrecioCompra").value;
+    const precioVenta = document.getElementById("editProdPrecioVenta").value;
+    const stock = document.getElementById("editProdStock").value;
+    const sucursalId = document.getElementById("editProdSucursal").value;
+    const tieneVariantes = document.getElementById("editProdTieneVariantes").checked ? 'SI' : 'NO';
 
-    const datos = {
-        action: "actualizarProducto",
-        id,
-        nombre: document.getElementById("editProdNombre").value,
-        categoria: document.getElementById("editProdCategoria").value,
-        tipo: document.getElementById("editProdGenero").value,
-        precioCompra: Number(document.getElementById("editProdPrecioCompra").value),
-        precioVenta: Number(document.getElementById("editProdPrecioVenta").value),
-        stock: Number(document.getElementById("editProdStock").value),
-        sucursalId: document.getElementById("editProdSucursal").value
-    };
-
-    // Solo enviar imagen si cambió
-    if (imagenEditarCambiada) {
-        datos.imagenBase64 = imagenEditarBase64 || '';
+    if (!nombre) {
+        toast("⚠️ El nombre es obligatorio");
+        return;
     }
 
-    const resp = await apiCall(datos);
-
-    if (resp.success) {
-        toast("✅ Producto actualizado");
-        window.modalEditarAbierto = false;
-        cerrarModalEditar();
-        await cargarCaches();
-        
-        if (vieneDeCatalogo && productoIdParaVolver) {
-            const idProducto = productoIdParaVolver;
-            vieneDeCatalogo = false;
-            productoIdParaVolver = null;
-            
-            setTimeout(() => {
-                cargarVista('catalogo').then(() => {
-                    setTimeout(() => {
-                        abrirModalProducto(Number(idProducto));
-                    }, 500);
-                });
-            }, 300);
-        } else {
-            renderizarTablaProductos();
+    // Verificar si hay nueva imagen
+    let imagenBase64 = undefined; // undefined = no cambiar
+    const fileInput = document.getElementById("editProdImagen");
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+        // Hay una nueva imagen seleccionada
+        const preview = document.getElementById("editProdImagenPreview");
+        if (preview && preview.src && preview.src.startsWith('data:image')) {
+            imagenBase64 = preview.src;
         }
-    } else {
+    }
+
+    try {
+        const dataToSend = {
+            action: "actualizarProducto",
+            id,
+            nombre,
+            categoria,
+            tipo,
+            sku,
+            precioCompra: Number(precioCompra) || 0,
+            precioVenta: Number(precioVenta) || 0,
+            stock: Number(stock) || 0,
+            sucursalId,
+            tieneVariantes
+        };
+        
+        // Solo incluir imagen si se cambió
+        if (imagenBase64 !== undefined) {
+            dataToSend.imagenBase64 = imagenBase64;
+        }
+
+        const resp = await apiCall(dataToSend);
+
+        if (resp.success) {
+            toast("✅ Producto actualizado");
+            cerrarModalEditarManual();
+            
+            // Recargar catálogo si estamos en catálogo
+            if (typeof cargarCatalogoProductos === 'function') {
+                await cargarCatalogoProductos();
+            }
+            
+            // También actualizar productosCache si existe
+            if (typeof renderizarTablaProductos === 'function') {
+                await renderizarTablaProductos();
+            }
+        } else {
+            toast("❌ Error: " + (resp.error || "No se pudo actualizar"));
+        }
+    } catch (error) {
+        console.error("Error actualizando producto:", error);
         toast("❌ Error al actualizar");
     }
 }
@@ -2473,19 +3039,69 @@ async function editarProductoDesdeModal() {
         return;
     }
     
-    const idGuardado = productoActualId;
+    // Buscar producto en el cache del catálogo
+    const producto = catalogoProductos.find(p => String(p.id) === String(productoActualId));
+    if (!producto) {
+        toast('❌ Producto no encontrado');
+        return;
+    }
+    
+    // Cerrar modal del catálogo
     cerrarModalProducto();
     
-    // Marcar que viene del catálogo
-    vieneDeCatalogo = true;
-    productoIdParaVolver = idGuardado;
+    // Guardar referencia para recargar después
+    productoModalActual = producto;
     
-    // Ir a productos y abrir modal de editar
-    cargarVista('productos').then(() => {
-        setTimeout(() => {
-            editarProducto(idGuardado);
-        }, 500);
-    });
+    // Resetear estado de imagen
+    imagenEditarBase64 = null;
+    imagenEditarCambiada = false;
+
+    // Llenar campos del modal de edición
+    document.getElementById("editProdId").value = producto.id;
+    document.getElementById("editProdNombre").value = producto.nombre;
+    document.getElementById("editProdCategoria").value = producto.categoria || '';
+    document.getElementById("editProdGenero").value = producto.tipo || 'Unisex';
+    document.getElementById("editProdPrecioCompra").value = producto.precioCompra || 0;
+    document.getElementById("editProdPrecioVenta").value = producto.precioVenta || 0;
+    document.getElementById("editProdStock").value = producto.stock || 0;
+    
+    // SKU
+    const skuField = document.getElementById("editProdSKU");
+    if (skuField) skuField.value = producto.sku || '';
+
+    // Toggle de variantes
+    const tieneVariantes = producto.tieneVariantes === 'SI';
+    const toggleEdit = document.getElementById("editProdTieneVariantes");
+    const toggleLabelEdit = document.getElementById("editToggleLabel");
+    
+    if (toggleEdit) toggleEdit.checked = tieneVariantes;
+    if (toggleLabelEdit) {
+        toggleLabelEdit.textContent = tieneVariantes 
+            ? 'Sí - Tiene múltiples tallas/colores' 
+            : 'No - Producto Simple';
+        toggleLabelEdit.style.color = tieneVariantes ? '#3b82f6' : '#475569';
+    }
+
+    // Imagen
+    if (producto.imagenUrl) {
+        const imgUrl = convertirUrlGoogleDrive(producto.imagenUrl);
+        mostrarPreviewImagenEditar(imgUrl);
+    } else {
+        ocultarPreviewImagenEditar();
+    }
+
+    // Cargar sucursales
+    await cargarSelectSucursales("editProdSucursal");
+    document.getElementById("editProdSucursal").value = producto.sucursalId || '';
+
+    // Mostrar/ocultar botón de variantes
+    const btnVariantesEnEditar = document.getElementById('btnVariantesEnEditar');
+    if (btnVariantesEnEditar) {
+        btnVariantesEnEditar.style.display = tieneVariantes ? 'inline-flex' : 'none';
+    }
+
+    // Abrir modal de edición
+    document.getElementById("modalEditarProducto").classList.add("active");
 }
 
 // Interceptar el guardado para volver al catálogo automáticamente
@@ -2578,6 +3194,236 @@ document.addEventListener('vista-cargada', () => {
     }
 });
 
+// ⚠️ FUNCIÓN PARA GENERAR SKU
+function generarSKU(categoria, color, talla) {
+    // Obtener iniciales de categoría (primeras 3 letras)
+    const catCode = (categoria || 'PRD').substring(0, 3).toUpperCase().replace(/\s/g, '');
+    
+    // Obtener iniciales de color (primeras 3 letras)
+    const colorCode = (color || 'STD').substring(0, 3).toUpperCase().replace(/\s/g, '');
+    
+    // Talla
+    const tallaCode = (talla || 'U').toUpperCase();
+    
+    // Número aleatorio de 4 dígitos
+    const random = Math.floor(1000 + Math.random() * 9000);
+    
+    // Formato: CAT-COL-TAL-RANDOM
+    // Ejemplo: POL-NEG-M-5847
+    return `${catCode}-${colorCode}-${tallaCode}-${random}`;
+}
+
+// ⚠️ FUNCIÓN PARA ACTUALIZAR SKU EN TIEMPO REAL
+function actualizarSKUPreview() {
+    const categoria = document.getElementById("prodCategoria")?.value.trim() || '';
+    const color = document.getElementById("prodColor")?.value.trim() || '';
+    const talla = document.getElementById("prodTalla")?.value || '';
+    
+    const skuInput = document.getElementById("prodSKU");
+    
+    if (categoria || color || talla) {
+        const sku = generarSKU(categoria, color, talla);
+        if (skuInput) skuInput.value = sku;
+    } else {
+        if (skuInput) skuInput.value = '';
+    }
+}
+
+//VARIANTES
+// =======================================================
+//  MODAL DE VARIANTES
+// =======================================================
+
+let productoVariantesActual = null;
+let variantesActuales = [];
+
+// Abrir modal de variantes
+window.abrirModalVariantes = function(id) {
+    const producto = productosCache.find(p => String(p.id) === String(id));
+    if (!producto) {
+        toast('❌ Producto no encontrado');
+        return;
+    }
+    
+    productoVariantesActual = producto;
+    
+    // Mostrar info del producto
+    document.getElementById('variantesProductoNombre').textContent = producto.nombre;
+    document.getElementById('variantesProductoId').textContent = 'ID: ' + producto.id;
+    
+    // Limpiar formulario
+    document.getElementById('varianteColor').value = '';
+    document.getElementById('varianteTalla').value = '';
+    document.getElementById('varianteStock').value = '0';
+    document.getElementById('varianteSKU').value = '';
+    
+    // Cargar variantes existentes
+    cargarVariantesProducto(id);
+    
+    // Abrir modal
+    document.getElementById('modalVariantes').classList.add('active');
+};
+
+// Cargar variantes del producto
+async function cargarVariantesProducto(productoId) {
+    try {
+        const resp = await apiCall({ action: 'getVariantesPorProducto', productoId: productoId });
+        variantesActuales = resp.variantes || [];
+        renderizarTablaVariantes();
+    } catch (error) {
+        console.error('Error cargando variantes:', error);
+        variantesActuales = [];
+        renderizarTablaVariantes();
+    }
+}
+
+// Renderizar tabla de variantes
+function renderizarTablaVariantes() {
+    const tbody = document.getElementById('tablaVariantes');
+    const empty = document.getElementById('variantesEmpty');
+    const activas = variantesActuales.filter(v => v.estado !== 'INACTIVO');
+    
+    // Calcular stock
+    const stockUsado = activas.reduce((sum, v) => sum + (Number(v.stock) || 0), 0);
+    const stockMaximo = Number(productoVariantesActual?.stock) || 0;
+    const stockDisponible = stockMaximo - stockUsado;
+    
+    if (activas.length === 0) {
+        tbody.innerHTML = '';
+        if (empty) empty.style.display = 'block';
+        document.getElementById('totalVariantes').textContent = '0';
+        document.getElementById('stockTotalVariantes').textContent = `0 / ${stockMaximo}`;
+        return;
+    }
+    
+    if (empty) empty.style.display = 'none';
+    
+    tbody.innerHTML = activas.map(v => `
+        <tr>
+            <td><span style="background: ${getColorHex(v.color)}; padding: 4px 10px; border-radius: 12px; color: ${v.color === 'Blanco' || v.color === 'Amarillo' ? '#333' : '#fff'}; font-size: 12px;">${v.color}</span></td>
+            <td><strong>${v.talla}</strong></td>
+            <td><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${v.sku || '-'}</code></td>
+            <td>${v.stock}</td>
+            <td>
+                <button class="btn-action btn-edit" onclick="editarVariante('${v.id}')" title="Editar">✏️</button>
+                <button class="btn-action btn-delete" onclick="eliminarVariante('${v.id}')" title="Eliminar">🗑️</button>
+            </td>
+        </tr>
+    `).join('');
+    
+    document.getElementById('totalVariantes').textContent = activas.length;
+    document.getElementById('stockTotalVariantes').innerHTML = `${stockUsado} / ${stockMaximo} <small style="color: ${stockDisponible > 0 ? '#10b981' : '#ef4444'};">(${stockDisponible} disponible)</small>`;
+}
+
+function getColorHex(color) {
+    const colores = {
+        'Negro': '#1e1e1e', 'Blanco': '#ffffff', 'Gris': '#6b7280',
+        'Azul': '#3b82f6', 'Rojo': '#ef4444', 'Verde': '#22c55e',
+        'Amarillo': '#eab308', 'Rosado': '#ec4899', 'Morado': '#a855f7',
+        'Naranja': '#f97316', 'Beige': '#d4a574', 'Celeste': '#38bdf8', 'Marron': '#92400e'
+    };
+    return colores[color] || '#6b7280';
+}
+
+window.agregarVariante = async function() {
+    console.log('🚀 Iniciando agregarVariante');
+    
+    const color = document.getElementById('varianteColor').value;
+    const talla = document.getElementById('varianteTalla').value;
+    const stock = Number(document.getElementById('varianteStock').value) || 0;
+    
+    console.log('📋 Datos:', { color, talla, stock });
+    
+    if (!color || !talla) {
+        toast('⚠️ Selecciona color y talla');
+        console.log('❌ Falta color o talla');
+        return;
+    }
+    
+    if (variantesActuales.find(v => v.color === color && v.talla === talla && v.estado !== 'INACTIVO')) {
+        toast('⚠️ Ya existe esa variante');
+        console.log('❌ Variante duplicada');
+        return;
+    }
+    
+    const stockActualVariantes = variantesActuales
+        .filter(v => v.estado !== 'INACTIVO')
+        .reduce((sum, v) => sum + (Number(v.stock) || 0), 0);
+    
+    const stockMaximo = Number(productoVariantesActual.stock) || 0;
+    const stockDisponible = stockMaximo - stockActualVariantes;
+    
+    console.log('📦 Stock:', { stockActualVariantes, stockMaximo, stockDisponible });
+    
+    if (stock > stockDisponible) {
+        toast(`⚠️ Stock máximo disponible: ${stockDisponible} unidades`);
+        console.log('❌ Stock excedido');
+        return;
+    }
+    
+    const skuBase = productoVariantesActual.sku || productoVariantesActual.nombre.substring(0, 3).toUpperCase();
+    const skuVariante = `${skuBase}-${color.substring(0, 3).toUpperCase()}-${talla}`;
+    
+    console.log('🏷️ SKU:', skuVariante);
+    console.log('📤 Enviando a API...');
+    
+    try {
+        const resp = await apiCall({
+            action: 'crearVariante',
+            productoId: productoVariantesActual.id,
+            color, talla, stock: stock, sku: skuVariante, estado: 'ACTIVO'
+        });
+        
+        console.log('📥 Respuesta:', resp);
+        
+        if (resp.success) {
+            toast('✅ Variante agregada');
+            document.getElementById('varianteColor').value = '';
+            document.getElementById('varianteTalla').value = '';
+            document.getElementById('varianteStock').value = '0';
+            console.log('🔄 Recargando variantes...');
+            await cargarVariantesProducto(productoVariantesActual.id);
+            console.log('✅ Completado');
+        } else {
+            toast('❌ ' + (resp.error || 'Error'));
+            console.log('❌ Error del servidor:', resp.error);
+        }
+    } catch (error) {
+        console.error('❌ Error catch:', error);
+        toast('❌ Error al agregar');
+    }
+};
+
+window.editarVariante = async function(id) {
+    const variante = variantesActuales.find(v => String(v.id) === String(id));
+    if (!variante) return;
+    
+    const nuevoStock = prompt(`Stock actual: ${variante.stock}\nNuevo stock:`, variante.stock);
+    if (nuevoStock === null) return;
+    
+    const resp = await apiCall({ action: 'actualizarVariante', id, stock: Number(nuevoStock) || 0 });
+    if (resp.success) {
+        toast('✅ Actualizado');
+        await cargarVariantesProducto(productoVariantesActual.id);
+    }
+};
+
+window.eliminarVariante = async function(id) {
+    if (!confirm('¿Eliminar variante?')) return;
+    
+    const resp = await apiCall({ action: 'actualizarVariante', id, estado: 'INACTIVO' });
+    if (resp.success) {
+        toast('🗑️ Eliminada');
+        await cargarVariantesProducto(productoVariantesActual.id);
+    }
+};
+
+window.cerrarModalVariantes = function() {
+    document.getElementById('modalVariantes').classList.remove('active');
+    productoVariantesActual = null;
+    variantesActuales = [];
+    renderizarTablaProductos();
+};
 
 // =======================================================
 //  SWITCH DE VISTAS

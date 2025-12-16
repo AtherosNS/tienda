@@ -305,6 +305,546 @@
                 top: 70px;
             }
         }
+
+        /* Botón Exportar Excel */
+.btn-excel {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 16px !important;
+    background: #10b981 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: background 0.2s !important;
+}
+
+.btn-excel:hover {
+    background: #059669 !important;
+}
+
+.card-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 16px !important;
+}
+
+.card-header h3 {
+    margin: 0 !important;
+}
+/* Forzar estilos para vistas dinámicas */
+#contenidoAdmin .btn-excel {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#contenidoAdmin .btn-excel:hover {
+    background: #059669;
+}
+
+#contenidoAdmin .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+#contenidoAdmin .card-header h3 {
+    margin: 0;
+}
+.btn-variantes-edit {
+    padding: 10px 16px;
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-variantes-edit:hover {
+    background: #7c3aed;
+}
+/* Sección de Variantes en Modal - MEJORADO */
+.modal-variantes-section {
+    margin-top: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.modal-variantes-section h4 {
+    margin: 0 0 14px 0;
+    font-size: 14px;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.variantes-lista-modal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 180px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.variante-item-modal {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.variante-item-modal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.variante-color-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.8);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.variante-detalle {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.variante-talla-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.variante-color-label {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.variante-stock-badge {
+    background: #dcfce7;
+    color: #166534;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.variante-stock-badge.bajo {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.variante-stock-badge.agotado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.variantes-empty {
+    width: 100%;
+    text-align: center;
+    padding: 24px;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.variantes-resumen {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed #cbd5e1;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.variantes-resumen strong {
+    color: #1e293b;
+}
+
+/* =====================================================
+   MODALES GLOBALES
+   ===================================================== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--card-bg, #fff);
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal-variantes-content {
+    max-width: 700px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.modal-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f1f5f9;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: #e2e8f0;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.modal-acciones {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+/* Toggle Variantes */
+.variantes-toggle-edit {
+    background: #f0f9ff;
+    padding: 16px;
+    border-radius: 12px;
+    border: 2px solid #bae6fd;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.3s;
+    border-radius: 28px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #3b82f6;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+.toggle-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+}
+
+/* Botón Variantes en Editar */
+.btn-variantes-edit {
+    padding: 10px 16px;
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-variantes-edit:hover {
+    background: #7c3aed;
+}
+
+/* =====================================================
+   MODAL VARIANTES
+   ===================================================== */
+.variantes-producto-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.variantes-producto-nombre {
+    font-weight: 700;
+    font-size: 16px;
+    color: #1e293b;
+}
+
+.variantes-producto-id {
+    font-size: 12px;
+    color: #64748b;
+    background: #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.variantes-form {
+    background: #f0fdf4;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 2px solid #bbf7d0;
+}
+
+.variantes-form h4 {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    color: #166534;
+}
+
+.variantes-form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.btn-agregar-variante {
+    width: 100%;
+}
+
+.variantes-lista h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #475569;
+}
+
+.variantes-tabla-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.variantes-tabla {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.variantes-tabla th {
+    background: #f8fafc;
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    position: sticky;
+    top: 0;
+}
+
+.variantes-tabla td {
+    padding: 10px 12px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 13px;
+}
+
+.variantes-resumen-box {
+    display: flex;
+    justify-content: space-around;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 10px;
+    margin-top: 16px;
+}
+
+.variantes-resumen-box .resumen-item {
+    text-align: center;
+}
+
+.variantes-resumen-box span {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.variantes-resumen-box strong {
+    display: block;
+    font-size: 20px;
+    color: #1e293b;
+    margin-top: 4px;
+}
+
+.variantes-empty {
+    text-align: center;
+    padding: 30px;
+    color: #94a3b8;
+}
+
+.variantes-empty span {
+    font-size: 40px;
+}
+
+/* Modal Imagen Grande */
+.modal-imagen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 10001;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-imagen.active {
+    display: flex;
+}
+
+.modal-imagen-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+}
+
+.modal-imagen-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 12px;
+}
+
+.modal-imagen-content .modal-close {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    background: white;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .variantes-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .modal-acciones {
+        flex-direction: column;
+    }
+    
+    .modal-acciones button {
+        width: 100%;
+    }
+}
     </style>
 </head>
 <body>
@@ -478,5 +1018,228 @@
     </script>
     
 
+
+    <!-- MODAL EDITAR PRODUCTO (Global) -->
+<div class="modal" id="modalEditarProducto">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>✏️ Editar Producto</h3>
+            <button class="modal-close" onclick="cerrarModalEditarManual()">✕</button>
+        </div>
+
+        <input type="hidden" id="editProdId">
+
+        <div class="modal-body form-grid">
+            
+            <!-- IMAGEN DEL PRODUCTO -->
+            <div class="input-group" style="grid-column: span 2; margin-bottom: 20px;">
+                <label>📷 Imagen del Producto</label>
+                <div style="display: flex; align-items: center; gap: 24px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 2px dashed #e2e8f0; margin-top: 8px;">
+                    <div style="width: 120px; height: 120px; min-width: 120px; min-height: 120px; border-radius: 12px; overflow: hidden; background: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid #e2e8f0; position: relative;">
+                        <img id="editProdImagenPreview" src="" alt="Preview" style="width: 100%; height: 100%; object-fit: contain; padding: 8px; display: none;">
+                        <div id="editProdImagenPlaceholder" style="font-size: 48px; color: #cbd5e1; position: absolute;">👔</div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <input type="file" id="editProdImagen" accept="image/*" hidden>
+                        <button type="button" onclick="document.getElementById('editProdImagen').click()" style="padding: 12px 20px; font-size: 14px; background: #e2e8f0; border: none; border-radius: 8px; cursor: pointer;">
+                            📷 Cambiar imagen
+                        </button>
+                        <button type="button" onclick="eliminarImagenEditar()" style="padding: 10px 20px; background: #fee2e2; color: #991b1b; border: none; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                            🗑️ Quitar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Nombre</label>
+                <input id="editProdNombre">
+            </div>
+
+            <div class="input-group">
+                <label>Categoría</label>
+                <input id="editProdCategoria">
+            </div>
+
+            <div class="input-group">
+                <label>Género</label>
+                <select id="editProdGenero">
+                    <option value="Hombre">Hombre</option>
+                    <option value="Mujer">Mujer</option>
+                    <option value="Unisex">Unisex</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>SKU</label>
+                <input id="editProdSKU" readonly style="background: #f1f5f9; cursor: not-allowed;">
+            </div>
+
+            <div class="input-group">
+                <label>Precio Compra</label>
+                <input type="number" id="editProdPrecioCompra" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label>Precio Venta</label>
+                <input type="number" id="editProdPrecioVenta" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label>Stock</label>
+                <input type="number" id="editProdStock">
+            </div>
+
+            <div class="input-group">
+                <label>Sucursal</label>
+                <select id="editProdSucursal"></select>
+            </div>
+
+            <!-- TOGGLE TIENE VARIANTES -->
+            <div class="input-group variantes-toggle-edit" style="grid-column: span 2;">
+                <label>¿Tiene Variantes?</label>
+                <div class="toggle-container">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="editProdTieneVariantes" onchange="actualizarToggleLabelEditar()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label" id="editToggleLabel">No - Producto Simple</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <div class="modal-acciones">
+                <button type="button" class="btn-secondary" onclick="cerrarModalEditarManual()">Cancelar</button>
+                <button type="button" class="btn-variantes-edit" id="btnVariantesEnEditar" onclick="irAVariantesDesdeEditar()" style="display: none;">🎨 Gestionar Variantes</button>
+                <button type="button" class="btn-primary" onclick="guardarEdicionProducto()">💾 Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL GESTIONAR VARIANTES (Global) -->
+<div class="modal" id="modalVariantes">
+    <div class="modal-content modal-variantes-content">
+        <div class="modal-header">
+            <h3>🎨 Gestionar Variantes</h3>
+            <button class="modal-close" onclick="cerrarModalVariantes()">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <!-- Info del producto -->
+            <div class="variantes-producto-info">
+                <span class="variantes-producto-nombre" id="variantesProductoNombre">Producto</span>
+                <span class="variantes-producto-id" id="variantesProductoId">ID: 0</span>
+            </div>
+
+            <!-- Formulario agregar variante -->
+            <div class="variantes-form">
+                <h4>➕ Agregar Variante</h4>
+                <div class="variantes-form-grid">
+                    <div class="input-group">
+                        <label>Color</label>
+                        <select id="varianteColor">
+                            <option value="">Seleccionar...</option>
+                            <option value="Negro">Negro</option>
+                            <option value="Blanco">Blanco</option>
+                            <option value="Gris">Gris</option>
+                            <option value="Azul">Azul</option>
+                            <option value="Rojo">Rojo</option>
+                            <option value="Verde">Verde</option>
+                            <option value="Amarillo">Amarillo</option>
+                            <option value="Rosado">Rosado</option>
+                            <option value="Morado">Morado</option>
+                            <option value="Naranja">Naranja</option>
+                            <option value="Beige">Beige</option>
+                            <option value="Celeste">Celeste</option>
+                            <option value="Marron">Marrón</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Talla</label>
+                        <select id="varianteTalla">
+                            <option value="">Seleccionar...</option>
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                            <option value="XXXL">XXXL</option>
+                            <option value="28">28</option>
+                            <option value="30">30</option>
+                            <option value="32">32</option>
+                            <option value="34">34</option>
+                            <option value="36">36</option>
+                            <option value="38">38</option>
+                            <option value="40">40</option>
+                            <option value="42">42</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Stock</label>
+                        <input type="number" id="varianteStock" placeholder="0" min="0" value="0">
+                    </div>
+                    <div class="input-group">
+                        <label>SKU Variante</label>
+                        <input type="text" id="varianteSKU" placeholder="Automático" readonly style="background: #f1f5f9;">
+                    </div>
+                </div>
+                <button class="btn-primary btn-agregar-variante" onclick="agregarVariante()">
+                    ➕ Agregar Variante
+                </button>
+            </div>
+
+            <!-- Lista de variantes -->
+            <div class="variantes-lista">
+                <h4>📋 Variantes Registradas</h4>
+                <div class="variantes-tabla-container">
+                    <table class="variantes-tabla">
+                        <thead>
+                            <tr>
+                                <th>Color</th>
+                                <th>Talla</th>
+                                <th>SKU</th>
+                                <th>Stock</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaVariantes"></tbody>
+                    </table>
+                </div>
+                <div class="variantes-empty" id="variantesEmpty" style="display:none;">
+                    <span>📭</span>
+                    <p>No hay variantes registradas</p>
+                </div>
+            </div>
+
+            <!-- Resumen -->
+            <div class="variantes-resumen-box">
+                <div class="resumen-item">
+                    <span>Total Variantes:</span>
+                    <strong id="totalVariantes">0</strong>
+                </div>
+                <div class="resumen-item">
+                    <span>Stock Total:</span>
+                    <strong id="stockTotalVariantes">0</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="cerrarModalVariantes()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL VER IMAGEN GRANDE (Global) -->
+<div class="modal-imagen" id="modalImagenGrande">
+    <div class="modal-imagen-content">
+        <button class="modal-close" onclick="cerrarModalImagenGrande()">✕</button>
+        <img id="imagenGrandePreview" src="" alt="Producto">
+    </div>
+</div>
 </body>
 </html>
