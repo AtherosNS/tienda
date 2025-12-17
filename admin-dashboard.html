@@ -845,6 +845,344 @@
         width: 100%;
     }
 }
+/* Modal Nota de Venta - MEJORADO */
+.modal-nota-content {
+    max-width: 420px;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.nota-venta-modal {
+    padding: 24px;
+}
+
+.nota-header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.nota-logo {
+    font-size: 56px;
+    margin-bottom: 8px;
+}
+
+.nota-header h3 {
+    margin: 8px 0;
+    font-size: 20px;
+    color: #1e293b;
+    letter-spacing: 2px;
+}
+
+.nota-numero {
+    color: #3b82f6;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    background: #eff6ff;
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+}
+
+.nota-info {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+}
+
+.nota-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+    font-size: 13px;
+}
+
+.nota-row span {
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nota-row strong {
+    color: #1e293b;
+}
+
+.nota-divider {
+    border: none;
+    border-top: 2px dashed #e2e8f0;
+    margin: 20px 0;
+}
+
+.nota-cliente {
+    background: #fefce8;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border-left: 4px solid #facc15;
+}
+
+.nota-cliente h4,
+.nota-productos h4 {
+    margin: 0 0 12px;
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nota-cliente p {
+    margin: 6px 0;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.nota-productos {
+    margin-top: 8px;
+}
+
+.nota-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.nota-tabla th {
+    text-align: left;
+    padding: 12px 8px;
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nota-tabla th:first-child {
+    border-radius: 8px 0 0 8px;
+}
+
+.nota-tabla th:last-child {
+    border-radius: 0 8px 8px 0;
+    text-align: right;
+}
+
+.nota-tabla td {
+    padding: 14px 8px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+}
+
+.nota-tabla td:last-child {
+    text-align: right;
+    font-weight: 600;
+}
+
+.nota-totales {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 8px;
+}
+
+.nota-total-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.nota-total-row.total-final {
+    font-size: 22px;
+    font-weight: 700;
+    color: #10b981;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 2px solid #bbf7d0;
+}
+
+.nota-footer {
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.nota-footer p {
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nota-footer strong {
+    color: #1e293b;
+}
+
+.nota-acciones {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 2px solid #f1f5f9;
+}
+
+.nota-acciones button {
+    flex: 1;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.nota-acciones .btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.nota-acciones .btn-secondary:hover {
+    background: #e2e8f0;
+}
+
+.nota-acciones .btn-primary {
+    background: #3b82f6;
+    color: white;
+}
+
+.nota-acciones .btn-primary:hover {
+    background: #2563eb;
+}
+
+.nota-acciones .btn-pdf {
+    background: #ef4444;
+    color: white;
+}
+
+.nota-acciones .btn-pdf:hover {
+    background: #dc2626;
+}
+.btn-pdf {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-pdf:hover {
+    background: #dc2626;
+}
+#modalNotaVenta {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+#modalNotaVenta.active {
+    display: flex;
+}
+
+#modalNotaVenta .modal-content {
+    background: white;
+    border-radius: 20px;
+    max-width: 420px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+#modalNotaVenta .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f1f5f9;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 10;
+}
+/* FIX: Modal producto en responsive */
+@media (max-width: 768px) {
+    #modalProducto .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    #modalProducto .modal-producto-imagen {
+        max-height: 200px;
+        overflow: hidden;
+    }
+    
+    #modalProducto .modal-producto-imagen img {
+        max-height: 200px;
+        object-fit: contain;
+    }
+    
+    #modalProducto .modal-producto-info {
+        flex: 1;
+        overflow-y: auto;
+        padding-bottom: 100px;
+    }
+    
+    #modalProducto .modal-acciones {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 16px 20px;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+        display: flex !important;
+        gap: 12px;
+        z-index: 10002;
+        border-radius: 16px 16px 0 0;
+    }
+    
+    #modalProducto .modal-acciones button {
+        flex: 1;
+        padding: 14px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 10px;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+}
     </style>
 </head>
 <body>
@@ -913,7 +1251,9 @@
             <button type="button" data-vista="sucursales" onclick="cargarVista('sucursales')">
                 <span class="icon">🏬</span><span class="sidebar-text">Sucursales</span>
             </button>
-
+            <button type="button" data-vista="notificaciones" onclick="cargarVista('notificaciones')">
+                <span class="icon">🔔</span><span class="sidebar-text">Notificaciones</span>
+            </button>
             <div class="sidebar-divider"></div>
             <div class="sidebar-section-title">Reportes</div>
             <button type="button" data-vista="ventas-totales" onclick="cargarVista('ventas-totales')">

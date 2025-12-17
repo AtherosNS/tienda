@@ -1,0 +1,395 @@
+<div class="page">
+    <h2 class="page-title">🔔 Centro de Notificaciones</h2>
+
+    <!-- FILTROS -->
+    <div class="card filtros-card">
+        <div class="filtros-row">
+            <div class="filtro-grupo">
+                <label>Estado</label>
+                <select id="filtroEstadoNotif">
+                    <option value="">Todos</option>
+                    <option value="NUEVO">🔵 Nuevos</option>
+                    <option value="PENDIENTE">🟡 Pendientes</option>
+                    <option value="COMPLETADO">🟢 Completados</option>
+                    <option value="DESCARTADO">⚪ Descartados</option>
+                </select>
+            </div>
+
+            <div class="filtro-grupo">
+                <label>Tipo</label>
+                <select id="filtroTipoNotif">
+                    <option value="">Todos</option>
+                    <option value="VENTA">🛒 Ventas</option>
+                    <option value="STOCK">📦 Stock Bajo</option>
+                    <option value="SISTEMA">⚙️ Sistema</option>
+                </select>
+            </div>
+
+            <div class="filtro-grupo">
+                <label>Período</label>
+                <select id="filtroPeriodoNotif">
+                    <option value="hoy">Hoy</option>
+                    <option value="semana" selected>Esta semana</option>
+                    <option value="mes">Este mes</option>
+                    <option value="todo">Todo</option>
+                </select>
+            </div>
+
+            <button class="btn-primary btn-buscar" onclick="buscarNotificaciones()">
+                🔍 Buscar
+            </button>
+        </div>
+    </div>
+
+    <!-- RESUMEN -->
+    <div class="notif-resumen-cards">
+        <div class="notif-resumen-card nuevo">
+            <span class="notif-resumen-icon">🔵</span>
+            <div class="notif-resumen-info">
+                <span class="notif-resumen-valor" id="countNuevos">0</span>
+                <span class="notif-resumen-label">Nuevos</span>
+            </div>
+        </div>
+        <div class="notif-resumen-card pendiente">
+            <span class="notif-resumen-icon">🟡</span>
+            <div class="notif-resumen-info">
+                <span class="notif-resumen-valor" id="countPendientes">0</span>
+                <span class="notif-resumen-label">Pendientes</span>
+            </div>
+        </div>
+        <div class="notif-resumen-card completado">
+            <span class="notif-resumen-icon">🟢</span>
+            <div class="notif-resumen-info">
+                <span class="notif-resumen-valor" id="countCompletados">0</span>
+                <span class="notif-resumen-label">Completados</span>
+            </div>
+        </div>
+        <div class="notif-resumen-card total">
+            <span class="notif-resumen-icon">📊</span>
+            <div class="notif-resumen-info">
+                <span class="notif-resumen-valor" id="countTotal">0</span>
+                <span class="notif-resumen-label">Total</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCIONES MASIVAS -->
+    <div class="card acciones-masivas">
+        <button class="btn-secondary" onclick="marcarTodosNuevosComoPendientes()">
+            🟡 Marcar nuevos como pendientes
+        </button>
+        <button class="btn-secondary" onclick="marcarSeleccionadosCompletados()">
+            ✅ Completar seleccionados
+        </button>
+    </div>
+
+    <!-- LISTA DE NOTIFICACIONES -->
+    <div class="card">
+        <div class="card-header">
+            <h3>📋 Historial de Notificaciones</h3>
+            <button class="btn-excel" onclick="exportarNotificaciones()">
+                <span>📊</span> Exportar
+            </button>
+        </div>
+
+        <div class="notif-lista-page" id="notifListaPage">
+            <!-- Se llena dinámicamente -->
+        </div>
+
+        <div class="notif-empty" id="notifEmpty" style="display: none;">
+            <span>📭</span>
+            <p>No hay notificaciones que mostrar</p>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Filtros */
+.filtros-card {
+    margin-bottom: 20px;
+}
+
+.filtros-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+}
+
+.filtro-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.filtro-grupo label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.filtro-grupo select {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    font-size: 14px;
+    min-width: 150px;
+    background: var(--card-bg);
+}
+
+.btn-buscar {
+    padding: 10px 20px;
+    height: fit-content;
+}
+
+/* Resumen Cards */
+.notif-resumen-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.notif-resumen-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 4px solid #cbd5e1;
+}
+
+.notif-resumen-card.nuevo { border-left-color: #3b82f6; }
+.notif-resumen-card.pendiente { border-left-color: #f59e0b; }
+.notif-resumen-card.completado { border-left-color: #10b981; }
+.notif-resumen-card.total { border-left-color: #8b5cf6; }
+
+.notif-resumen-icon {
+    font-size: 28px;
+}
+
+.notif-resumen-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.notif-resumen-valor {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.notif-resumen-label {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* Acciones Masivas */
+.acciones-masivas {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding: 16px;
+}
+
+/* Lista de Notificaciones */
+.notif-lista-page {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notif-item-page {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border-left: 4px solid #cbd5e1;
+    transition: all 0.2s;
+}
+
+.notif-item-page:hover {
+    background: #f1f5f9;
+}
+
+.notif-item-page.nuevo { border-left-color: #3b82f6; background: #eff6ff; }
+.notif-item-page.pendiente { border-left-color: #f59e0b; background: #fffbeb; }
+.notif-item-page.completado { border-left-color: #10b981; background: #f0fdf4; opacity: 0.8; }
+.notif-item-page.descartado { border-left-color: #94a3b8; background: #f8fafc; opacity: 0.6; }
+
+.notif-checkbox {
+    margin-top: 4px;
+}
+
+.notif-icono-page {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.notif-contenido-page {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-header-page {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+}
+
+.notif-titulo-page {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.notif-estado-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.notif-estado-badge.nuevo { background: #dbeafe; color: #1e40af; }
+.notif-estado-badge.pendiente { background: #fef3c7; color: #92400e; }
+.notif-estado-badge.completado { background: #dcfce7; color: #166534; }
+.notif-estado-badge.descartado { background: #f1f5f9; color: #64748b; }
+
+.notif-detalle-page {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.notif-meta-page {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-bottom: 12px;
+}
+
+.notif-meta-page span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.notif-acciones-page {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-notif {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+}
+
+.btn-notif.completar {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.btn-notif.completar:hover {
+    background: #bbf7d0;
+}
+
+.btn-notif.pendiente {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.btn-notif.pendiente:hover {
+    background: #fde68a;
+}
+
+.btn-notif.descartar {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.btn-notif.descartar:hover {
+    background: #e2e8f0;
+}
+
+.btn-notif.ver {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.btn-notif.ver:hover {
+    background: #bfdbfe;
+}
+
+.notif-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+}
+
+.notif-empty span {
+    font-size: 64px;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.notif-empty p {
+    font-size: 16px;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .filtros-row {
+        flex-direction: column;
+    }
+    
+    .filtro-grupo {
+        width: 100%;
+    }
+    
+    .filtro-grupo select {
+        width: 100%;
+    }
+    
+    .btn-buscar {
+        width: 100%;
+    }
+    
+    .notif-item-page {
+        flex-direction: column;
+    }
+    
+    .notif-acciones-page {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+    
+    .btn-notif {
+        flex: 1;
+        justify-content: center;
+    }
+}
+</style>

@@ -726,7 +726,7 @@ async function inicializarDashboardAdmin() {
                             <td>${getNombreProducto(v.productoId)}</td>
                             <td>${v.cantidad || 0}</td>
                             <td>S/ ${(rent.ventaTotal || 0).toFixed(2)}</td>
-                            <td class="${getGananciaClass(rent.ganancia || 0)}">S/ ${(rent.ganancia || 0).toFixed(2)}</td>
+                           
                         </tr>
                     `;
                 }).join("");
@@ -2575,7 +2575,641 @@ async function cargarNotificaciones() {
         console.error('Error cargando notificaciones:', error);
     }
 }
+// =====================================================
+// NOTIFICACIONES - PÁGINA COMPLETA
+// =====================================================
 
+let notificacionesPageCache = [];
+
+async function inicializarNotificacionesPage() {
+    await buscarNotificaciones();
+}
+
+async function buscarNotificaciones() {
+    const estado = document.getElementById('filtroEstadoNotif')?.value || '';
+    const periodo = document.getElementById('filtroPeriodoNotif')?.value || 'semana';
+    
+    const { desde, hasta } = obtenerRangoFechas(periodo);
+    
+    const data = await apiCall({ action: 'getVentasTotales' });
+    
+    if (!data.ventas || data.ventas.length === 0) {
+        mostrarNotifVacio();
+        actualizarContadoresNotif([]);
+        return;
+    }
+    
+    let notifs = filtrarVentasPorFecha(data.ventas, desde, hasta);
+    
+    // Filtrar por estado si se seleccionó
+    if (estado) {
+        notifs = notifs.filter(n => (n.estado || 'NUEVO') === estado);
+    }
+    
+    // Guardar en cache
+    notificacionesPageCache = notifs;
+    
+    // Actualizar contadores con TODAS las ventas (sin filtro de fecha)
+    actualizarContadoresNotif(data.ventas);
+    
+    // Renderizar lista
+    renderizarNotificacionesPage(notifs);
+}
+
+function actualizarContadoresNotif(ventas) {
+    const nuevos = ventas.filter(v => (v.estado || 'NUEVO') === 'NUEVO').length;
+    const pendientes = ventas.filter(v => v.estado === 'PENDIENTE').length;
+    const completados = ventas.filter(v => v.estado === 'COMPLETADO').length;
+    
+    const countNuevos = document.getElementById('countNuevos');
+    const countPendientes = document.getElementById('countPendientes');
+    const countCompletados = document.getElementById('countCompletados');
+    const countTotal = document.getElementById('countTotal');
+    
+    if (countNuevos) countNuevos.textContent = nuevos;
+    if (countPendientes) countPendientes.textContent = pendientes;
+    if (countCompletados) countCompletados.textContent = completados;
+    if (countTotal) countTotal.textContent = ventas.length;
+}
+
+function renderizarNotificacionesPage(notifs) {
+    const lista = document.getElementById('notifListaPage');
+    const empty = document.getElementById('notifEmpty');
+    
+    if (!lista) return;
+    
+    if (!notifs || notifs.length === 0) {
+        lista.innerHTML = '';
+        if (empty) empty.style.display = 'block';
+        return;
+    }
+    
+    if (empty) empty.style.display = 'none';
+    
+    lista.innerHTML = notifs.map(n => {
+        const estado = n.estado || 'NUEVO';
+        const estadoLower = estado.toLowerCase();
+        const fecha = formatearFecha(n.fechaISO || n.fecha);
+        const fechaObj = new Date(n.fechaISO || n.fecha);
+        const hora = fechaObj.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+        
+        return `
+            <div class="notif-item-page ${estadoLower}">
+                <input type="checkbox" class="notif-checkbox" data-id="${n.id}">
+                
+                <div class="notif-icono-page">🛒</div>
+                
+                <div class="notif-contenido-page">
+                    <div class="notif-header-page">
+                        <span class="notif-titulo-page">Venta #${n.numeroNota || n.id}</span>
+                        <span class="notif-estado-badge ${estadoLower}">${getEstadoTexto(estado)}</span>
+                    </div>
+                    
+                    <div class="notif-detalle-page">
+                        ${n.clienteNombre || 'Cliente General'} - ${getNombreProducto(n.productoId)} x${n.cantidad}
+                    </div>
+                    
+                    <div class="notif-meta-page">
+                        <span>📅 ${fecha}</span>
+                        <span>🕐 ${hora}</span>
+                        <span>👤 ${getNombreEmpleado(n.empleadoId)}</span>
+                        <span>🏬 ${getNombreSucursal(n.sucursalId)}</span>
+                    </div>
+                    
+                    <div class="notif-acciones-page">
+                        ${estado !== 'COMPLETADO' ? `
+                            <button class="btn-notif completar" onclick="cambiarEstadoNotif('${n.id}', 'COMPLETADO')">
+                                ✅ Completado
+                            </button>
+                        ` : ''}
+                        ${estado === 'NUEVO' ? `
+                            <button class="btn-notif pendiente" onclick="cambiarEstadoNotif('${n.id}', 'PENDIENTE')">
+                                ⏳ Pendiente
+                            </button>
+                        ` : ''}
+                        ${estado !== 'DESCARTADO' ? `
+                            <button class="btn-notif descartar" onclick="cambiarEstadoNotif('${n.id}', 'DESCARTADO')">
+                                🗑️ Descartar
+                            </button>
+                        ` : ''}
+                        <button class="btn-notif ver" onclick="verNotaVenta('${n.id}')">
+                            🧾 Ver Nota
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="notif-monto">
+                    <strong>S/ ${Number(n.total).toFixed(2)}</strong>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+// Ver nota de venta desde notificaciones
+async function verNotaVenta(id) {
+    // Buscar la venta en el cache
+    let venta = notificacionesPageCache.find(v => String(v.id) === String(id));
+    
+    // Si no está en cache, buscar en todas las ventas
+    if (!venta) {
+        const data = await apiCall({ action: 'getVentasTotales' });
+        if (data.ventas) {
+            venta = data.ventas.find(v => String(v.id) === String(id));
+        }
+    }
+    
+    if (!venta) {
+        toast('❌ Venta no encontrada');
+        return;
+    }
+    
+    // Construir el contenido de la nota
+    const fecha = formatearFecha(venta.fechaISO || venta.fecha);
+    const hora = new Date(venta.fechaISO || venta.fecha).toLocaleTimeString('es-PE', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+    
+    const producto = getProductoPorId(venta.productoId);
+    const precioUnitario = producto ? producto.precioVenta : (venta.total / venta.cantidad);
+    
+    const contenido = `
+        <div class="nota-venta-modal">
+            <div class="nota-header">
+                <div class="nota-logo">🧾</div>
+                <h3>NOTA DE VENTA</h3>
+                <p class="nota-numero">#${venta.numeroNota || venta.id}</p>
+            </div>
+            
+            <div class="nota-info">
+                <div class="nota-row">
+                    <span>📅 Fecha:</span>
+                    <strong>${fecha} - ${hora}</strong>
+                </div>
+                <div class="nota-row">
+                    <span>🏬 Sucursal:</span>
+                    <strong>${getNombreSucursal(venta.sucursalId)}</strong>
+                </div>
+                <div class="nota-row">
+                    <span>👤 Vendedor:</span>
+                    <strong>${getNombreEmpleado(venta.empleadoId)}</strong>
+                </div>
+            </div>
+            
+            <div class="nota-divider"></div>
+            
+            <div class="nota-cliente">
+                <h4>Cliente</h4>
+                <p><strong>${venta.clienteNombre || 'CLIENTE GENERAL'}</strong></p>
+                <p>Doc: ${venta.clienteDoc || '-'}</p>
+                ${venta.clienteCelular && venta.clienteCelular !== '-' ? `<p>Tel: ${venta.clienteCelular}</p>` : ''}
+            </div>
+            
+            <div class="nota-divider"></div>
+            
+            <div class="nota-productos">
+                <h4>Detalle</h4>
+                <table class="nota-tabla">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cant.</th>
+                            <th>P.Unit</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${getNombreProducto(venta.productoId)}</td>
+                            <td>${venta.cantidad}</td>
+                            <td>S/ ${Number(precioUnitario).toFixed(2)}</td>
+                            <td>S/ ${Number(venta.total).toFixed(2)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="nota-divider"></div>
+            
+            <div class="nota-totales">
+                <div class="nota-total-row">
+                    <span>Subtotal:</span>
+                    <span>S/ ${Number(venta.total).toFixed(2)}</span>
+                </div>
+                <div class="nota-total-row total-final">
+                    <span>TOTAL:</span>
+                    <span>S/ ${Number(venta.total).toFixed(2)}</span>
+                </div>
+            </div>
+            
+            <div class="nota-footer">
+                <p>💳 Método de pago: <strong>${venta.metodoPago || 'EFECTIVO'}</strong></p>
+                <p>📄 Comprobante: <strong>${venta.tipoComprobante || 'NOTA'}</strong></p>
+                ${venta.observacion ? `<p>📝 Obs: ${venta.observacion}</p>` : ''}
+            </div>
+            
+           <div class="nota-acciones">
+            <button class="btn-secondary" onclick="cerrarModalNotaVenta()">✕ Cerrar</button>
+            <button class="btn-primary" onclick="imprimirNotaVenta('${venta.id}')">🖨️ Imprimir</button>
+            <button class="btn-pdf" onclick="descargarNotaPDF('${venta.id}')">📄 PDF</button>
+        </div>
+        </div>
+    `;
+    
+    // Mostrar en modal
+    mostrarModalNotaVenta(contenido);
+}
+
+function mostrarModalNotaVenta(contenido) {
+    let modal = document.getElementById('modalNotaVenta');
+    
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modalNotaVenta';
+        modal.className = 'modal';
+        document.body.appendChild(modal);
+    }
+    
+    modal.innerHTML = `
+        <div class="modal-content modal-nota-content">
+            <button class="modal-close" onclick="cerrarModalNotaVenta()">✕</button>
+            ${contenido}
+        </div>
+    `;
+    
+    modal.classList.add('active');
+}
+
+function cerrarModalNotaVenta() {
+    const modal = document.getElementById('modalNotaVenta');
+    if (modal) modal.classList.remove('active');
+}
+
+function imprimirNotaVenta(id) {
+    // Imprimir solo el contenido de la nota
+    const contenido = document.querySelector('.nota-venta-modal');
+    if (!contenido) return;
+    
+    const ventanaImpresion = window.open('', '_blank');
+    ventanaImpresion.document.write(`
+        <html>
+        <head>
+            <title>Nota de Venta</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; max-width: 300px; margin: 0 auto; }
+                .nota-header { text-align: center; margin-bottom: 20px; }
+                .nota-logo { font-size: 40px; }
+                h3 { margin: 10px 0 5px; }
+                .nota-numero { color: #666; margin: 0; }
+                .nota-row { display: flex; justify-content: space-between; margin: 5px 0; font-size: 12px; }
+                .nota-divider { border-top: 1px dashed #ccc; margin: 15px 0; }
+                .nota-tabla { width: 100%; border-collapse: collapse; font-size: 11px; }
+                .nota-tabla th, .nota-tabla td { padding: 5px; text-align: left; }
+                .nota-tabla th { border-bottom: 1px solid #ccc; }
+                .nota-total-row { display: flex; justify-content: space-between; margin: 5px 0; }
+                .total-final { font-size: 16px; font-weight: bold; }
+                .nota-footer { font-size: 11px; color: #666; margin-top: 15px; }
+                .nota-acciones { display: none; }
+                h4 { margin: 10px 0 5px; font-size: 12px; }
+            </style>
+        </head>
+        <body>
+            ${contenido.innerHTML}
+        </body>
+        </html>
+    `);
+    ventanaImpresion.document.close();
+    ventanaImpresion.print();
+}
+
+async function descargarNotaPDF(id) {
+    // Buscar la venta
+    let venta = notificacionesPageCache.find(v => String(v.id) === String(id));
+    
+    if (!venta) {
+        const data = await apiCall({ action: 'getVentasTotales' });
+        if (data.ventas) {
+            venta = data.ventas.find(v => String(v.id) === String(id));
+        }
+    }
+    
+    if (!venta) {
+        toast('❌ Venta no encontrada');
+        return;
+    }
+    
+    toast('📄 Generando PDF...');
+    
+    const fecha = formatearFecha(venta.fechaISO || venta.fecha);
+    const hora = new Date(venta.fechaISO || venta.fecha).toLocaleTimeString('es-PE', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+    
+    const producto = getProductoPorId(venta.productoId);
+    const precioUnitario = producto ? producto.precioVenta : (venta.total / venta.cantidad);
+    
+    // Crear contenido HTML para el PDF
+    const contenidoPDF = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Nota de Venta #${venta.numeroNota || venta.id}</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { 
+                    font-family: 'Segoe UI', Arial, sans-serif; 
+                    padding: 40px; 
+                    max-width: 400px; 
+                    margin: 0 auto;
+                    color: #1e293b;
+                }
+                .header { 
+                    text-align: center; 
+                    margin-bottom: 30px;
+                    padding-bottom: 20px;
+                    border-bottom: 2px dashed #e2e8f0;
+                }
+                .logo { font-size: 48px; margin-bottom: 10px; }
+                .titulo { font-size: 20px; font-weight: 700; letter-spacing: 2px; margin-bottom: 8px; }
+                .numero { 
+                    background: #eff6ff; 
+                    color: #3b82f6; 
+                    padding: 6px 16px; 
+                    border-radius: 20px; 
+                    font-weight: 600;
+                    display: inline-block;
+                }
+                .seccion { 
+                    background: #f8fafc; 
+                    padding: 16px; 
+                    border-radius: 10px; 
+                    margin-bottom: 16px;
+                }
+                .seccion-titulo { 
+                    font-size: 11px; 
+                    color: #64748b; 
+                    text-transform: uppercase; 
+                    letter-spacing: 1px;
+                    margin-bottom: 10px;
+                }
+                .fila { 
+                    display: flex; 
+                    justify-content: space-between; 
+                    margin: 8px 0;
+                    font-size: 13px;
+                }
+                .fila span { color: #64748b; }
+                .fila strong { color: #1e293b; }
+                .cliente {
+                    background: #fefce8;
+                    border-left: 4px solid #facc15;
+                    padding: 16px;
+                    border-radius: 10px;
+                    margin-bottom: 16px;
+                }
+                table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+                th { 
+                    text-align: left; 
+                    padding: 10px 8px; 
+                    background: #f1f5f9; 
+                    font-size: 11px;
+                    color: #64748b;
+                    text-transform: uppercase;
+                }
+                td { padding: 12px 8px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+                td:last-child, th:last-child { text-align: right; }
+                .totales {
+                    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin-top: 16px;
+                }
+                .total-fila { 
+                    display: flex; 
+                    justify-content: space-between; 
+                    margin: 8px 0;
+                    font-size: 14px;
+                    color: #64748b;
+                }
+                .total-final { 
+                    font-size: 22px; 
+                    font-weight: 700; 
+                    color: #10b981;
+                    margin-top: 10px;
+                    padding-top: 10px;
+                    border-top: 2px solid #bbf7d0;
+                }
+                .footer {
+                    margin-top: 20px;
+                    padding: 16px;
+                    background: #f8fafc;
+                    border-radius: 10px;
+                    font-size: 12px;
+                    color: #64748b;
+                }
+                .footer p { margin: 6px 0; }
+                .gracias {
+                    text-align: center;
+                    margin-top: 30px;
+                    font-size: 14px;
+                    color: #64748b;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div class="logo">🧾</div>
+                <div class="titulo">NOTA DE VENTA</div>
+                <span class="numero">#${venta.numeroNota || venta.id}</span>
+            </div>
+            
+            <div class="seccion">
+                <div class="fila"><span>📅 Fecha:</span><strong>${fecha} - ${hora}</strong></div>
+                <div class="fila"><span>🏬 Sucursal:</span><strong>${getNombreSucursal(venta.sucursalId)}</strong></div>
+                <div class="fila"><span>👤 Vendedor:</span><strong>${getNombreEmpleado(venta.empleadoId)}</strong></div>
+            </div>
+            
+            <div class="cliente">
+                <div class="seccion-titulo">Cliente</div>
+                <strong>${venta.clienteNombre || 'CLIENTE GENERAL'}</strong><br>
+                <span>Doc: ${venta.clienteDoc || '-'}</span>
+                ${venta.clienteCelular && venta.clienteCelular !== '-' ? `<br><span>Tel: ${venta.clienteCelular}</span>` : ''}
+            </div>
+            
+            <div class="seccion-titulo">Detalle</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cant.</th>
+                        <th>P.Unit</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${getNombreProducto(venta.productoId)}</td>
+                        <td>${venta.cantidad}</td>
+                        <td>S/ ${Number(precioUnitario).toFixed(2)}</td>
+                        <td>S/ ${Number(venta.total).toFixed(2)}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="totales">
+                <div class="total-fila"><span>Subtotal:</span><span>S/ ${Number(venta.total).toFixed(2)}</span></div>
+                <div class="total-fila total-final"><span>TOTAL:</span><span>S/ ${Number(venta.total).toFixed(2)}</span></div>
+            </div>
+            
+            <div class="footer">
+                <p>💳 Método de pago: <strong>${venta.metodoPago || 'EFECTIVO'}</strong></p>
+                <p>📄 Comprobante: <strong>${venta.tipoComprobante || 'NOTA'}</strong></p>
+                ${venta.observacion ? `<p>📝 Obs: ${venta.observacion}</p>` : ''}
+            </div>
+            
+            <div class="gracias">¡Gracias por su compra!</div>
+        </body>
+        </html>
+    `;
+    
+    // Abrir ventana e imprimir/guardar como PDF
+    const ventana = window.open('', '_blank');
+    ventana.document.write(contenidoPDF);
+    ventana.document.close();
+    
+    // Esperar a que cargue y abrir diálogo de impresión
+    setTimeout(() => {
+        ventana.print();
+    }, 500);
+}
+function getEstadoTexto(estado) {
+    const textos = {
+        'NUEVO': '🔵 Nuevo',
+        'PENDIENTE': '🟡 Pendiente',
+        'COMPLETADO': '🟢 Completado',
+        'DESCARTADO': '⚪ Descartado'
+    };
+    return textos[estado] || estado;
+}
+
+async function cambiarEstadoNotif(id, nuevoEstado) {
+    const resp = await apiCall({
+        action: 'actualizarEstadoNotificacion',
+        id: id,
+        estado: nuevoEstado
+    });
+    
+    if (resp.success) {
+        toast(`✅ Marcado como ${nuevoEstado.toLowerCase()}`);
+        await buscarNotificaciones();
+        
+        // Actualizar notificaciones flotantes
+        if (typeof cargarNotificaciones === 'function') {
+            cargarNotificaciones();
+        }
+    } else {
+        toast('❌ Error al actualizar');
+    }
+}
+
+async function marcarTodosNuevosComoPendientes() {
+    const nuevos = notificacionesPageCache.filter(n => (n.estado || 'NUEVO') === 'NUEVO');
+    
+    if (nuevos.length === 0) {
+        toast('⚠️ No hay notificaciones nuevas');
+        return;
+    }
+    
+    if (!confirm(`¿Marcar ${nuevos.length} notificaciones como pendientes?`)) return;
+    
+    toast('⏳ Procesando...');
+    
+    for (const n of nuevos) {
+        await apiCall({
+            action: 'actualizarEstadoNotificacion',
+            id: n.id,
+            estado: 'PENDIENTE'
+        });
+    }
+    
+    toast(`✅ ${nuevos.length} marcadas como pendientes`);
+    await buscarNotificaciones();
+    
+    if (typeof cargarNotificaciones === 'function') {
+        cargarNotificaciones();
+    }
+}
+
+async function marcarSeleccionadosCompletados() {
+    const checkboxes = document.querySelectorAll('.notif-checkbox:checked');
+    
+    if (checkboxes.length === 0) {
+        toast('⚠️ Selecciona al menos una notificación');
+        return;
+    }
+    
+    if (!confirm(`¿Marcar ${checkboxes.length} como completadas?`)) return;
+    
+    toast('⏳ Procesando...');
+    
+    for (const cb of checkboxes) {
+        await apiCall({
+            action: 'actualizarEstadoNotificacion',
+            id: cb.dataset.id,
+            estado: 'COMPLETADO'
+        });
+    }
+    
+    toast(`✅ ${checkboxes.length} completadas`);
+    await buscarNotificaciones();
+    
+    if (typeof cargarNotificaciones === 'function') {
+        cargarNotificaciones();
+    }
+}
+
+function exportarNotificaciones() {
+    if (!notificacionesPageCache || notificacionesPageCache.length === 0) {
+        toast('❌ No hay datos para exportar');
+        return;
+    }
+    
+    const datos = notificacionesPageCache.map(n => ({
+        id: n.id,
+        fecha: n.fechaISO || n.fecha,
+        cliente: n.clienteNombre || 'Cliente General',
+        producto: getNombreProducto(n.productoId),
+        cantidad: n.cantidad,
+        total: n.total,
+        estado: n.estado || 'NUEVO',
+        empleado: getNombreEmpleado(n.empleadoId),
+        sucursal: getNombreSucursal(n.sucursalId)
+    }));
+    
+    const columnas = [
+        { titulo: 'ID', campo: 'id', tipo: 'texto' },
+        { titulo: 'Fecha', campo: 'fecha', tipo: 'fecha' },
+        { titulo: 'Cliente', campo: 'cliente', tipo: 'texto' },
+        { titulo: 'Producto', campo: 'producto', tipo: 'texto' },
+        { titulo: 'Cantidad', campo: 'cantidad', tipo: 'numero' },
+        { titulo: 'Total', campo: 'total', tipo: 'moneda' },
+        { titulo: 'Estado', campo: 'estado', tipo: 'texto' },
+        { titulo: 'Empleado', campo: 'empleado', tipo: 'texto' },
+        { titulo: 'Sucursal', campo: 'sucursal', tipo: 'texto' }
+    ];
+    
+    exportarExcel(datos, 'notificaciones', columnas);
+}
+
+function mostrarNotifVacio() {
+    const lista = document.getElementById('notifListaPage');
+    const empty = document.getElementById('notifEmpty');
+    
+    if (lista) lista.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+}
 // =======================================================
 //  ACTUALIZAR BADGE
 // =======================================================
@@ -3475,6 +4109,9 @@ document.addEventListener("vista-cargada", () => {
             
         case "catalogo": 
             inicializarCatalogo(); 
+            break;
+            case 'notificaciones':
+            inicializarNotificacionesPage();
             break;
     }
 });
