@@ -1240,15 +1240,141 @@ window.toggleEstadoUsuario = async function(id, nuevoEstado) {
 };
 
 // Editar usuario (placeholder - puedes expandir)
-window.editarUsuario = function(id) {
+window.editarUsuario = async function(id) {
     const usuario = usuariosCache.find(u => String(u.id) === String(id));
     if (!usuario) {
         toast('❌ Usuario no encontrado');
         return;
     }
     
-    // Por ahora solo muestra info, puedes agregar modal de edición después
-    toast(`📝 Editar: ${usuario.nombre}`);
+    usuarioEditandoId = id;
+    
+    // Cargar sucursales en el select del modal
+    await cargarSelectSucursales('editUserSucursal');
+    
+    // Llenar el formulario con los datos del usuario
+    document.getElementById('editUserId').value = usuario.id;
+    document.getElementById('editUserNombre').value = usuario.nombre || '';
+    document.getElementById('editUserEmail').value = usuario.email || '';
+    document.getElementById('editUserRol').value = usuario.rol || 'EMPLEADO';
+    document.getElementById('editUserSucursal').value = usuario.sucursalId || '';
+    document.getElementById('editUserEstado').value = usuario.estado || 'ACTIVO';
+    
+    // Limpiar campo de contraseña (opcional)
+    document.getElementById('editUserPassword').value = '';
+    
+    // Mostrar nombre en el título del modal
+    const tituloModal = document.getElementById('editUserTitulo');
+    if (tituloModal) {
+        tituloModal.textContent = `Editar Usuario: ${usuario.nombre}`;
+    }
+    
+    // Abrir el modal
+    document.getElementById('modalEditarUsuario').classList.add('active');
+};
+
+// =======================================================
+//  GUARDAR CAMBIOS DEL USUARIO
+// =======================================================
+window.guardarEdicionUsuario = async function() {
+    const id = document.getElementById('editUserId').value;
+    const nombre = document.getElementById('editUserNombre').value.trim();
+    const email = document.getElementById('editUserEmail').value.trim();
+    const rol = document.getElementById('editUserRol').value;
+    const sucursalId = document.getElementById('editUserSucursal').value;
+    const estado = document.getElementById('editUserEstado').value;
+    const password = document.getElementById('editUserPassword').value; // Opcional
+    
+    // Validaciones
+    if (!nombre) {
+        toast('❌ El nombre es obligatorio');
+        document.getElementById('editUserNombre').focus();
+        return;
+    }
+    
+    if (!email) {
+        toast('❌ El email es obligatorio');
+        document.getElementById('editUserEmail').focus();
+        return;
+    }
+    
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        toast('❌ El formato del email no es válido');
+        document.getElementById('editUserEmail').focus();
+        return;
+    }
+    
+    if (!sucursalId) {
+        toast('❌ Debes seleccionar una sucursal');
+        document.getElementById('editUserSucursal').focus();
+        return;
+    }
+    
+    // Preparar datos para enviar
+    const datosActualizar = {
+        action: 'actualizarUsuario',
+        id: id,
+        nombre: nombre,
+        email: email,
+        rol: rol,
+        sucursalId: sucursalId,
+        estado: estado
+    };
+    
+    // Solo incluir contraseña si se ingresó una nueva
+    if (password && password.length > 0) {
+        if (password.length < 6) {
+            toast('❌ La contraseña debe tener al menos 6 caracteres');
+            document.getElementById('editUserPassword').focus();
+            return;
+        }
+        datosActualizar.password = password;
+    }
+    
+    // Deshabilitar botón mientras guarda
+    const btn = document.getElementById('btnGuardarEdicionUsuario');
+    const textoOriginal = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Guardando...';
+    
+    try {
+        const resp = await apiCall(datosActualizar);
+        
+        if (resp.success) {
+            toast('✅ Usuario actualizado correctamente');
+            cerrarModalEditarUsuario();
+            
+            // Recargar la lista de usuarios
+            await inicializarUsuarios();
+        } else {
+            toast('❌ Error: ' + (resp.error || 'No se pudo actualizar'));
+        }
+    } catch (error) {
+        console.error('Error actualizando usuario:', error);
+        toast('❌ Error inesperado al actualizar');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = textoOriginal;
+    }
+};
+
+// =======================================================
+//  CERRAR MODAL DE EDICIÓN
+// =======================================================
+window.cerrarModalEditarUsuario = function() {
+    document.getElementById('modalEditarUsuario').classList.remove('active');
+    usuarioEditandoId = null;
+    
+    // Limpiar formulario
+    document.getElementById('editUserId').value = '';
+    document.getElementById('editUserNombre').value = '';
+    document.getElementById('editUserEmail').value = '';
+    document.getElementById('editUserPassword').value = '';
+    document.getElementById('editUserRol').value = 'EMPLEADO';
+    document.getElementById('editUserSucursal').value = '';
+    document.getElementById('editUserEstado').value = 'ACTIVO';
 };
 
 // =======================================================

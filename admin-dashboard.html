@@ -121,19 +121,24 @@
 
         @media (max-width: 768px) {
             .mobile-toggle { display: flex; }
-            .sidebar { transform: translateX(-100%); }
+            .sidebar { transform: translateX(-100%); box-shadow: 4px 0 20px rgba(0,0,0,0.3); }
             .sidebar.mobile-open { transform: translateX(0); }
             .sidebar .sidebar-toggle { display: none; }
-            .sidebar.collapsed { width: var(--sidebar-width); }
+            .sidebar.collapsed { width: var(--sidebar-width); transform: translateX(-100%); }
+            .sidebar.collapsed.mobile-open { transform: translateX(0); }
             .sidebar .logo-container h2, .sidebar .sidebar-user-info, .sidebar .sidebar-section-title,
             .sidebar .sidebar-menu button .sidebar-text, .sidebar .logout-btn .sidebar-text {
                 opacity: 1 !important; width: auto !important;
             }
-            .sidebar .sidebar-header, .sidebar .sidebar-user, .sidebar .sidebar-menu button, .sidebar .logout-btn {
+            .sidebar .sidebar-header { justify-content: space-between !important; padding: 20px 16px !important; }
+            .sidebar .logo-container { justify-content: flex-start !important; }
+            .sidebar .sidebar-user, .sidebar .sidebar-menu button, .sidebar .logout-btn {
                 justify-content: flex-start !important; padding: 12px 14px !important;
             }
+            .sidebar .sidebar-user { padding: 16px !important; }
             .main-content { margin-left: 0; padding: 70px 16px 16px; }
             .notificaciones-btn { top: 16px; right: 70px; }
+            body { overflow-x: hidden; }
         }
 
         @media (max-width: 1024px) and (min-width: 769px) {
@@ -1581,5 +1586,82 @@
         <img id="imagenGrandePreview" src="" alt="Producto">
     </div>
 </div>
+
+<div class="modal" id="modalEditarUsuario">
+    <div class="modal-content" style="max-width: 550px;">
+        <div class="modal-header">
+            <h3 id="editUserTitulo">✏️ Editar Usuario</h3>
+            <button class="modal-close" onclick="cerrarModalEditarUsuario()" aria-label="Cerrar modal">✕</button>
+        </div>
+        
+        <div class="modal-body">
+            <!-- ID oculto -->
+            <input type="hidden" id="editUserId">
+            
+            <div class="form-grid">
+                
+                <!-- Nombre -->
+                <div class="input-group">
+                    <label for="editUserNombre">Nombre completo *</label>
+                    <input type="text" id="editUserNombre" placeholder="Nombre del usuario" required>
+                </div>
+                
+                <!-- Email -->
+                <div class="input-group">
+                    <label for="editUserEmail">Email *</label>
+                    <input type="email" id="editUserEmail" placeholder="correo@ejemplo.com" required>
+                </div>
+                
+                <!-- Rol -->
+                <div class="input-group">
+                    <label for="editUserRol">Rol *</label>
+                    <select id="editUserRol" required>
+                        <option value="EMPLEADO">👤 Empleado</option>
+                        <option value="ADMIN">👑 Administrador</option>
+                    </select>
+                </div>
+                
+                <!-- Sucursal -->
+                <div class="input-group">
+                    <label for="editUserSucursal">Sucursal *</label>
+                    <select id="editUserSucursal" required>
+                        <option value="">-- Seleccionar sucursal --</option>
+                        <!-- Se llena dinámicamente -->
+                    </select>
+                </div>
+                
+                <!-- Estado -->
+                <div class="input-group" style="grid-column: span 2;">
+                    <label for="editUserEstado">Estado del Usuario *</label>
+                    <select id="editUserEstado" required>
+                        <option value="ACTIVO">✅ Activo - Puede iniciar sesión</option>
+                        <option value="INACTIVO">🚫 Inactivo - No puede acceder al sistema</option>
+                    </select>
+                </div>
+                
+                <!-- Contraseña (opcional) -->
+                <div class="input-group" style="grid-column: span 2;">
+                    <label for="editUserPassword">Nueva Contraseña (opcional)</label>
+                    <input type="password" id="editUserPassword" placeholder="Dejar vacío para mantener la actual">
+                    <small style="color: #64748b; font-size: 11px; margin-top: 4px; display: block;">
+                        ℹ️ Solo completar si deseas cambiar la contraseña (mínimo 6 caracteres)
+                    </small>
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="cerrarModalEditarUsuario()">
+                Cancelar
+            </button>
+            <button type="button" class="btn-primary" id="btnGuardarEdicionUsuario" onclick="guardarEdicionUsuario()">
+                💾 Guardar Cambios
+            </button>
+        </div>
+    </div>
+</div>
+
 </body>
+
 </html>

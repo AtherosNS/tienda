@@ -1008,3 +1008,100 @@ body {
 [class*="toast"] {
     z-index: 2147483647 !important;
 }
+
+#modalEditarUsuario .modal-content {
+    max-width: 550px;
+}
+
+#modalEditarUsuario .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+#modalEditarUsuario .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#modalEditarUsuario .input-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-color, #1e293b);
+}
+
+#modalEditarUsuario .input-group input,
+#modalEditarUsuario .input-group select {
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 2px solid #e2e8f0;
+    font-size: 14px;
+    background: var(--card-bg, #fff);
+    color: var(--text-color, #1e293b);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#modalEditarUsuario .input-group input:focus,
+#modalEditarUsuario .input-group select:focus {
+    outline: none;
+    border-color: var(--primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Badge de estado en tabla de usuarios */
+.badge-estado {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-activo {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-inactivo {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Fila de usuario inactivo */
+.usuario-inactivo {
+    opacity: 0.6;
+    background: #f8fafc;
+}
+
+.usuario-inactivo:hover {
+    opacity: 0.8;
+}
+
+/* Botones de toggle estado */
+.btn-toggle-activo {
+    background: #fef3c7 !important;
+}
+
+.btn-toggle-activo:hover {
+    background: #fde68a !important;
+}
+
+.btn-toggle-inactivo {
+    background: #dcfce7 !important;
+}
+
+.btn-toggle-inactivo:hover {
+    background: #bbf7d0 !important;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    #modalEditarUsuario .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    #modalEditarUsuario .input-group[style*="grid-column: span 2"] {
+        grid-column: span 1;
+    }
+}
