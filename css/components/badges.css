@@ -1,0 +1,263 @@
+/* =======================================================
+   BADGES.CSS - SISTEMA DE BADGES Y ETIQUETAS
+   ======================================================= */
+
+/* ===================================================
+   BADGE BASE
+   =================================================== */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    line-height: 1;
+    border-radius: var(--radius-full);
+    white-space: nowrap;
+}
+
+/* ===================================================
+   VARIANTES DE COLOR
+   =================================================== */
+.badge-primary {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.badge-success {
+    background: var(--success-light);
+    color: var(--success-dark);
+}
+
+.badge-warning {
+    background: var(--warning-light);
+    color: var(--warning-dark);
+}
+
+.badge-danger {
+    background: var(--danger-light);
+    color: var(--danger-dark);
+}
+
+.badge-info {
+    background: var(--info-light);
+    color: var(--info-dark);
+}
+
+.badge-gray {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+/* ===================================================
+   BADGES DE ROL
+   =================================================== */
+.badge-admin {
+    background: var(--warning-light);
+    color: var(--warning-dark);
+}
+
+.badge-empleado {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+/* ===================================================
+   BADGES DE ESTADO
+   =================================================== */
+.badge-estado {
+    padding: var(--spacing-xs) var(--spacing-md);
+}
+
+.badge-activo {
+    background: var(--success-light);
+    color: var(--success-dark);
+}
+
+.badge-inactivo {
+    background: var(--danger-light);
+    color: var(--danger-dark);
+}
+
+.badge-pendiente {
+    background: var(--warning-light);
+    color: var(--warning-dark);
+}
+
+/* ===================================================
+   BADGES DE MARGEN
+   =================================================== */
+.margen-badge {
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+}
+
+.margen-excelente {
+    background: var(--success-light);
+    color: var(--success-dark);
+}
+
+.margen-bueno {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.margen-regular {
+    background: var(--warning-light);
+    color: var(--warning-dark);
+}
+
+.margen-bajo {
+    background: var(--danger-light);
+    color: var(--danger-dark);
+}
+
+/* ===================================================
+   BADGES DE VARIANTES
+   =================================================== */
+.badge-variantes {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    cursor: default;
+}
+
+.badge-variantes.tiene {
+    background: var(--info-light);
+    color: var(--info-dark);
+    cursor: pointer;
+}
+
+.badge-variantes.tiene:hover {
+    background: #ddd6fe;
+}
+
+.badge-variantes.no-tiene {
+    background: var(--gray-100);
+    color: var(--gray-500);
+}
+
+/* ===================================================
+   BADGE STOCK
+   =================================================== */
+.badge-stock {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+}
+
+.badge-stock.alto {
+    background: var(--success-light);
+    color: var(--success-dark);
+}
+
+.badge-stock.medio {
+    background: var(--warning-light);
+    color: var(--warning-dark);
+}
+
+.badge-stock.bajo {
+    background: var(--danger-light);
+    color: var(--danger-dark);
+}
+
+/* ===================================================
+   BADGE CARRITO
+   =================================================== */
+.carrito-variante {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    background: var(--gray-100);
+    padding: 2px var(--spacing-sm);
+    border-radius: var(--radius-full);
+    display: inline-block;
+    margin-top: var(--spacing-xs);
+}
+
+.checkout-variante {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    background: var(--gray-200);
+    padding: 2px var(--spacing-sm);
+    border-radius: var(--radius-full);
+    display: inline-block;
+    margin-left: var(--spacing-sm);
+}
+
+/* ===================================================
+   BADGE DE NOTIFICACIÓN (CONTADOR)
+   =================================================== */
+.notif-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 var(--spacing-xs);
+    background: var(--danger);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* ===================================================
+   BADGE EN PRODUCTO
+   =================================================== */
+.producto-badge {
+    position: absolute;
+    top: var(--spacing-sm);
+    left: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+}
+
+.producto-badge.nuevo {
+    background: var(--primary);
+    color: white;
+}
+
+.producto-badge.oferta {
+    background: var(--danger);
+    color: white;
+}
+
+.producto-badge.agotado {
+    background: var(--gray-800);
+    color: white;
+}
+
+/* ===================================================
+   BADGE TOGGLE (ACTIVO/INACTIVO EN TABLAS)
+   =================================================== */
+.btn-toggle-activo {
+    background: var(--warning-light);
+}
+
+.btn-toggle-activo:hover {
+    background: #fde68a;
+}
+
+.btn-toggle-inactivo {
+    background: var(--success-light);
+}
+
+.btn-toggle-inactivo:hover {
+    background: #bbf7d0;
+}

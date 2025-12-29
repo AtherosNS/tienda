@@ -1,0 +1,193 @@
+/* =======================================================
+   TABLES.CSS - SISTEMA DE TABLAS
+   ======================================================= */
+
+/* ===================================================
+   TABLA RESPONSIVE WRAPPER
+   =================================================== */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ===================================================
+   TABLA BASE
+   =================================================== */
+table,
+.neo-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-bg);
+}
+
+/* ===================================================
+   ENCABEZADO
+   =================================================== */
+thead {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+th {
+    padding: var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Alternativa: encabezado claro */
+.table-light thead {
+    background: var(--gray-100);
+    color: var(--text-color);
+}
+
+/* ===================================================
+   CELDAS
+   =================================================== */
+td {
+    padding: var(--spacing-lg);
+    font-size: var(--font-size-sm);
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+    color: var(--text-color);
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===================================================
+   HOVER EN FILAS
+   =================================================== */
+tbody tr {
+    transition: background var(--transition-fast);
+}
+
+tbody tr:hover {
+    background: var(--primary-light);
+}
+
+/* ===================================================
+   IMAGEN EN TABLA
+   =================================================== */
+.product-img-cell {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+    background: var(--gray-100);
+}
+
+.product-img-cell:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg);
+}
+
+.product-img-placeholder {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--text-light);
+}
+
+/* ===================================================
+   ESTADOS EN TABLA
+   =================================================== */
+.stock-bajo {
+    color: var(--danger);
+    font-weight: 600;
+    background: var(--danger-light);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    display: inline-block;
+}
+
+.ganancia-positiva {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.ganancia-negativa {
+    color: var(--danger);
+    font-weight: 600;
+}
+
+/* ===================================================
+   FILA INACTIVA
+   =================================================== */
+.usuario-inactivo,
+tr.inactivo {
+    opacity: 0.6;
+    background: var(--gray-50);
+}
+
+.usuario-inactivo:hover,
+tr.inactivo:hover {
+    opacity: 0.8;
+}
+
+/* ===================================================
+   TABLA COMPACTA
+   =================================================== */
+.table-compact th,
+.table-compact td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+}
+
+/* ===================================================
+   TABLA STRIPED (CEBRA)
+   =================================================== */
+.table-striped tbody tr:nth-child(even) {
+    background: var(--gray-50);
+}
+
+.table-striped tbody tr:nth-child(even):hover {
+    background: var(--primary-light);
+}
+
+/* ===================================================
+   CELDA DE ACCIONES
+   =================================================== */
+td .btn-action {
+    margin: 0 2px;
+}
+
+td:last-child {
+    white-space: nowrap;
+}
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+@media (max-width: 768px) {
+    th, td {
+        padding: var(--spacing-sm) var(--spacing-md);
+        font-size: var(--font-size-xs);
+    }
+    
+    .product-img-cell,
+    .product-img-placeholder {
+        width: 45px;
+        height: 45px;
+        min-width: 45px;
+    }
+    
+    /* Ocultar columnas menos importantes en móvil */
+    .hide-mobile {
+        display: none;
+    }
+}

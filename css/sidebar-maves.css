@@ -1,0 +1,261 @@
+/* ============================================
+   MAVES BOUTIQUE - SIDEBAR THEME OVERRIDE
+   Solo sobrescribe colores y estilos del sidebar
+   Agregar DESPUÉS de los estilos existentes
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Poppins:wght@300;400;500;600&display=swap');
+
+:root {
+    /* Sobrescribir variables del sidebar */
+    --sidebar-width: 260px;
+    --sidebar-collapsed: 72px;
+    --sidebar-bg: linear-gradient(180deg, #2d1f29 0%, #1a1218 100%);
+    --sidebar-hover: rgba(232, 164, 184, 0.12);
+    --sidebar-active: linear-gradient(135deg, #e8a4b8 0%, #8b5a7b 100%);
+    --sidebar-text: #f5f0f2;
+    --sidebar-text-muted: #a89aa0;
+    
+    /* Colores Maves */
+    --maves-rose: #e8a4b8;
+    --maves-rose-light: #f8dde5;
+    --maves-lavender: #c9b8d9;
+    --maves-purple: #6b3a5b;
+    --maves-purple-light: #8b5a7b;
+    --maves-gold: #c9a962;
+}
+
+/* ============================================
+   SIDEBAR BASE
+   ============================================ */
+.sidebar {
+    background: var(--sidebar-bg) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ============================================
+   MOBILE TOGGLE
+   ============================================ */
+.mobile-toggle {
+    background: var(--maves-purple) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(107, 58, 91, 0.3) !important;
+}
+
+.mobile-toggle:hover {
+    background: var(--maves-purple-light) !important;
+}
+
+/* ============================================
+   OVERLAY
+   ============================================ */
+.sidebar-overlay {
+    background: rgba(26, 18, 24, 0.6) !important;
+    backdrop-filter: blur(4px);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.sidebar-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    min-height: 80px !important;
+}
+
+.logo-icon {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    border-radius: 12px !important;
+    background: linear-gradient(135deg, var(--maves-rose-light) 0%, #ebe4f0 100%) !important;
+    box-shadow: 0 4px 12px rgba(232, 164, 184, 0.3) !important;
+    overflow: hidden;
+}
+
+/* Si usas imagen de logo */
+.logo-icon img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
+
+.logo-container h2 {
+    font-family: 'Playfair Display', Georgia, serif !important;
+    font-size: 20px !important;
+    font-weight: 600 !important;
+}
+
+.sidebar-toggle {
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.sidebar-toggle:hover {
+    background: var(--sidebar-hover) !important;
+    border-color: var(--maves-rose) !important;
+    color: var(--maves-rose) !important;
+}
+
+/* ============================================
+   USER SECTION
+   ============================================ */
+.sidebar-user {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-radius: 12px !important;
+    margin: 12px !important;
+    padding: 14px !important;
+}
+
+.sidebar-user-avatar {
+    background: linear-gradient(135deg, var(--maves-rose) 0%, var(--maves-purple-light) 100%) !important;
+    border-radius: 10px !important;
+}
+
+.user-role {
+    color: var(--maves-gold) !important;
+    font-weight: 500 !important;
+}
+
+.sidebar.collapsed .sidebar-user {
+    margin: 12px 8px !important;
+    padding: 12px !important;
+}
+
+/* ============================================
+   MENU
+   ============================================ */
+.sidebar-menu {
+    padding: 8px !important;
+}
+
+.sidebar-section-title {
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 1.5px !important;
+    color: var(--sidebar-text-muted) !important;
+    padding: 16px 14px 8px !important;
+}
+
+.sidebar-divider {
+    background: rgba(255, 255, 255, 0.06) !important;
+    margin: 8px 14px !important;
+}
+
+.sidebar-menu button {
+    border-radius: 10px !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: var(--sidebar-text-muted) !important;
+    transition: all 0.2s ease !important;
+    position: relative;
+}
+
+/* Barra lateral decorativa */
+.sidebar-menu button::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--maves-rose);
+    border-radius: 0 3px 3px 0;
+    transform: scaleY(0);
+    transition: transform 0.2s ease;
+}
+
+.sidebar-menu button:hover {
+    background: var(--sidebar-hover) !important;
+    color: var(--sidebar-text) !important;
+}
+
+.sidebar-menu button:hover::before {
+    transform: scaleY(0.5);
+}
+
+.sidebar-menu button.active {
+    background: var(--sidebar-active) !important;
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(232, 164, 184, 0.3) !important;
+}
+
+.sidebar-menu button.active::before {
+    transform: scaleY(1);
+    background: white;
+}
+
+.sidebar-menu button .icon {
+    font-size: 18px !important;
+    min-width: 26px !important;
+}
+
+/* ============================================
+   FOOTER / LOGOUT
+   ============================================ */
+.sidebar-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    padding: 12px 8px !important;
+}
+
+.logout-btn {
+    border-radius: 10px !important;
+    background: rgba(239, 68, 68, 0.1) !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.2) !important;
+}
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.main-content {
+    background: #fdfbfc !important;
+}
+
+/* ============================================
+   RESPONSIVE TABLET - Hover expand
+   ============================================ */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .sidebar:hover {
+        box-shadow: 4px 0 25px rgba(0, 0, 0, 0.25) !important;
+    }
+}
+
+/* ============================================
+   RESPONSIVE MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+    .sidebar {
+        box-shadow: 4px 0 30px rgba(0, 0, 0, 0.3) !important;
+    }
+}
+
+/* ============================================
+   VARIACIÓN EMPLEADO (opcional)
+   Agregar clase .sidebar-empleado al aside
+   ============================================ */
+.sidebar-empleado .sidebar-user-avatar {
+    background: linear-gradient(135deg, var(--maves-lavender) 0%, var(--maves-purple) 100%) !important;
+}
+
+.sidebar-empleado .user-role {
+    color: var(--maves-lavender) !important;
+}
+
+.sidebar-empleado .sidebar-menu button.active {
+    background: linear-gradient(135deg, var(--maves-lavender) 0%, var(--maves-purple) 100%) !important;
+    box-shadow: 0 4px 15px rgba(201, 184, 217, 0.3) !important;
+}
+
+.sidebar-empleado .sidebar-menu button::before {
+    background: var(--maves-lavender);
+}
+
+.sidebar-empleado .sidebar-menu button.active::before {
+    background: white;
+}

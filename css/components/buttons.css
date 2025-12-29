@@ -1,0 +1,360 @@
+/* =======================================================
+   BUTTONS.CSS - SISTEMA DE BOTONES
+   Optimizado para pantallas táctiles (POS)
+   ======================================================= */
+
+/* ===================================================
+   BOTÓN BASE
+   =================================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    min-height: var(--touch-target-min);
+    padding: var(--spacing-md) var(--spacing-xl);
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    border: 2px solid transparent;
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.btn:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* ===================================================
+   BOTÓN PRIMARIO
+   =================================================== */
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+}
+
+/* ===================================================
+   BOTÓN SECUNDARIO
+   =================================================== */
+.btn-secondary {
+    background: transparent;
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--gray-100);
+    border-color: var(--gray-300);
+}
+
+.dark .btn-secondary:hover:not(:disabled) {
+    background: var(--gray-700);
+    border-color: var(--gray-600);
+}
+
+/* ===================================================
+   BOTÓN SUCCESS (PARA FINALIZAR VENTA)
+   =================================================== */
+.btn-success {
+    background: var(--success);
+    color: white;
+    border-color: var(--success);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover:not(:disabled) {
+    background: var(--success-hover);
+    border-color: var(--success-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+/* ===================================================
+   BOTÓN DANGER
+   =================================================== */
+.btn-danger {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: var(--danger-hover);
+    border-color: var(--danger-hover);
+}
+
+/* ===================================================
+   BOTÓN WARNING
+   =================================================== */
+.btn-warning {
+    background: var(--warning);
+    color: white;
+    border-color: var(--warning);
+}
+
+.btn-warning:hover:not(:disabled) {
+    background: var(--warning-hover);
+    border-color: var(--warning-hover);
+}
+
+/* ===================================================
+   BOTÓN GHOST (SIN FONDO)
+   =================================================== */
+.btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border-color: transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+    background: var(--gray-100);
+    color: var(--text-color);
+}
+
+/* ===================================================
+   BOTÓN EXCEL (EXPORTAR)
+   =================================================== */
+.btn-excel {
+    background: var(--success);
+    color: white;
+    border-color: var(--success);
+}
+
+.btn-excel:hover:not(:disabled) {
+    background: var(--success-hover);
+    border-color: var(--success-hover);
+}
+
+/* ===================================================
+   BOTÓN LOGOUT
+   =================================================== */
+.btn-logout,
+.logout-btn {
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+    border-color: transparent;
+    width: 100%;
+}
+
+.btn-logout:hover,
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
+
+/* ===================================================
+   TAMAÑOS DE BOTÓN
+   =================================================== */
+.btn-sm {
+    min-height: var(--button-height-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+}
+
+.btn-lg {
+    min-height: var(--button-height-lg);
+    padding: var(--spacing-lg) var(--spacing-2xl);
+    font-size: var(--font-size-lg);
+}
+
+/* ===================================================
+   BOTÓN FINALIZAR VENTA (DESTACADO PARA POS)
+   =================================================== */
+.btn-finalizar {
+    background: linear-gradient(135deg, var(--success), var(--success-hover));
+    color: white;
+    min-height: 60px;
+    padding: var(--spacing-xl) var(--spacing-3xl);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    border-radius: var(--radius-xl);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    border: none;
+}
+
+.btn-finalizar:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.5);
+}
+
+/* ===================================================
+   BOTONES DE ACCIÓN EN TABLAS
+   =================================================== */
+.btn-action {
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+    padding: 0;
+    border-radius: var(--radius-md);
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-action:hover {
+    transform: scale(1.05);
+}
+
+.btn-edit {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.btn-edit:hover {
+    background: #dbeafe;
+}
+
+.btn-delete {
+    background: var(--danger-light);
+    color: var(--danger-dark);
+}
+
+.btn-delete:hover {
+    background: #fecaca;
+}
+
+.btn-variantes {
+    background: var(--info-light);
+    color: var(--info-dark);
+}
+
+.btn-variantes:hover {
+    background: #ddd6fe;
+}
+
+.btn-view {
+    background: var(--gray-100);
+    color: var(--gray-600);
+}
+
+.btn-view:hover {
+    background: var(--gray-200);
+}
+
+/* ===================================================
+   BOTÓN CON ICONO
+   =================================================== */
+.btn-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+/* ===================================================
+   BOTÓN LOADING
+   =================================================== */
+.btn.loading {
+    pointer-events: none;
+    position: relative;
+    color: transparent !important;
+}
+
+.btn.loading::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin: -10px 0 0 -10px;
+    border: 2px solid currentColor;
+    border-color: white white transparent transparent;
+    border-radius: 50%;
+    animation: btn-spin 0.6s linear infinite;
+}
+
+@keyframes btn-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===================================================
+   GRUPO DE BOTONES
+   =================================================== */
+.btn-group {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.btn-group-vertical {
+    flex-direction: column;
+}
+
+/* ===================================================
+   BOTONES DE CANTIDAD (POS)
+   =================================================== */
+.btn-cantidad {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border: none;
+    background: white;
+    border-radius: var(--radius-lg);
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-muted);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+}
+
+.btn-cantidad:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-cantidad:active {
+    transform: scale(0.95);
+}
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+@media (max-width: 768px) {
+    .btn {
+        width: 100%;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .btn-action {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+    }
+}
+
+/* Solo aplicar hover en dispositivos que lo soporten */
+@media (hover: hover) {
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-1px);
+    }
+}

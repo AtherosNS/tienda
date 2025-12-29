@@ -1,0 +1,403 @@
+/* =======================================================
+   TOASTS.CSS - NOTIFICACIONES Y ALERTAS
+   ======================================================= */
+
+/* ===================================================
+   TOAST BASE
+   =================================================== */
+.toast {
+    position: fixed;
+    bottom: var(--spacing-2xl);
+    right: var(--spacing-2xl);
+    background: var(--card-bg);
+    color: var(--text-color);
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    z-index: var(--z-toast);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-base);
+    max-width: 400px;
+    animation: toastSlideIn var(--transition-slow) ease;
+}
+
+@keyframes toastSlideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.toast.hide {
+    animation: toastSlideOut var(--transition-slow) ease forwards;
+}
+
+@keyframes toastSlideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Variantes de toast */
+.toast.success {
+    border-left: 4px solid var(--success);
+}
+
+.toast.error {
+    border-left: 4px solid var(--danger);
+}
+
+.toast.warning {
+    border-left: 4px solid var(--warning);
+}
+
+.toast.info {
+    border-left: 4px solid var(--primary);
+}
+
+.toast-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.toast.success .toast-icon { color: var(--success); }
+.toast.error .toast-icon { color: var(--danger); }
+.toast.warning .toast-icon { color: var(--warning); }
+.toast.info .toast-icon { color: var(--primary); }
+
+/* ===================================================
+   PANEL DE NOTIFICACIONES
+   =================================================== */
+.notificaciones-btn {
+    position: fixed;
+    top: var(--spacing-xl);
+    right: var(--spacing-xl);
+    width: 50px;
+    height: 50px;
+    background: var(--card-bg);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    z-index: var(--z-fixed);
+    transition: transform var(--transition-fast);
+    border: none;
+}
+
+.notificaciones-btn:hover {
+    transform: scale(1.05);
+}
+
+.notif-icon {
+    font-size: 24px;
+}
+
+.notif-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 22px;
+    height: 22px;
+    background: var(--danger);
+    color: white;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Panel desplegable */
+.notificaciones-panel {
+    position: fixed;
+    top: 80px;
+    right: var(--spacing-xl);
+    width: 380px;
+    max-width: calc(100vw - 40px);
+    max-height: 500px;
+    background: var(--card-bg);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    z-index: calc(var(--z-fixed) + 1);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.notificaciones-panel.active {
+    display: flex;
+}
+
+.notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--gray-50);
+}
+
+.notif-header h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    color: var(--text-color);
+}
+
+.btn-marcar-todas {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    cursor: pointer;
+    padding: var(--spacing-sm) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+}
+
+.btn-marcar-todas:hover {
+    background: var(--primary-light);
+}
+
+/* Lista de notificaciones */
+.notif-lista {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-md);
+}
+
+.notif-item {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--success-light);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--spacing-sm);
+    border-left: 4px solid var(--success);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.notif-item:hover {
+    background: #dcfce7;
+}
+
+.notif-item.leido {
+    background: var(--gray-50);
+    border-left-color: var(--gray-300);
+}
+
+.notif-item.warning {
+    background: var(--warning-light);
+    border-left-color: var(--warning);
+}
+
+.notif-item.danger {
+    background: var(--danger-light);
+    border-left-color: var(--danger);
+}
+
+.notif-icono {
+    width: 44px;
+    height: 44px;
+    background: white;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.notif-contenido {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-titulo {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-xs);
+}
+
+.notif-detalle {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.4;
+}
+
+.notif-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notif-monto {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--success);
+}
+
+.notif-tiempo {
+    font-size: var(--font-size-xs);
+    color: var(--text-light);
+}
+
+/* Estado vacío */
+.notif-vacio {
+    padding: var(--spacing-3xl) var(--spacing-xl);
+    text-align: center;
+    color: var(--text-light);
+    display: none;
+}
+
+.notif-vacio.visible {
+    display: block;
+}
+
+.notif-vacio span {
+    font-size: 48px;
+    display: block;
+    margin-bottom: var(--spacing-md);
+}
+
+.notif-vacio p {
+    margin: 0;
+    font-size: var(--font-size-base);
+}
+
+/* Overlay para cerrar */
+.notif-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    z-index: var(--z-fixed);
+    display: none;
+}
+
+.notif-overlay.active {
+    display: block;
+}
+
+/* ===================================================
+   SPINNER DE CARGA
+   =================================================== */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--gray-200);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.spinner-small {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Spinner en contenedor */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-3xl);
+    color: var(--text-muted);
+}
+
+/* ===================================================
+   LOADING OVERLAY (PANTALLA COMPLETA)
+   =================================================== */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    z-index: var(--z-modal);
+}
+
+.loading-overlay .spinner {
+    width: 50px;
+    height: 50px;
+    border-color: rgba(255, 255, 255, 0.2);
+    border-top-color: white;
+}
+
+.loading-overlay .loading-text {
+    color: white;
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+}
+
+/* ===================================================
+   PULSE ANIMATION (CARRITO)
+   =================================================== */
+#carritoBadge.pulse {
+    animation: badgePulse 0.5s ease;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+/* ===================================================
+   RESPONSIVE
+   =================================================== */
+@media (max-width: 480px) {
+    .toast {
+        left: var(--spacing-lg);
+        right: var(--spacing-lg);
+        bottom: var(--spacing-lg);
+        max-width: none;
+    }
+    
+    .notificaciones-panel {
+        right: var(--spacing-sm);
+        left: var(--spacing-sm);
+        width: auto;
+        top: 70px;
+    }
+    
+    .notificaciones-btn {
+        top: var(--spacing-lg);
+        right: var(--spacing-lg);
+        width: 44px;
+        height: 44px;
+    }
+}

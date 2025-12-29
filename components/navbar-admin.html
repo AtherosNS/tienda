@@ -1,200 +1,235 @@
-<!-- BOTÓN TOGGLE MÓVIL -->
-<button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Abrir menú">☰</button>
+<button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Abrir menú">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+</button>
 
-<!-- OVERLAY PARA MÓVIL -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
-    
-    <!-- HEADER -->
+
     <div class="sidebar-header">
         <div class="logo-container">
-            <div class="logo-icon">👔</div>
-            <h2>TiendaApp</h2>
+            <div class="logo-icon">
+                <img src="img/logo-maves.png" alt="Maves" class="logo-img">
+            </div>
+            <div class="logo-text">
+                <h2>Maves</h2>
+                <span>Boutique</span>
+            </div>
         </div>
         <button class="sidebar-toggle" id="sidebarToggle" type="button" title="Colapsar menú">
-            <span id="toggleIcon">◀</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
         </button>
     </div>
 
-    <!-- INFO USUARIO -->
     <div class="sidebar-user">
-        <div class="sidebar-user-avatar">👤</div>
+        <div class="sidebar-user-avatar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </div>
         <div class="sidebar-user-info">
             <div class="user-name" id="adminNombre">Administrador</div>
             <div class="user-role">Admin</div>
         </div>
     </div>
 
-    <!-- MENÚ PRINCIPAL -->
     <nav class="sidebar-menu">
-        
+
         <div class="sidebar-section-title">Principal</div>
-        
-        <button type="button" onclick="cargarVista('dashboard')" data-vista="dashboard" data-tooltip="Dashboard">
-            <span class="icon">📊</span>
-            <span class="sidebar-text">Dashboard</span>
+
+        <button type="button" onclick="cargarVista('dashboard')" data-vista="dashboard">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg></span>
+            <span class="menu-text">Dashboard</span>
         </button>
-        
-        <button type="button" onclick="cargarVista('productos')" data-vista="productos" data-tooltip="Productos">
-            <span class="icon">📦</span>
-            <span class="sidebar-text">Productos</span>
+
+        <button type="button" onclick="cargarVista('productos')" data-vista="productos">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg></span>
+            <span class="menu-text">Productos</span>
         </button>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-section-title">Gestión</div>
-        
-        <button type="button" onclick="cargarVista('usuarios')" data-vista="usuarios" data-tooltip="Usuarios">
-            <span class="icon">👥</span>
-            <span class="sidebar-text">Usuarios</span>
+
+        <button type="button" onclick="cargarVista('usuarios')" data-vista="usuarios">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg></span>
+            <span class="menu-text">Usuarios</span>
         </button>
-        
-        <button type="button" onclick="cargarVista('sucursales')" data-vista="sucursales" data-tooltip="Sucursales">
-            <span class="icon">🏬</span>
-            <span class="sidebar-text">Sucursales</span>
+
+        <button type="button" onclick="cargarVista('sucursales')" data-vista="sucursales">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg></span>
+            <span class="menu-text">Sucursales</span>
         </button>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-section-title">Reportes</div>
-        
-        <button type="button" onclick="cargarVista('ventas-totales')" data-vista="ventas-totales" data-tooltip="Ventas Totales">
-            <span class="icon">💰</span>
-            <span class="sidebar-text">Ventas Totales</span>
+
+        <button type="button" onclick="cargarVista('ventas-totales')" data-vista="ventas-totales">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg></span>
+            <span class="menu-text">Ventas Totales</span>
         </button>
-        
-        <button type="button" onclick="cargarVista('ventas-tienda')" data-vista="ventas-tienda" data-tooltip="Por Tienda">
-            <span class="icon">🏪</span>
-            <span class="sidebar-text">Por Tienda</span>
+
+        <button type="button" onclick="cargarVista('ventas-tienda')" data-vista="ventas-tienda">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"></path>
+                </svg></span>
+            <span class="menu-text">Por Tienda</span>
         </button>
-        
-        <button type="button" onclick="cargarVista('ventas-empleado')" data-vista="ventas-empleado" data-tooltip="Por Empleado">
-            <span class="icon">🧑‍💼</span>
-            <span class="sidebar-text">Por Empleado</span>
+
+        <button type="button" onclick="cargarVista('ventas-empleado')" data-vista="ventas-empleado">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg></span>
+            <span class="menu-text">Por Empleado</span>
         </button>
-        
-        <button type="button" onclick="cargarVista('rentabilidad')" data-vista="rentabilidad" data-tooltip="Rentabilidad">
-            <span class="icon">💹</span>
-            <span class="sidebar-text">Rentabilidad</span>
+
+        <button type="button" onclick="cargarVista('rentabilidad')" data-vista="rentabilidad">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    <polyline points="17 6 23 6 23 12"></polyline>
+                </svg></span>
+            <span class="menu-text">Rentabilidad</span>
         </button>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-section-title">Sistema</div>
-        
-        <button type="button" onclick="cargarVista('stock-alertas')" data-vista="stock-alertas" data-tooltip="Alertas Stock">
-            <span class="icon">⚠️</span>
-            <span class="sidebar-text">Alertas Stock</span>
+
+        <button type="button" onclick="cargarVista('stock-alertas')" data-vista="stock-alertas">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                    </path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg></span>
+            <span class="menu-text">Alertas Stock</span>
         </button>
-        
-        <button type="button" onclick="cargarVista('configuracion')" data-vista="configuracion" data-tooltip="Configuración">
-            <span class="icon">⚙️</span>
-            <span class="sidebar-text">Configuración</span>
+
+        <button type="button" onclick="cargarVista('configuracion')" data-vista="configuracion">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                    </path>
+                </svg></span>
+            <span class="menu-text">Configuración</span>
         </button>
 
     </nav>
 
-    <!-- FOOTER / LOGOUT -->
     <div class="sidebar-footer">
         <button class="logout-btn" type="button" onclick="logoutAdmin()">
-            <span class="icon">🚪</span>
-            <span class="sidebar-text">Cerrar Sesión</span>
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg></span>
+            <span class="menu-text">Cerrar Sesión</span>
         </button>
     </div>
 
 </aside>
 
-<!-- CONTENIDO PRINCIPAL -->
 <main class="main-content">
     <div id="contenido"></div>
 </main>
 
 <script>
-(function() {
-    // Esperar a que el DOM esté listo
-    function initSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const toggleIcon = document.getElementById('toggleIcon');
-        const mobileToggle = document.getElementById('mobileToggle');
-        const overlay = document.getElementById('sidebarOverlay');
-        
-        if (!sidebar || !mobileToggle || !overlay) {
-            console.error('Elementos del sidebar no encontrados');
-            return;
-        }
+    (function () {
+        function initSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileToggle = document.getElementById('mobileToggle');
+            const overlay = document.getElementById('sidebarOverlay');
 
-        // Recuperar estado guardado (solo desktop)
-        if (window.innerWidth > 768) {
-            const savedState = localStorage.getItem('sidebarCollapsed');
-            if (savedState === 'true') {
-                sidebar.classList.add('collapsed');
-                if (toggleIcon) toggleIcon.textContent = '▶';
+            if (!sidebar || !mobileToggle || !overlay) return;
+
+            if (window.innerWidth > 768) {
+                const savedState = localStorage.getItem('sidebarCollapsed');
+                if (savedState === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
             }
-        }
 
-        // Toggle en desktop (botón ◀/▶)
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', function(e) {
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                });
+            }
+
+            mobileToggle.addEventListener('click', function (e) {
                 e.preventDefault();
-                e.stopPropagation();
-                
-                sidebar.classList.toggle('collapsed');
-                const isCollapsed = sidebar.classList.contains('collapsed');
-                
-                if (toggleIcon) {
-                    toggleIcon.textContent = isCollapsed ? '▶' : '◀';
-                }
-                
-                localStorage.setItem('sidebarCollapsed', isCollapsed);
-                console.log('Sidebar colapsado:', isCollapsed);
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
             });
+
+            overlay.addEventListener('click', function () {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            });
+
+            document.querySelectorAll('.sidebar-menu button').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('mobile-open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+
+            window.marcarMenuActivo = function (vista) {
+                document.querySelectorAll('.sidebar-menu button').forEach(function (btn) {
+                    btn.classList.remove('active');
+                    if (btn.dataset.vista === vista) {
+                        btn.classList.add('active');
+                    }
+                });
+            };
         }
 
-        // Toggle en móvil (botón hamburguesa ☰)
-        mobileToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            sidebar.classList.toggle('mobile-open');
-            overlay.classList.toggle('active');
-            console.log('Mobile toggle clicked, sidebar open:', sidebar.classList.contains('mobile-open'));
-        });
-
-        // Cerrar con overlay
-        overlay.addEventListener('click', function() {
-            sidebar.classList.remove('mobile-open');
-            overlay.classList.remove('active');
-        });
-
-        // Cerrar sidebar en móvil al hacer clic en un enlace del menú
-        const menuButtons = document.querySelectorAll('.sidebar-menu button');
-        menuButtons.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('mobile-open');
-                    overlay.classList.remove('active');
-                }
-            });
-        });
-
-        // Función global para marcar menú activo
-        window.marcarMenuActivo = function(vista) {
-            document.querySelectorAll('.sidebar-menu button').forEach(function(btn) {
-                btn.classList.remove('active');
-                if (btn.dataset.vista === vista) {
-                    btn.classList.add('active');
-                }
-            });
-        };
-
-        console.log('Sidebar inicializado correctamente');
-    }
-
-    // Ejecutar cuando el DOM esté listo
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initSidebar);
-    } else {
-        initSidebar();
-    }
-})();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSidebar);
+        } else {
+            initSidebar();
+        }
+    })();
 </script>

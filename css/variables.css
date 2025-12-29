@@ -1,0 +1,176 @@
+/* =======================================================
+   VARIABLES.CSS - SISTEMA CENTRALIZADO DE DISEÑO
+   Este es el ÚNICO archivo donde se definen variables
+   ======================================================= */
+
+:root {
+    /* ===================================================
+       COLORES PRIMARIOS
+       =================================================== */
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --primary-light: #eff6ff;
+    --primary-dark: #1d4ed8;
+    
+    /* ===================================================
+       COLORES SEMÁNTICOS
+       =================================================== */
+    --success: #10b981;
+    --success-hover: #059669;
+    --success-light: #ecfdf5;
+    --success-dark: #047857;
+    
+    --warning: #f59e0b;
+    --warning-hover: #d97706;
+    --warning-light: #fef3c7;
+    --warning-dark: #b45309;
+    
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+    --danger-light: #fee2e2;
+    --danger-dark: #b91c1c;
+    
+    --info: #8b5cf6;
+    --info-hover: #7c3aed;
+    --info-light: #ede9fe;
+    --info-dark: #6d28d9;
+    
+    /* ===================================================
+       COLORES NEUTROS
+       =================================================== */
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    
+    /* ===================================================
+       TEMA CLARO (DEFAULT)
+       =================================================== */
+    --bg-color: #f4f6f9;
+    --bg-secondary: #eef1f6;
+    --card-bg: #ffffff;
+    --text-color: #1e293b;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+    --border-color: #e2e8f0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --shadow-light: rgba(255, 255, 255, 0.8);
+    
+    /* ===================================================
+       SIDEBAR
+       =================================================== */
+    --sidebar-width: 260px;
+    --sidebar-collapsed: 70px;
+    --sidebar-bg: #1e293b;
+    --sidebar-hover: #334155;
+    --sidebar-active: #3b82f6;
+    --sidebar-text: #e2e8f0;
+    --sidebar-text-muted: #94a3b8;
+    
+    /* ===================================================
+       TIPOGRAFÍA
+       =================================================== */
+    --font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --font-size-xs: 11px;
+    --font-size-sm: 13px;
+    --font-size-base: 14px;
+    --font-size-lg: 16px;
+    --font-size-xl: 18px;
+    --font-size-2xl: 24px;
+    --font-size-3xl: 28px;
+    
+    /* ===================================================
+       ESPACIADO
+       =================================================== */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 20px;
+    --spacing-2xl: 24px;
+    --spacing-3xl: 32px;
+    
+    /* ===================================================
+       BORDES
+       =================================================== */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 10px;
+    --radius-xl: 12px;
+    --radius-2xl: 16px;
+    --radius-full: 9999px;
+    
+    /* ===================================================
+       SOMBRAS
+       =================================================== */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+    
+    /* ===================================================
+       TRANSICIONES
+       =================================================== */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.2s ease;
+    --transition-slow: 0.3s ease;
+    
+    /* ===================================================
+       Z-INDEX
+       =================================================== */
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-fixed: 500;
+    --z-overlay: 900;
+    --z-sidebar: 1000;
+    --z-modal: 10000;
+    --z-toast: 99999;
+    
+    /* ===================================================
+       TAMAÑOS TÁCTILES (Mínimo 44px para POS)
+       =================================================== */
+    --touch-target-min: 44px;
+    --button-height-sm: 36px;
+    --button-height-md: 44px;
+    --button-height-lg: 52px;
+}
+
+/* =======================================================
+   TEMA OSCURO
+   ======================================================= */
+.dark {
+    --bg-color: #0f172a;
+    --bg-secondary: #1e293b;
+    --card-bg: #1e293b;
+    --text-color: #e2e8f0;
+    --text-muted: #94a3b8;
+    --text-light: #64748b;
+    --border-color: #334155;
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    --shadow-light: rgba(255, 255, 255, 0.05);
+}
+
+/* =======================================================
+   COLORES DE PRODUCTOS (VARIANTES)
+   ======================================================= */
+:root {
+    --color-negro: #1e1e1e;
+    --color-blanco: #ffffff;
+    --color-gris: #6b7280;
+    --color-azul: #3b82f6;
+    --color-rojo: #ef4444;
+    --color-verde: #22c55e;
+    --color-amarillo: #eab308;
+    --color-rosado: #ec4899;
+    --color-morado: #a855f7;
+    --color-naranja: #f97316;
+    --color-beige: #d4a574;
+    --color-celeste: #38bdf8;
+    --color-marron: #92400e;
+}

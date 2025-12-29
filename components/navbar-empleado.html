@@ -1,182 +1,209 @@
-<!-- BOTÓN TOGGLE MÓVIL -->
-<button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Abrir menú">☰</button>
+<button class="mobile-toggle" id="mobileToggle" type="button" aria-label="Abrir menú">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+</button>
 
-<!-- OVERLAY PARA MÓVIL -->
 <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- SIDEBAR EMPLEADO -->
 <aside class="sidebar sidebar-empleado" id="sidebar">
-    
-    <!-- HEADER -->
+
     <div class="sidebar-header">
         <div class="logo-container">
-            <div class="logo-icon logo-empleado">👤</div>
-            <h2>Mi Panel</h2>
+            <div class="logo-icon">
+                <img src="img/logo-maves.png" alt="Maves" class="logo-img">
+            </div>
+            <div class="logo-text">
+                <h2>Maves</h2>
+                <span>Mi Panel</span>
+            </div>
         </div>
         <button class="sidebar-toggle" id="sidebarToggle" type="button" title="Colapsar menú">
-            <span id="toggleIcon">◀</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
         </button>
     </div>
 
-    <!-- INFO USUARIO -->
     <div class="sidebar-user">
-        <div class="sidebar-user-avatar avatar-empleado">🧑‍💼</div>
+        <div class="sidebar-user-avatar avatar-empleado">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </div>
         <div class="sidebar-user-info">
             <div class="user-name" id="empleadoNombre">Empleado</div>
-            <div class="user-role" id="empleadoSucursal">Sucursal</div>
+            <div class="user-role user-role-empleado" id="empleadoSucursal">Sucursal</div>
         </div>
     </div>
 
-    <!-- MENÚ PRINCIPAL -->
     <nav class="sidebar-menu">
-        
+
         <div class="sidebar-section-title">Principal</div>
-        
-        <button type="button" onclick="cargarVistaEmpleado('dashboard')" data-vista="dashboard" data-tooltip="Dashboard">
-            <span class="icon">📊</span>
-            <span class="sidebar-text">Dashboard</span>
+
+        <button type="button" onclick="cargarVistaEmpleado('dashboard')" data-vista="dashboard">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg></span>
+            <span class="menu-text">Dashboard</span>
         </button>
-        
-        <button type="button" onclick="cargarVistaEmpleado('registrar-venta')" data-vista="registrar-venta" data-tooltip="Nueva Venta">
-            <span class="icon">🛒</span>
-            <span class="sidebar-text">Registrar Venta</span>
+
+        <button type="button" onclick="cargarVistaEmpleado('registrar-venta')" data-vista="registrar-venta">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg></span>
+            <span class="menu-text">Registrar Venta</span>
         </button>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-section-title">Historial</div>
-        
-        <button type="button" onclick="cargarVistaEmpleado('mis-ventas')" data-vista="mis-ventas" data-tooltip="Mis Ventas">
-            <span class="icon">📋</span>
-            <span class="sidebar-text">Mis Ventas</span>
+
+        <button type="button" onclick="cargarVistaEmpleado('mis-ventas')" data-vista="mis-ventas">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg></span>
+            <span class="menu-text">Mis Ventas</span>
         </button>
 
         <div class="sidebar-divider"></div>
         <div class="sidebar-section-title">Cuenta</div>
-        
-        <button type="button" onclick="cargarVistaEmpleado('perfil')" data-vista="perfil" data-tooltip="Mi Perfil">
-            <span class="icon">⚙️</span>
-            <span class="sidebar-text">Mi Perfil</span>
+
+        <button type="button" onclick="cargarVistaEmpleado('perfil')" data-vista="perfil">
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                    </path>
+                </svg></span>
+            <span class="menu-text">Mi Perfil</span>
         </button>
 
     </nav>
 
-    <!-- FOOTER / LOGOUT -->
     <div class="sidebar-footer">
         <button class="logout-btn" type="button" onclick="logoutEmpleado()">
-            <span class="icon">🚪</span>
-            <span class="sidebar-text">Cerrar Sesión</span>
+            <span class="menu-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg></span>
+            <span class="menu-text">Cerrar Sesión</span>
         </button>
     </div>
 
 </aside>
 
-<!-- CONTENIDO PRINCIPAL -->
 <main class="main-content">
     <div id="contenidoEmpleado"></div>
 </main>
 
 <script>
-(function() {
-    function initSidebarEmpleado() {
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const toggleIcon = document.getElementById('toggleIcon');
-        const mobileToggle = document.getElementById('mobileToggle');
-        const overlay = document.getElementById('sidebarOverlay');
-        
-        if (!sidebar || !mobileToggle || !overlay) {
-            console.error('Elementos del sidebar no encontrados');
-            return;
-        }
+    (function () {
+        function initSidebarEmpleado() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileToggle = document.getElementById('mobileToggle');
+            const overlay = document.getElementById('sidebarOverlay');
 
-        // Recuperar estado guardado (solo desktop)
-        if (window.innerWidth > 768) {
-            const savedState = localStorage.getItem('sidebarEmpleadoCollapsed');
-            if (savedState === 'true') {
-                sidebar.classList.add('collapsed');
-                if (toggleIcon) toggleIcon.textContent = '▶';
+            if (!sidebar || !mobileToggle || !overlay) return;
+
+            if (window.innerWidth > 768) {
+                const savedState = localStorage.getItem('sidebarEmpleadoCollapsed');
+                if (savedState === 'true') {
+                    sidebar.classList.add('collapsed');
+                }
             }
-        }
 
-        // Toggle en desktop
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', function(e) {
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    sidebar.classList.toggle('collapsed');
+                    localStorage.setItem('sidebarEmpleadoCollapsed', sidebar.classList.contains('collapsed'));
+                });
+            }
+
+            mobileToggle.addEventListener('click', function (e) {
                 e.preventDefault();
-                e.stopPropagation();
-                
-                sidebar.classList.toggle('collapsed');
-                const isCollapsed = sidebar.classList.contains('collapsed');
-                
-                if (toggleIcon) {
-                    toggleIcon.textContent = isCollapsed ? '▶' : '◀';
-                }
-                
-                localStorage.setItem('sidebarEmpleadoCollapsed', isCollapsed);
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
             });
+
+            overlay.addEventListener('click', function () {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+            });
+
+            document.querySelectorAll('.sidebar-menu button').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('mobile-open');
+                        overlay.classList.remove('active');
+                    }
+                });
+            });
+
+            window.marcarMenuActivoEmpleado = function (vista) {
+                document.querySelectorAll('.sidebar-menu button').forEach(function (btn) {
+                    btn.classList.remove('active');
+                    if (btn.dataset.vista === vista) {
+                        btn.classList.add('active');
+                    }
+                });
+            };
         }
 
-        // Toggle en móvil
-        mobileToggle.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            sidebar.classList.toggle('mobile-open');
-            overlay.classList.toggle('active');
-        });
-
-        // Cerrar con overlay
-        overlay.addEventListener('click', function() {
-            sidebar.classList.remove('mobile-open');
-            overlay.classList.remove('active');
-        });
-
-        // Cerrar sidebar en móvil al hacer clic en menú
-        const menuButtons = document.querySelectorAll('.sidebar-menu button');
-        menuButtons.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('mobile-open');
-                    overlay.classList.remove('active');
-                }
-            });
-        });
-
-        // Función global para marcar menú activo
-        window.marcarMenuActivoEmpleado = function(vista) {
-            document.querySelectorAll('.sidebar-menu button').forEach(function(btn) {
-                btn.classList.remove('active');
-                if (btn.dataset.vista === vista) {
-                    btn.classList.add('active');
-                }
-            });
-        };
-
-        console.log('Sidebar empleado inicializado');
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initSidebarEmpleado);
-    } else {
-        initSidebarEmpleado();
-    }
-})();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSidebarEmpleado);
+        } else {
+            initSidebarEmpleado();
+        }
+    })();
 </script>
 
 <style>
-/* Colores específicos para empleado */
-.sidebar-empleado {
-    --sidebar-active: #10b981;
-}
+    /* Variaciones para empleado */
+    .sidebar-empleado {
+        --sidebar-active: linear-gradient(135deg, var(--lavender) 0%, var(--purple) 100%);
+    }
 
-.logo-empleado {
-    background: linear-gradient(135deg, #10b981, #34d399) !important;
-}
+    .sidebar-empleado .logo-text span {
+        color: var(--lavender);
+    }
 
-.avatar-empleado {
-    background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
-}
+    .sidebar-empleado .sidebar-menu button.active {
+        box-shadow: 0 4px 15px rgba(201, 184, 217, 0.3);
+    }
 
-.sidebar-empleado .sidebar-menu button.active {
-    background: var(--sidebar-active);
-}
+    .sidebar-empleado .sidebar-menu button::before {
+        background: var(--lavender);
+    }
+
+    .sidebar-empleado .sidebar-menu button.active::before {
+        background: white;
+    }
+
+    .avatar-empleado {
+        background: linear-gradient(135deg, var(--lavender) 0%, var(--purple) 100%) !important;
+    }
+
+    .user-role-empleado {
+        color: var(--lavender) !important;
+    }
 </style>
