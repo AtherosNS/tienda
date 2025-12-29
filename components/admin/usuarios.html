@@ -1,130 +1,540 @@
 <div class="page">
 
-    <h2 class="page-title">Gestión de Usuarios</h2>
+    <h2 class="page-title">👥 Gestión de Usuarios</h2>
 
+    <!-- FORMULARIO REGISTRO -->
     <div class="card form-card">
-        <h3>Registrar Usuario</h3>
+        <div class="card-header">
+            <h3>➕ Registrar Usuario</h3>
+        </div>
 
         <form id="formUsuario" autocomplete="off">
             <div class="form-grid">
                 <div class="input-group">
-                    <input type="text" id="userNombre" required autocomplete="off">
                     <label>Nombre Completo</label>
+                    <input type="text" id="userNombre" placeholder="Ej: María García" required autocomplete="off">
                 </div>
 
                 <div class="input-group">
-                    <input type="email" id="userEmail" required autocomplete="off">
                     <label>Email</label>
+                    <input type="email" id="userEmail" placeholder="correo@ejemplo.com" required autocomplete="off">
                 </div>
 
                 <div class="input-group">
-                    <input type="password" id="userPassword" required autocomplete="new-password">
                     <label>Contraseña</label>
+                    <input type="password" id="userPassword" placeholder="••••••••" required
+                        autocomplete="new-password">
                 </div>
 
                 <div class="input-group">
+                    <label>Rol</label>
                     <select id="userRol">
                         <option value="EMPLEADO">Empleado</option>
                         <option value="ADMIN">Administrador</option>
                     </select>
-                    <label class="label-select">Rol</label>
                 </div>
 
                 <div class="input-group">
+                    <label>Sucursal</label>
                     <select id="userSucursal"></select>
-                    <label class="label-select">Sucursal</label>
                 </div>
             </div>
 
             <button type="button" class="btn-primary" id="btnGuardarUsuario">
-                Crear Usuario
+                <span>💾</span> Crear Usuario
             </button>
         </form>
     </div>
 
+    <!-- LISTA DE USUARIOS -->
     <div class="card">
-        <h3>Usuarios Registrados</h3>
+        <div class="card-header">
+            <h3>📋 Usuarios Registrados</h3>
+            <div class="usuarios-stats">
+                <span class="stat-pill activos" id="countActivos">0 activos</span>
+                <span class="stat-pill inactivos" id="countInactivos">0 inactivos</span>
+            </div>
+        </div>
 
-        <div class="table-responsive">
-            <table class="neo-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Sucursal</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaUsuarios"></tbody>
-            </table>
+        <!-- Grid de Cards -->
+        <div class="usuarios-grid" id="usuariosGrid">
+            <!-- Las cards se generan dinámicamente -->
+        </div>
+
+        <!-- Estado vacío -->
+        <div class="usuarios-empty" id="usuariosEmpty" style="display: none;">
+            <span class="empty-icon">👤</span>
+            <p>No hay usuarios registrados</p>
+            <small>Crea el primer usuario usando el formulario de arriba</small>
         </div>
     </div>
 
 </div>
 
 <style>
-/* Badge de estado */
-.badge-estado {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
+    /* ===================================================
+   STATS PILLS
+   =================================================== */
+    .usuarios-stats {
+        display: flex;
+        gap: 8px;
+    }
 
-.badge-activo {
-    background: #dcfce7;
-    color: #166534;
-}
+    .stat-pill {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
 
-.badge-inactivo {
-    background: #fee2e2;
-    color: #991b1b;
-}
+    .stat-pill.activos {
+        background: var(--success-light, #ecfdf5);
+        color: var(--success-dark, #047857);
+    }
 
-/* Botones de acción */
-.btn-action {
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s;
-    margin: 0 2px;
-}
+    .stat-pill.inactivos {
+        background: var(--gray-100, #f1f5f9);
+        color: var(--gray-600, #475569);
+    }
 
-.btn-toggle-activo {
-    background: #fee2e2;
-    color: #991b1b;
-}
+    /* ===================================================
+   GRID DE USUARIOS
+   =================================================== */
+    .usuarios-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
 
-.btn-toggle-activo:hover {
-    background: #fecaca;
-}
+    /* ===================================================
+   CARD DE USUARIO
+   =================================================== */
+    .usuario-card {
+        background: var(--card-bg, #ffffff);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid var(--border-color, #e2e8f0);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
 
-.btn-toggle-inactivo {
-    background: #dcfce7;
-    color: #166534;
-}
+    .usuario-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
 
-.btn-toggle-inactivo:hover {
-    background: #bbf7d0;
-}
+    .usuario-card.inactivo {
+        opacity: 0.6;
+        background: var(--gray-50, #f8fafc);
+    }
 
-.btn-edit {
-    background: #dbeafe;
-    color: #1e40af;
-}
+    .usuario-card.inactivo:hover {
+        opacity: 0.8;
+    }
 
-.btn-edit:hover {
-    background: #bfdbfe;
-}
+    /* Indicador de estado en borde superior */
+    .usuario-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--success, #10b981);
+    }
 
-/* Fila de usuario inactivo */
-.usuario-inactivo {
-    opacity: 0.6;
-}
+    .usuario-card.inactivo::before {
+        background: var(--gray-300, #cbd5e1);
+    }
+
+    /* ===================================================
+   HEADER DE CARD
+   =================================================== */
+    .usuario-card-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .usuario-avatar {
+        width: 56px;
+        height: 56px;
+        min-width: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: 700;
+        color: white;
+        background: linear-gradient(135deg, var(--primary, #3b82f6), #8b5cf6);
+        text-transform: uppercase;
+    }
+
+    .usuario-card.admin .usuario-avatar {
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+    }
+
+    .usuario-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .usuario-nombre {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-color, #1e293b);
+        margin: 0 0 4px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .usuario-email {
+        font-size: 13px;
+        color: var(--text-muted, #64748b);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .usuario-id {
+        font-size: 11px;
+        color: var(--text-light, #94a3b8);
+        background: var(--gray-100, #f1f5f9);
+        padding: 2px 8px;
+        border-radius: 10px;
+        position: absolute;
+        top: 16px;
+        right: 16px;
+    }
+
+    /* ===================================================
+   BADGES
+   =================================================== */
+    .usuario-badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .badge-rol {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .badge-rol.admin {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+    }
+
+    .badge-rol.empleado {
+        background: var(--primary-light, #eff6ff);
+        color: var(--primary-dark, #1d4ed8);
+    }
+
+    .badge-estado {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .badge-estado.activo {
+        background: var(--success-light, #ecfdf5);
+        color: var(--success-dark, #047857);
+    }
+
+    .badge-estado.activo::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        background: var(--success, #10b981);
+        border-radius: 50%;
+        animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.4;
+        }
+    }
+
+    .badge-estado.inactivo {
+        background: var(--gray-100, #f1f5f9);
+        color: var(--gray-500, #64748b);
+    }
+
+    /* ===================================================
+   INFO DE SUCURSAL
+   =================================================== */
+    .usuario-sucursal {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px;
+        background: var(--gray-50, #f8fafc);
+        border-radius: 10px;
+        margin-bottom: 16px;
+    }
+
+    .sucursal-icon {
+        font-size: 18px;
+    }
+
+    .sucursal-info {
+        flex: 1;
+    }
+
+    .sucursal-label {
+        font-size: 10px;
+        color: var(--text-light, #94a3b8);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .sucursal-nombre {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-color, #1e293b);
+    }
+
+    /* ===================================================
+   ACCIONES
+   =================================================== */
+    .usuario-acciones {
+        display: flex;
+        gap: 8px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color, #e2e8f0);
+    }
+
+    .usuario-acciones .btn-action {
+        flex: 1;
+        height: 40px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-toggle {
+        background: var(--warning-light, #fef3c7);
+        color: var(--warning-dark, #b45309);
+    }
+
+    .btn-toggle:hover {
+        background: #fde68a;
+    }
+
+    .btn-toggle.activar {
+        background: var(--success-light, #ecfdf5);
+        color: var(--success-dark, #047857);
+    }
+
+    .btn-toggle.activar:hover {
+        background: #d1fae5;
+    }
+
+    .btn-editar {
+        background: var(--primary-light, #eff6ff);
+        color: var(--primary-dark, #1d4ed8);
+    }
+
+    .btn-editar:hover {
+        background: #dbeafe;
+    }
+
+    /* ===================================================
+   ESTADO VACÍO
+   =================================================== */
+    .usuarios-empty {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted, #64748b);
+    }
+
+    .usuarios-empty .empty-icon {
+        font-size: 64px;
+        display: block;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    .usuarios-empty p {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 8px 0;
+        color: var(--text-color, #1e293b);
+    }
+
+    .usuarios-empty small {
+        font-size: 14px;
+        color: var(--text-muted, #64748b);
+    }
+
+    /* ===================================================
+   RESPONSIVE
+   =================================================== */
+    @media (max-width: 768px) {
+        .usuarios-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .usuarios-stats {
+            width: 100%;
+        }
+
+        .stat-pill {
+            flex: 1;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .usuario-card-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .usuario-avatar {
+            margin: 0 auto;
+        }
+
+        .usuario-id {
+            position: static;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .usuario-badges {
+            justify-content: center;
+        }
+
+        .usuario-acciones {
+            flex-direction: column;
+        }
+    }
 </style>
+
+<script>
+    // Función para renderizar usuarios como cards
+    function renderizarUsuariosCards(usuarios) {
+        const grid = document.getElementById('usuariosGrid');
+        const empty = document.getElementById('usuariosEmpty');
+        const countActivos = document.getElementById('countActivos');
+        const countInactivos = document.getElementById('countInactivos');
+
+        if (!usuarios || usuarios.length === 0) {
+            grid.style.display = 'none';
+            empty.style.display = 'block';
+            countActivos.textContent = '0 activos';
+            countInactivos.textContent = '0 inactivos';
+            return;
+        }
+
+        grid.style.display = 'grid';
+        empty.style.display = 'none';
+
+        // Contar activos/inactivos
+        const activos = usuarios.filter(u => u.activo !== false).length;
+        const inactivos = usuarios.length - activos;
+        countActivos.textContent = `${activos} activo${activos !== 1 ? 's' : ''}`;
+        countInactivos.textContent = `${inactivos} inactivo${inactivos !== 1 ? 's' : ''}`;
+
+        // Generar cards
+        grid.innerHTML = usuarios.map(usuario => {
+            const esActivo = usuario.activo !== false;
+            const esAdmin = usuario.rol === 'ADMIN';
+            const iniciales = obtenerIniciales(usuario.nombre);
+            const sucursalNombre = usuario.sucursal?.nombre || usuario.sucursalNombre || 'Sin asignar';
+
+            return `
+            <div class="usuario-card ${!esActivo ? 'inactivo' : ''} ${esAdmin ? 'admin' : ''}">
+                <span class="usuario-id">#${usuario.id}</span>
+                
+                <div class="usuario-card-header">
+                    <div class="usuario-avatar">${iniciales}</div>
+                    <div class="usuario-info">
+                        <h4 class="usuario-nombre">${usuario.nombre}</h4>
+                        <p class="usuario-email">${usuario.email}</p>
+                    </div>
+                </div>
+                
+                <div class="usuario-badges">
+                    <span class="badge-rol ${esAdmin ? 'admin' : 'empleado'}">
+                        ${esAdmin ? '👑 Admin' : '👤 Empleado'}
+                    </span>
+                    <span class="badge-estado ${esActivo ? 'activo' : 'inactivo'}">
+                        ${esActivo ? 'Activo' : 'Inactivo'}
+                    </span>
+                </div>
+                
+                <div class="usuario-sucursal">
+                    <span class="sucursal-icon">🏪</span>
+                    <div class="sucursal-info">
+                        <span class="sucursal-label">Sucursal</span>
+                        <span class="sucursal-nombre">${sucursalNombre}</span>
+                    </div>
+                </div>
+                
+                <div class="usuario-acciones">
+                    <button class="btn-action btn-toggle ${!esActivo ? 'activar' : ''}" 
+                            onclick="toggleUsuario(${usuario.id}, ${esActivo})"
+                            title="${esActivo ? 'Desactivar' : 'Activar'}">
+                        ${esActivo ? '🚫 Desactivar' : '✅ Activar'}
+                    </button>
+                    <button class="btn-action btn-editar" 
+                            onclick="editarUsuario(${usuario.id})"
+                            title="Editar">
+                        ✏️ Editar
+                    </button>
+                </div>
+            </div>
+        `;
+        }).join('');
+    }
+
+    // Obtener iniciales del nombre
+    function obtenerIniciales(nombre) {
+        if (!nombre) return '??';
+        const palabras = nombre.trim().split(' ');
+        if (palabras.length >= 2) {
+            return (palabras[0][0] + palabras[1][0]).toUpperCase();
+        }
+        return nombre.substring(0, 2).toUpperCase();
+    }
+
+    // Estas funciones deben existir en tu admin.js
+    // toggleUsuario(id, estadoActual) - cambiar estado activo/inactivo
+    // editarUsuario(id) - abrir modal de edición
+</script>
